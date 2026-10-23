@@ -3,12 +3,14 @@
 ## Contents
 
 1. Programme principles — sequencing and merge discipline.
-2. Issue map — TTT-001 through TTT-016.
+2. Issue map — TTT-001 through TTT-016 and GitHub numbers.
 3. Execution waves — safe parallelism.
 4. Dependency graph — explicit blockers.
 5. Model-selection gate — where owner choice enters.
 6. Expensive-work gate — what must exist before training campaigns.
 7. Completion target — what the programme delivers.
+
+Programme tracker: #1.
 
 ## 1. Programme principles
 
@@ -18,48 +20,48 @@ Issues should be executed from current `main`; agents must reconcile work merged
 
 ## 2. Issue map
 
-| ID | Deliverable |
-|---|---|
-| TTT-001 | Repository/package bootstrap, deterministic dev tooling and CI |
-| TTT-002 | Versioned canonical schemas for scenarios, observations, episodes, provenance |
-| TTT-003 | Typed command IR, deterministic interpreter, stable error taxonomy |
-| TTT-004 | Abstract battlefield simulator and procedural scenario generator |
-| TTT-005 | Stateful console/session renderer, recorder, replay and delta views |
-| TTT-006 | Model-agnostic creative-teacher/persona mutation subsystem |
-| TTT-007 | Corpus assembler, validators, provenance, dedup and split discipline |
-| TTT-008 | Player intercept/telegraph semantic codec and explicit deception model |
-| TTT-009 | Evaluation harness, frozen generated/handwritten suites and baselines |
-| TTT-010 | Student-visited/corrective rollout pipeline inspired by DAgger-style repair |
-| TTT-011 | Initial model-cast admission: owner-selected teacher/student candidates, licensing/runtime probes, frozen decision record |
-| TTT-012 | Reproducible fine-tuning/export harness for the admitted cast |
-| TTT-013 | Pilot corpus generation and smoke/ablation fine-tunes |
-| TTT-014 | Closed-loop 20–30 turn commander benchmark and comparative report |
-| TTT-015 | Runtime export/bridge contract plus reference intercept integration |
-| TTT-016 | Release/admission package: model/data cards, manifests, benchmarks and reproducibility |
+| ID | Issue | Deliverable |
+|---|---:|---|
+| TTT-001 | #2 | Repository/package bootstrap, deterministic dev tooling and CI |
+| TTT-002 | #3 | Versioned canonical schemas for scenarios, observations, episodes, provenance |
+| TTT-003 | #4 | Typed command IR, deterministic interpreter, stable error taxonomy |
+| TTT-004 | #5 | Abstract battlefield simulator and procedural scenario generator |
+| TTT-005 | #6 | Stateful console/session renderer, recorder, replay and delta views |
+| TTT-006 | #7 | Model-agnostic creative-teacher/persona mutation subsystem |
+| TTT-007 | #8 | Corpus assembler, validators, provenance, dedup and split discipline |
+| TTT-008 | #9 | Player intercept/telegraph semantic codec and explicit deception model |
+| TTT-009 | #10 | Evaluation harness, frozen generated/handwritten suites and baselines |
+| TTT-010 | #11 | Student-visited/corrective rollout pipeline inspired by DAgger-style repair |
+| TTT-011 | #12 | Initial model-cast admission: owner-selected teacher/student candidates, licensing/runtime probes, frozen decision record |
+| TTT-012 | #13 | Reproducible fine-tuning/export harness for the admitted cast |
+| TTT-013 | #14 | Pilot corpus generation and smoke/ablation fine-tunes |
+| TTT-014 | #15 | Closed-loop 20–30 turn commander benchmark and comparative report |
+| TTT-015 | #16 | Runtime export/bridge contract plus reference intercept integration |
+| TTT-016 | #17 | Release/admission package: model/data cards, manifests, benchmarks and reproducibility |
 
 ## 3. Execution waves
 
-**Wave 0:** TTT-001.
+**Wave 0:** TTT-001 / #2.
 
-**Wave 1:** TTT-002.
+**Wave 1:** TTT-002 / #3.
 
-**Wave 2, parallel:** TTT-003 and TTT-006.
+**Wave 2, parallel:** TTT-003 / #4 and TTT-006 / #7.
 
-**Wave 3:** TTT-004 after TTT-003; TTT-008 can run in parallel after TTT-003.
+**Wave 3:** TTT-004 / #5 after TTT-003; TTT-008 / #9 can run in parallel after TTT-003.
 
-**Wave 4, parallel where practical:** TTT-005 after TTT-004; TTT-007 after TTT-002/003/004/006; TTT-009 after TTT-003/004 and may consume TTT-005 when available.
+**Wave 4, parallel where practical:** TTT-005 / #6 after TTT-004; TTT-007 / #8 after TTT-002/003/004/006; TTT-009 / #10 after TTT-003/004 and may consume TTT-005 when available.
 
-**Wave 5:** TTT-010 after TTT-007/009.
+**Wave 5:** TTT-010 / #11 after TTT-007/009.
 
-**Wave 6:** TTT-011 after TTT-006/007/009/010. This is the deliberate model-selection gate.
+**Wave 6:** TTT-011 / #12 after TTT-006/007/009/010. This is the deliberate model-selection gate.
 
-**Wave 7, parallel:** TTT-012 and TTT-015 after TTT-011 (TTT-015 also requires TTT-008/009).
+**Wave 7, parallel:** TTT-012 / #13 and TTT-015 / #16 after TTT-011 (TTT-015 also requires TTT-008/009).
 
-**Wave 8:** TTT-013 after TTT-012.
+**Wave 8:** TTT-013 / #14 after TTT-012.
 
-**Wave 9:** TTT-014 after TTT-013.
+**Wave 9:** TTT-014 / #15 after TTT-013.
 
-**Wave 10:** TTT-016 after TTT-014/015.
+**Wave 10:** TTT-016 / #17 after TTT-014/015.
 
 ## 4. Dependency graph
 
@@ -86,7 +88,7 @@ Issues should be executed from current `main`; agents must reconcile work merged
 
 No teacher/student lineup is selected in this programme document.
 
-TTT-011 is blocked until the owner records the initial cast decision in `11-model-cast-admission.md` or its issue. Candidate analysis may precede the final decision, but implementation must not silently choose a checkpoint.
+TTT-011 / #12 is blocked until the owner records the initial cast decision in `11-model-cast-admission.md` or its issue. Candidate analysis may precede the final decision, but implementation must not silently choose a checkpoint.
 
 Possible roles to fill:
 - creative teacher(s);
