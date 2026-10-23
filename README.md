@@ -16,6 +16,7 @@ Neither Sprocket nor any Qwen/WorldTUI checkpoint is selected as a required runt
 
 ## Start here
 
+- [Programme tracker](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/1)
 - [Agent execution contract](AGENTS.md)
 - [RAG index](docs/rag/00-index.md)
 - [Vision and non-goals](docs/rag/01-vision-and-non-goals.md)
@@ -32,7 +33,11 @@ Neither Sprocket nor any Qwen/WorldTUI checkpoint is selected as a required runt
 
 ## Current status
 
-Programme design and RAG documentation are being established before implementation. GitHub issues are the authoritative work queue. Each programme issue is written so an implementation agent can start from current `main`, read the referenced RAG material, implement the task, open a PR, satisfy automated checks, and merge it.
+The reviewed programme and RAG context are published. **TTT-001 / issue #2 is ready to execute.** The implementation queue runs through TTT-016 / issue #17.
+
+The initial model cast remains deliberately **UNSELECTED** and is admitted only at TTT-011 / issue #12 after the model-independent command, corpus, recovery, and evaluation foundations exist.
+
+Each implementation issue contains an autonomous-agent prompt and inherits the repository-wide requirement to implement, test, open a focused PR, satisfy automated checks, self-review, and merge.
 
 ## Core rule
 
