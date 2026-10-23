@@ -1,0 +1,144 @@
+# Architecture
+
+## Contents
+
+1. System boundaries — what is authoritative and what is learned.
+2. Data flow — how scenarios become training episodes.
+3. Runtime flow — how a trained commander interacts with actors.
+4. Component contracts — stable interfaces between modules.
+5. Hidden-information surfaces — private, observed, and player-visible state.
+6. Failure handling — how errors become training signal.
+7. Extension points — where model families and games plug in.
+
+## 1. System boundaries
+
+### World Authority
+
+Deterministic, replayable code owns:
+- scenario state;
+- unit identities/capabilities/resources;
+- command validation;
+- accepted/rejected order state;
+- abstract movement/combat/objective transitions;
+- error codes and structured feedback;
+- secrets and visibility;
+- authoritative event log.
+
+It may use probabilistic simulation only when randomness is seeded and replayable.
+
+### Creative Teacher
+
+Untrusted, pluggable generator may:
+- propose character utterances;
+- rewrite semantically equivalent messages;
+- invent persona traits and doctrine vocabulary;
+- propose tactical candidate actions;
+- create riddles, insults, rituals, codewords, and eccentric motives.
+
+Teacher proposals enter admitted data only after validation. Teacher-generated world results never override World Authority.
+
+### Student Commander
+
+Receives only the admitted commander observation plus its allowed durable memory/context. Produces:
+- typed command/action objects;
+- optional commander speech/radio;
+- optional rationale only when a training/evaluation mode explicitly requests it.
+
+Its output is parsed and validated before the World Authority executes anything.
+
+## 2. Data flow
+
+```
+scenario seed/spec
+      |
+      v
+World Authority -----> authoritative event/result stream
+      |                          |
+      | observation              | validated facts/errors
+      v                          v
+teacher/oracle ---> candidate action + style mutation
+      |                          |
+      +---------- validators ----+
+                    |
+                    v
+          canonical episode record
+                    |
+        provenance / dedup / split
+                    |
+                    v
+             training corpus
+```
+
+A teacher can improve *how* an action is expressed or suggest an action to test, but the environment determines whether that action is valid and what follows.
+
+## 3. Runtime flow
+
+```
+game/abstract state
+   -> observation adapter
+   -> Student Commander
+   -> command parser/schema
+   -> deterministic interpreter
+   -> squad/actor objective adapter
+   -> authoritative game execution
+   -> structured feedback/event log
+   -> next observation
+```
+
+Player intercept rendering consumes the **dispatched authoritative command/event stream**, not free-standing hallucinated hints.
+
+## 4. Component contracts
+
+Implement modules behind interfaces rather than a monolith:
+
+- `ScenarioGenerator`
+- `World` / `WorldState`
+- `ObservationBuilder`
+- `CommandInterpreter`
+- `SessionRecorder`
+- `TeacherAdapter`
+- `StudentAdapter`
+- `CorpusAssembler`
+- `EpisodeValidator`
+- `InterceptEncoder`
+- `Evaluator`
+- `RunManifest`
+
+Serialized contracts must be versioned.
+
+## 5. Hidden-information surfaces
+
+Maintain distinct views:
+
+- **world_private:** complete authoritative state; never sent to student/player unless explicitly revealed.
+- **commander_observation:** exactly what the commander may know.
+- **commander_private_memory:** admitted persistent beliefs/goals/secrets for the commander.
+- **player_observation:** game-visible state.
+- **player_intercept:** deliberately telegraphed/encoded subset of actual enemy command events.
+- **evaluation_annotations:** labels used only by scoring code.
+
+Tests must detect accidental inclusion of forbidden fields.
+
+## 6. Failure handling
+
+Failures are first-class:
+- syntax/schema failure;
+- unknown entity;
+- stale entity/version;
+- capability mismatch;
+- unavailable/dead unit;
+- invalid target;
+- impossible/precondition failure;
+- resource failure;
+- command accepted but execution later fails;
+- timeout/stall/no-progress;
+- contradictory/overlapping order;
+- hidden-information violation.
+
+The student should be exposed to both immediate interpreter errors and later execution failures.
+
+## 7. Extension points
+
+Model adapters must support local checkpoints and recorded fixtures without requiring network access. The programme may later admit API teachers or different students.
+
+Game adapters should convert game-specific state/actions into the canonical observation/command/event contracts. The abstract simulator remains a fast training/evaluation environment, not a claim of full physical equivalence.
