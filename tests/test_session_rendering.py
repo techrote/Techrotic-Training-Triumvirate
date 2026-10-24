@@ -61,7 +61,7 @@ def test_structured_compact_and_delta_rendering_are_deterministic() -> None:
 
     delta = compute_delta(observation, next_observation)
 
-    assert renderer.structured_observation(observation) == observation.to_payload()
+    assert renderer.structured_observation(observation) == observation.to_dict()
     assert renderer.compact_delta(delta).startswith("DELTA ")
     assert apply_delta(observation, delta) == next_observation.to_payload()
     assert delta.base_hash == observation.content_hash()
