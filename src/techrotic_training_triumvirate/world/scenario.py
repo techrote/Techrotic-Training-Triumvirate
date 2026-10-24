@@ -136,8 +136,7 @@ class ScenarioGenerator:
         )
 
         selected_archetypes = tuple(
-            archetypes[index % len(archetypes)]
-            for index in range(config.unit_count)
+            archetypes[index % len(archetypes)] for index in range(config.unit_count)
         )
         units: list[UnitSeed] = []
         for index, archetype in enumerate(selected_archetypes):
@@ -218,9 +217,7 @@ class ScenarioGenerator:
             objectives=objectives,
             archetypes=archetypes,
             private_facts={
-                "relay_backup_state": (
-                    "unstable" if rng.randrange(2) else "nominal"
-                ),
+                "relay_backup_state": ("unstable" if rng.randrange(2) else "nominal"),
                 "enemy_reserve_zone": "reserve",
             },
             initial_tick=5 if config.mid_state else 0,
