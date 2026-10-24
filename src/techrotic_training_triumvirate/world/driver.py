@@ -62,9 +62,7 @@ def run_envelopes(
         commander_observation_hash=content_hash(
             world.commander_observation(turn_id=turn_id)
         ),
-        player_observation_hash=content_hash(
-            world.player_observation(turn_id=turn_id)
-        ),
+        player_observation_hash=content_hash(world.player_observation(turn_id=turn_id)),
     )
 
 
@@ -139,7 +137,5 @@ def run_scripted_episode(
         commander_observation_hash=content_hash(
             world.commander_observation(turn_id=turns)
         ),
-        player_observation_hash=content_hash(
-            world.player_observation(turn_id=turns)
-        ),
+        player_observation_hash=content_hash(world.player_observation(turn_id=turns)),
     )
