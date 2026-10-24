@@ -12,7 +12,9 @@ from techrotic_training_triumvirate.schemas import JsonObject, PersonaSpec, cont
 from .model import BenchmarkCase, BenchmarkManifest
 
 BENCHMARK_RESOURCE = "benchmark_v1.json"
-EXPECTED_BENCHMARK_HASH = (\n    "22a93e8861e25d1b6b15fea298431b4023b28610884d1699d447cf8a85bb92aa"\n)
+EXPECTED_BENCHMARK_HASH = (
+    "22a93e8861e25d1b6b15fea298431b4023b28610884d1699d447cf8a85bb92aa"
+)
 
 
 class BenchmarkIntegrityError(ValueError):
