@@ -7,7 +7,11 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
-from techrotic_training_triumvirate.schemas import JsonObject, RunManifest, canonical_json
+from techrotic_training_triumvirate.schemas import (
+    JsonObject,
+    RunManifest,
+    canonical_json,
+)
 
 from .admission import quantization_export_spec
 from .model import (
