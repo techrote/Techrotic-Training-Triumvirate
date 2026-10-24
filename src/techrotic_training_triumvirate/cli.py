@@ -39,6 +39,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="pretty-print instead of canonical compact JSON",
     )
+
+    command_schema_parser = subparsers.add_parser(
+        "command-schema",
+        help="emit the TTT command protocol JSON Schema",
+    )
+    command_schema_parser.add_argument(
+        "--pretty",
+        action="store_true",
+        help="pretty-print instead of compact JSON",
+    )
     return parser
 
 
@@ -76,6 +86,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                     separators=(",", ":"),
                 )
             )
+        return 0
+
+    if args.command == "command-schema":
+        from .commands import command_schema
+
+        schema = command_schema()
+        if args.pretty:
+            print(json.dumps(schema, indent=2, sort_keys=True))
+        else:
+            print(json.dumps(schema, sort_keys=True, separators=(",", ":")))
         return 0
 
     parser.print_help()
