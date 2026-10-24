@@ -239,7 +239,7 @@ class LocalModelTeacherStub:
     def generate(self, request: TeacherRequest) -> TeacherBatch:
         del request
         raise TeacherUnavailableError(
-            "local model adapter is not configured; model cast is unselected"
+            "local model adapter is not configured; use an explicitly admitted runtime integration"
         )
 
 
