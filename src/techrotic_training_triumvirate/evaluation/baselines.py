@@ -156,8 +156,7 @@ class WeakCommanderBaseline:
             stale = AssignObjectiveCommand(
                 command_id=f"{prefix}:stale",
                 observation_generation=max(
-                    0,
-                    context.observation_generation - 1,
+                    0, context.observation_generation - 1
                 ),
                 unit_id="unit-1",
                 objective_kind="secure",
