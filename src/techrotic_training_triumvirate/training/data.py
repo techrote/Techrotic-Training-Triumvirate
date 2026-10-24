@@ -174,7 +174,8 @@ def dataset_identity_from_examples(
 ) -> DatasetIdentity:
     """Build deterministic identity for an in-memory/smoke corpus."""
 
-    objects = [source.to_object() for source in sorted(sources, key=lambda item: item.example_id)]
+    ordered_sources = sorted(sources, key=lambda item: item.example_id)
+    objects = [source.to_object() for source in ordered_sources]
     dataset_hash = _sha256_text(canonical_json(objects))
     return DatasetIdentity(
         manifest_sha256=manifest_sha256 or dataset_hash,
@@ -303,7 +304,12 @@ def smoke_source_examples() -> tuple[SourceExample, ...]:
         "commander_private_context": {
             "schema": "ttt.commander_private_context",
             "schema_version": 1,
-            "payload": {"goals": ["hold"], "beliefs": {}, "secret_refs": [], "memory_refs": []},
+            "payload": {
+                "goals": ["hold"],
+                "beliefs": {},
+                "secret_refs": [],
+                "memory_refs": [],
+            },
         },
         "persona": {
             "schema": "ttt.persona",
@@ -359,7 +365,9 @@ def smoke_source_examples() -> tuple[SourceExample, ...]:
             input=copy.deepcopy(base_input),
             target={
                 "commands": [],
-                "communications": [_communication("Hold steady; let them spend first.")],
+                "communications": [
+                    _communication("Hold steady; let them spend first.")
+                ],
             },
         ),
         SourceExample(
@@ -381,7 +389,9 @@ def smoke_source_examples() -> tuple[SourceExample, ...]:
             input=recovery_input,
             target={
                 "commands": [_command("cmd-004", "u-1")],
-                "communications": [_communication("Correction: holding the visible unit.")],
+                "communications": [
+                    _communication("Correction: holding the visible unit.")
+                ],
             },
         ),
     )
