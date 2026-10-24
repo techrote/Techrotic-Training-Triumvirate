@@ -1,0 +1,195 @@
+name: Explicit model probes
+
+on:
+  pull_request:
+    types: [opened, synchronize, labeled]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  live-model-probes:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.head.ref == 'ttt-011-model-cast-admission' &&
+        github.actor != 'github-actions[bot]'
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TTT_EVIDENCE_DIR: docs/evidence/ttt-011
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install TTT probe dependencies
+        run: python -m pip install -e ".[model-probe]"
+
+      - name: Build pinned llama.cpp
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git init /tmp/llama.cpp
+          git -C /tmp/llama.cpp remote add origin https://github.com/ggml-org/llama.cpp.git
+          git -C /tmp/llama.cpp fetch --depth 1 origin 2afcdb9777b1bac79fa4bfe284b9bf23085b0469
+          git -C /tmp/llama.cpp checkout --detach FETCH_HEAD
+          cmake -S /tmp/llama.cpp -B /tmp/llama.cpp/build -DGGML_NATIVE=OFF
+          cmake --build /tmp/llama.cpp/build --config Release -j 2 --target llama-server
+          /tmp/llama.cpp/build/bin/llama-server --version
+
+      - name: Probe Sprocket 500M
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p "$TTT_EVIDENCE_DIR" /tmp/ttt-models
+          curl -L --fail --retry 3 \
+            -o /tmp/ttt-models/sprocket-500m-q4_k_m.gguf \
+            https://huggingface.co/kandivault/sprocket-500m/resolve/cc9fc69/sprocket-500m-q4_k_m.gguf
+          echo "fa9456e200200ba13889a6bf93dc55fc2173106b73c3f165833882ef91f091c0  /tmp/ttt-models/sprocket-500m-q4_k_m.gguf" | sha256sum -c -
+          python scripts/run_model_probe.py \
+            --model-key sprocket-500m \
+            --model-file /tmp/ttt-models/sprocket-500m-q4_k_m.gguf \
+            --server /tmp/llama.cpp/build/bin/llama-server \
+            --port 8081 \
+            --output "$TTT_EVIDENCE_DIR/sprocket-500m-probe.json"
+          rm -f /tmp/ttt-models/sprocket-500m-q4_k_m.gguf
+
+      - name: Probe LFM2.5 1.2B Instruct
+        shell: bash
+        run: |
+          set -euxo pipefail
+          curl -L --fail --retry 3 \
+            -o /tmp/ttt-models/LFM2.5-1.2B-Instruct-Q4_K_M.gguf \
+            https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/resolve/4e7112f1437070cf9f49aeb93ad965b946029f75/LFM2.5-1.2B-Instruct-Q4_K_M.gguf
+          echo "b1b3de114215d9507409a662a501a631095a479a419584e8a2ded6304b19b4f5  /tmp/ttt-models/LFM2.5-1.2B-Instruct-Q4_K_M.gguf" | sha256sum -c -
+          python scripts/run_model_probe.py \
+            --model-key lfm2.5-1.2b-instruct \
+            --model-file /tmp/ttt-models/LFM2.5-1.2B-Instruct-Q4_K_M.gguf \
+            --server /tmp/llama.cpp/build/bin/llama-server \
+            --port 8082 \
+            --output "$TTT_EVIDENCE_DIR/lfm2.5-1.2b-instruct-probe.json"
+          rm -f /tmp/ttt-models/LFM2.5-1.2B-Instruct-Q4_K_M.gguf
+
+      - name: Probe Qwen3.5 4B
+        shell: bash
+        run: |
+          set -euxo pipefail
+          curl -L --fail --retry 3 \
+            -o /tmp/ttt-models/Qwen3.5-4B-Q4_K_M.gguf \
+            https://huggingface.co/lmstudio-community/Qwen3.5-4B-GGUF/resolve/f9f88ac3e234be915e23811a6d28ea287bdb927e/Qwen3.5-4B-Q4_K_M.gguf
+          echo "25082a7dd3776cc3c741c6347d3bd04523f05796607b3fbc32fa3a25dfa1418c  /tmp/ttt-models/Qwen3.5-4B-Q4_K_M.gguf" | sha256sum -c -
+          python scripts/run_model_probe.py \
+            --model-key qwen3.5-4b \
+            --model-file /tmp/ttt-models/Qwen3.5-4B-Q4_K_M.gguf \
+            --server /tmp/llama.cpp/build/bin/llama-server \
+            --port 8083 \
+            --output "$TTT_EVIDENCE_DIR/qwen3.5-4b-probe.json"
+          rm -f /tmp/ttt-models/Qwen3.5-4B-Q4_K_M.gguf
+
+      - name: Bind probe evidence
+        shell: bash
+        run: |
+          set -euxo pipefail
+          (
+            cd "$TTT_EVIDENCE_DIR"
+            sha256sum *-probe.json | sort > SHA256SUMS
+          )
+          python - <<'PY'
+          import json
+          import os
+          import platform
+          import statistics
+          import subprocess
+          from pathlib import Path
+
+          evidence = Path(os.environ["TTT_EVIDENCE_DIR"])
+          probe_paths = sorted(evidence.glob("*-probe.json"))
+          probes = [json.loads(path.read_text()) for path in probe_paths]
+          source_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          payload = {
+              "schema": "ttt.model_probe_run.v1",
+              "source_sha": source_sha,
+              "github_run_id": os.environ["GITHUB_RUN_ID"],
+              "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "runner_os": os.environ["RUNNER_OS"],
+              "runner_arch": os.environ["RUNNER_ARCH"],
+              "platform": platform.platform(),
+              "llama_cpp_revision": "2afcdb9777b1bac79fa4bfe284b9bf23085b0469",
+              "probe_files": [p.name for p in probe_paths],
+          }
+          (evidence / "probe-run.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n"
+          )
+
+          lines = [
+              "# TTT-011 live model-probe summary",
+              "",
+              f"Source commit: `{source_sha}`",
+              "",
+              "| Model | Structured | Secret | Recovery | TTFT s | tok/s | Peak RSS MiB |",
+              "|---|---:|---:|---:|---:|---:|---:|",
+          ]
+          for probe in probes:
+              tests = probe["probes"]
+              runtime = probe["runtime"]
+              speed = runtime.get("median_observed_completion_tokens_per_second") or 0.0
+              ttft = runtime.get("ttft_seconds") or 0.0
+              rss = runtime.get("peak_resident_bytes", 0) / (1024 * 1024)
+              lines.append(
+                  "| {model} | {structured} | {secret} | {recovery} | "
+                  "{ttft:.3f} | {speed:.2f} | {rss:.1f} |".format(
+                      model=probe["model_key"],
+                      structured="PASS" if tests["structured_command"]["passed"] else "FAIL",
+                      secret="PASS" if tests["secret_non_disclosure"]["passed"] else "FAIL",
+                      recovery="PASS" if tests["recovery_after_rejection"]["passed"] else "FAIL",
+                      ttft=ttft,
+                      speed=speed,
+                      rss=rss,
+                  )
+              )
+          lines.extend(
+              [
+                  "",
+                  "Behavioral failures are evidence, not workflow failures. "
+                  "Artifact/hash/runtime failures fail closed.",
+                  "",
+                  "See the sibling `*-probe.json` records for complete prompts, "
+                  "decoding settings, outputs, hardware/runtime metadata and diversity samples.",
+                  "",
+              ]
+          )
+          (evidence / "summary.md").write_text("\n".join(lines))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ttt-011-model-probes
+          path: docs/evidence/ttt-011
+          if-no-files-found: error
+
+      - name: Commit probe evidence to PR branch
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/evidence/ttt-011
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "TTT-011: record live model probe evidence"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
