@@ -109,9 +109,12 @@ def test_native_torch_uuid_object_preserves_physical_identity(physical: str) -> 
         with pytest.raises(DeviceAdmissionError, match="actual CUDA GPU UUID differs"):
             verify_cuda_environment(cuda=NativeCuda(), environment=environment)
     else:
-        assert verify_cuda_environment(cuda=NativeCuda(), environment=environment)[
-            "actual_cuda_uuid"
-        ] == TITAN
+        assert (
+            verify_cuda_environment(cuda=NativeCuda(), environment=environment)[
+                "actual_cuda_uuid"
+            ]
+            == TITAN
+        )
 
 
 @pytest.mark.parametrize(
