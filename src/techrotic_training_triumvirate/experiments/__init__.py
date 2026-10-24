@@ -1,0 +1,96 @@
+"""Deterministic, restart-safe experiment orchestration for TTT-018."""
+
+from .adapters import (
+    load_verified_corpus,
+    verify_actual_admission,
+    verify_completed_training,
+    verify_resumable_checkpoint,
+    verify_stage_completion,
+)
+from .artifacts import (
+    ArtifactVerificationError,
+    inventory_hash,
+    verify_completion_marker,
+    write_completion_marker,
+)
+from .model import (
+    EvidenceClass,
+    ExperimentPlan,
+    ExperimentState,
+    OrchestrationError,
+    PlanValidationError,
+    Transition,
+    TransitionError,
+    advance,
+    semantic_stage_identity,
+)
+from .qualification import (
+    CpuQualificationError,
+    CpuQualificationSpec,
+    run_cpu_qualification,
+)
+from .rehearsal import run_rehearsal, simulation_plan
+from .store import (
+    BudgetError,
+    EvidenceError,
+    ExperimentStore,
+    StoreError,
+    StoredEvent,
+)
+from .worker import (
+    OwnedProcess,
+    WorkerContainmentError,
+    WorkerSpec,
+    force_cancel_owned,
+    launch_detached_worker_host,
+    load_owned_process,
+    load_worker_spec,
+    process_creation_token,
+    request_cancel,
+    run_worker_host,
+    verify_owned_process,
+    write_worker_spec,
+)
+
+__all__ = [
+    "ArtifactVerificationError",
+    "BudgetError",
+    "CpuQualificationError",
+    "CpuQualificationSpec",
+    "EvidenceClass",
+    "EvidenceError",
+    "ExperimentPlan",
+    "ExperimentState",
+    "ExperimentStore",
+    "OrchestrationError",
+    "OwnedProcess",
+    "PlanValidationError",
+    "StoreError",
+    "StoredEvent",
+    "Transition",
+    "TransitionError",
+    "WorkerContainmentError",
+    "WorkerSpec",
+    "advance",
+    "force_cancel_owned",
+    "inventory_hash",
+    "launch_detached_worker_host",
+    "load_owned_process",
+    "load_verified_corpus",
+    "load_worker_spec",
+    "process_creation_token",
+    "request_cancel",
+    "run_cpu_qualification",
+    "run_rehearsal",
+    "run_worker_host",
+    "semantic_stage_identity",
+    "simulation_plan",
+    "verify_actual_admission",
+    "verify_completed_training",
+    "verify_completion_marker",
+    "verify_owned_process",
+    "verify_resumable_checkpoint",
+    "verify_stage_completion",
+    "write_completion_marker",
+    "write_worker_spec",
+]

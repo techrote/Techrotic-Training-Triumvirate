@@ -24,6 +24,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     subparsers = parser.add_subparsers(dest="command")
+    experiments = subparsers.add_parser(
+        "experiments",
+        help="run deterministic durable experiment orchestration",
+    )
+    from .experiments.cli import configure_parser
+
+    configure_parser(experiments)
     seed_demo = subparsers.add_parser(
         "seed-demo",
         help="emit a deterministic sequence for a supplied seed",
@@ -98,6 +105,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Run the TTT developer CLI."""
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    if args.command == "experiments":
+        from .experiments.cli import handle
+
+        return handle(args, parser)
 
     if args.command == "runtime-demo":
         from .runtime import run_runtime_demo
