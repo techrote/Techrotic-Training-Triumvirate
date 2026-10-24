@@ -101,6 +101,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
+          rm -f "$TTT_EVIDENCE_DIR"/*.server.log
           (
             cd "$TTT_EVIDENCE_DIR"
             sha256sum *-probe.json | sort > SHA256SUMS
