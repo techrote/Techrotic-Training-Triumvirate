@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "lfm2.5-1.2b-instruct": {
+      "backend": "hf-transformers-peft",
+      "method": "lora",
+      "template_strategy": "native-apply-chat-template",
+      "max_sequence_tokens": 2048,
+      "learning_rate": 0.0002,
+      "epochs": 1,
+      "micro_batch_size": 1,
+      "gradient_accumulation_steps": 8,
+      "save_steps": 50,
+      "lora": {
+        "rank": 8,
+        "alpha": 16,
+        "dropout": 0.0,
+        "target_modules": ["all-linear"]
+      },
+      "parity_max_new_tokens": 96,
+      "quantization_export": {
+        "enabled_by_default": false,
+        "format": "GGUF",
+        "type": "Q4_K_M"
+      }
+    },
+    "qwen3.5-4b": {
+      "backend": "hf-transformers-peft",
+      "method": "lora",
+      "template_strategy": "native-apply-chat-template",
+      "max_sequence_tokens": 2048,
+      "learning_rate": 0.00015,
+      "epochs": 1,
+      "micro_batch_size": 1,
+      "gradient_accumulation_steps": 8,
+      "save_steps": 50,
+      "lora": {
+        "rank": 8,
+        "alpha": 16,
+        "dropout": 0.0,
+        "target_modules": ["all-linear"]
+      },
+      "parity_max_new_tokens": 96,
+      "quantization_export": {
+        "enabled_by_default": false,
+        "format": "GGUF",
+        "type": "Q4_K_M"
+      }
+    }
+  }
+}

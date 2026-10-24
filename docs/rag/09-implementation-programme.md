@@ -25,7 +25,7 @@ Issues should be executed from current `main`; agents must reconcile work merged
 
 ## 2. Current implementation status
 
-As of 24 October 2026, **Waves 0–5 are merged and Wave 6 is complete in this change**. TTT-011 / #12 records the owner-delegated initial model cast, immutable native/GGUF identities, licensing dispositions, bounded downstream budgets/runtime targets, and reproducible live probe workflow.
+As of 24 October 2026, **Waves 0–6 are merged and TTT-012 / Wave 7 is complete in this change**. TTT-012 adds admitted-model training profiles, leak-safe native chat mapping, deterministic checkpoint/resume, export manifests, fixed inference parity and an explicit budget-gated PEFT LoRA path.
 
 | Wave | Issues | State | Result |
 |---|---|---|---|
@@ -35,7 +35,8 @@ As of 24 October 2026, **Waves 0–5 are merged and Wave 6 is complete in this c
 | 3 | TTT-004 / #5 + TTT-008 / #9 | Complete | Deterministic World Authority + grounded player-intercept/deception codec |
 | 4 | TTT-005 / #6 + TTT-007 / #8 + TTT-009 / #10 | Complete | Session, corpus and frozen model-agnostic evaluation foundation |
 | 5 | TTT-010 / #11 | Complete | LangGraph-backed student-visited correction branches and validated T3 recovery corpus |
-| 6 | TTT-011 / #12 | Complete in this change | Initial model-cast admission, immutable artifact identities, licensing and live characterization evidence |
+| 6 | TTT-011 / #12 | Complete | Initial model-cast admission, immutable artifact identities, licensing and live characterization evidence |
+| 7 | TTT-012 / #13 | Complete in this change | Reproducible training profiles, checkpoint/resume, export and inference parity |
 
 Wave 3 merged evidence:
 
@@ -70,9 +71,9 @@ TTT-011 admits identities and characterization only; it does **not** authorize a
 | TTT-008 | #9 | Complete | Player intercept/telegraph semantic codec and explicit deception model |
 | TTT-009 | #10 | Complete | Evaluation harness, frozen generated/handwritten suites and baselines |
 | TTT-010 | #11 | Complete | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
-| TTT-011 | #12 | Complete in this change | Initial model-cast admission: owner-delegated teacher/student selection, licensing/runtime probes, frozen decision record |
-| TTT-012 | #13 | Ready after this change | Reproducible fine-tuning/export harness for the admitted cast |
-| TTT-013 | #14 | Blocked by #13 | Pilot corpus generation and smoke/ablation fine-tunes |
+| TTT-011 | #12 | Complete | Initial model-cast admission: owner-delegated teacher/student selection, licensing/runtime probes, frozen decision record |
+| TTT-012 | #13 | Complete in this change | Reproducible fine-tuning/export harness for the admitted cast |
+| TTT-013 | #14 | Ready after this change | Pilot corpus generation and smoke/ablation fine-tunes |
 | TTT-014 | #15 | Blocked by #14 | Closed-loop 20–30 turn commander benchmark and comparative report |
 | TTT-015 | #16 | Ready after this change | Runtime export/bridge contract plus reference intercept integration |
 | TTT-016 | #17 | Blocked by #15/#16 | Release/admission package: model/data cards, manifests, benchmarks and reproducibility |
@@ -91,11 +92,11 @@ TTT-011 admits identities and characterization only; it does **not** authorize a
 
 **Wave 5:** TTT-010 / #11 is merged after TTT-007/009.
 
-**Wave 6:** TTT-011 / #12 is complete in this change after the owner explicitly delegated the cast decision to the implementation agent.
+**Wave 6:** TTT-011 / #12 is merged after the owner explicitly delegated the cast decision to the implementation agent.
 
-**Wave 7, parallel:** TTT-012 / #13 and TTT-015 / #16 are ready after this change (TTT-015 also requires the already-complete TTT-008/009).
+**Wave 7, parallel:** TTT-012 / #13 is complete in this change; TTT-015 / #16 remains independently ready (it also requires the already-complete TTT-008/009).
 
-**Wave 8:** TTT-013 / #14 after TTT-012.
+**Wave 8:** TTT-013 / #14 becomes ready after this change, subject to the normal merge/green-check gate.
 
 **Wave 9:** TTT-014 / #15 after TTT-013.
 

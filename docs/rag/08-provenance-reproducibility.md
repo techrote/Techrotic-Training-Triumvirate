@@ -133,3 +133,24 @@ corrections from one historical state are separate TTT branches with distinct br
 identities and provenance; iterative corrective rounds link through `parent_run_ids`
 instead of overwriting earlier evidence.
 
+
+## TTT-012 training/export evidence
+
+TTT-012 binds every training/export invocation to the selected model-cast
+content hash, immutable native checkpoint revision/artifact identity, versioned
+training profile, exact corpus manifest SHA-256, verified shard hashes, split
+identity, dataset mix and explicit random seed.
+
+Training-visible corpus loading refuses shard-hash mismatches and excludes
+frozen-evaluation shards. The deterministic smoke backend checkpoints seeded
+example order and refuses resume when model/config/dataset identity changes.
+
+Export evidence records adapter/model artifacts, tokenizer/template provenance,
+configuration, dataset identity, optional GGUF/Q4 specification and fixed
+pre/post-export inference parity. The real PEFT path reloads the saved adapter
+on the same immutable base checkpoint before declaring parity.
+
+The smoke backend exists only to validate machinery in default CI. It is not
+model-quality evidence. Heavy native-model execution remains explicit,
+budget-gated and model-download-free unless the operator invokes the dedicated
+training command.

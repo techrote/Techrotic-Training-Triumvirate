@@ -12,7 +12,7 @@ The immediate programme is inspired by:
 - Simon Edwardsson's WorldTUI training methodology: https://simedw.com/2026/10/21/world-model-terminal/
 - Sprocket 500M as an example of a small model with unusually persistent/emergent character behaviour: https://huggingface.co/kandivault/sprocket-500m
 
-Neither Sprocket nor any Qwen/WorldTUI/Liquid/Gemma checkpoint is selected as a required runtime or training model. **The initial model cast is intentionally deferred until the architecture, corpus contracts, and evaluation gates exist.**
+The initial cast is now admitted: Sprocket 500M is the creative/reference teacher, LFM2.5-1.2B-Instruct is the primary compact student, and Qwen3.5-4B is the larger challenger/comparison teacher. Deterministic World Authority remains the sole operational oracle.
 
 ## Start here
 
@@ -61,13 +61,14 @@ ttt seed-demo --seed 24301 --count 5
 ttt schema-bundle --pretty
 ttt command-schema --pretty
 ttt world-demo --seed 24301 --turns 24
+ttt-train profile --model primary --mix joint+corrective --seed 24301
 ```
 
 See [docs/development.md](docs/development.md) for the supported-Python, dependency and artifact-hygiene policy.
 
 ## Current status
 
-**Programme Waves 0–5 are complete in this change; Wave 6 model-cast admission is next.**
+**Programme Waves 0–6 are merged; TTT-012 / Wave 7 training-export machinery is complete in this change.**
 
 Merged foundations now include:
 
@@ -80,11 +81,13 @@ Merged foundations now include:
 - TTT-007 / #8 — validated deterministic corpus assembly, provenance/license quarantine, deduplication and leak-safe split discipline;
 - TTT-008 / #9 — grounded player intercepts, deterministic doctrine/visibility policies and explicit deception broadcasts;
 - TTT-009 / #10 — frozen model-agnostic evaluation suites, deterministic baselines, leakage/recovery scoring and the immutable training blacklist;
-- TTT-010 / #11 — LangGraph-backed student-visited corrective rollouts, deterministic oracle repair, branch-preserving T3 recovery corpora and replay-correction adapters.
+- TTT-010 / #11 — LangGraph-backed student-visited corrective rollouts, deterministic oracle repair, branch-preserving T3 recovery corpora and replay-correction adapters;
+- TTT-011 / #12 — admitted initial model cast, immutable native/GGUF identities, licensing and characterization evidence;
+- TTT-012 / #13 — reproducible fine-tuning profiles, assistant-only loss mapping, deterministic checkpoint/resume, export manifests and inference parity.
 
-**Waves 4 and 5 are complete in this change.** TTT-005 / #6, TTT-007 / #8 and TTT-009 / #10 provide the session, corpus and frozen-evaluation prerequisites; TTT-010 / #11 closes the corrective-rollout layer. TTT-011 / #12 is the next programme gate.
+**Waves 4–6 are merged.** TTT-011 / #12 selected and froze the initial model cast; TTT-012 / #13 now supplies the reproducible training/export gate required before pilot experiments.
 
-The initial model cast remains deliberately **UNSELECTED**. Model admission stays gated at TTT-011 / issue #12 after corpus, evaluation and corrective-rollout infrastructure is complete.
+The initial model cast is **SELECTED** by TTT-011. TTT-012 resolves training identities from that admission rather than hard-coding model revisions in the trainer.
 
 A first-pass **~20 GB small-model GGUF characterization shelf** is recorded in `docs/rag/12-candidate-model-zoo.md`. It is a shortlist for later benchmarking, not an admission or download authorization.
 
