@@ -21,6 +21,7 @@ from techrotic_training_triumvirate.schemas import (
     canonical_json,
     content_hash,
 )
+from techrotic_training_triumvirate.session import DeterministicRenderer, SessionRenderer
 from techrotic_training_triumvirate.world import (
     ObjectiveStatus,
     ScenarioConfig,
@@ -565,12 +566,14 @@ def run_benchmark(
     *,
     code_revision: str,
     manifest: BenchmarkManifest | None = None,
+    renderer: SessionRenderer | None = None,
 ) -> BenchmarkReport:
     """Evaluate a policy over the full frozen suite without network/model downloads."""
     if not code_revision.strip():
         raise ValueError("code_revision must not be empty")
     selected = manifest or load_benchmark_v1()
     interpreter = CommandInterpreter()
+    resolved_renderer = renderer or DeterministicRenderer()
     case_results: list[CaseResult] = []
 
     for case in selected.cases:
@@ -598,6 +601,8 @@ def run_benchmark(
                 turn_index=turn,
                 observation_generation=observed_generation,
                 observation=observation,
+                structured_observation=resolved_renderer.structured_observation(observation),
+                compact_observation=resolved_renderer.compact_observation(observation),
                 previous_results=previous_results,
                 recent_events=recent_events,
                 persona=selected.persona,
