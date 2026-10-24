@@ -7,6 +7,7 @@ import json
 import math
 import re
 from pathlib import Path, PurePosixPath
+from typing import TYPE_CHECKING
 
 from .schemas import (
     JsonObject,
@@ -16,6 +17,9 @@ from .schemas import (
     content_hash,
     load_record,
 )
+
+if TYPE_CHECKING:
+    from .training.model import ModelBinding
 
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
 _REVISION = re.compile(r"[0-9a-f]{40}\Z")
@@ -194,6 +198,29 @@ def _verify_evidence_structure(source: Path, kind: str) -> None:
         raise AdmissionPackageError(
             f"invalid {kind} evidence: {source.name}: {exc}"
         ) from exc
+
+
+def _verify_parity_comparison(case: JsonObject) -> None:
+    """A passing flag must agree with the actual saved/reloaded comparison."""
+    raw_pair = "pre_export" in case or "post_export" in case
+    hash_pair = "pre_export_sha256" in case or "exported_sha256" in case
+    if not raw_pair and not hash_pair:
+        raise AdmissionPackageError("passing parity lacks comparable pre/post evidence")
+    if raw_pair:
+        before, after = case.get("pre_export"), case.get("post_export")
+        if not isinstance(before, str) or not isinstance(after, str) or before != after:
+            raise AdmissionPackageError("parity pre/post strings contradict equality")
+    if hash_pair:
+        before_hash = _sha(case.get("pre_export_sha256"))
+        after_hash = _sha(case.get("exported_sha256"))
+        if before_hash != after_hash:
+            raise AdmissionPackageError("parity pre/post hashes contradict equality")
+        if (
+            raw_pair
+            and before_hash
+            != hashlib.sha256(str(case["pre_export"]).encode("utf-8")).hexdigest()
+        ):
+            raise AdmissionPackageError("parity hashes contradict compared strings")
 
 
 def _number(value: object, name: str) -> float:
@@ -381,7 +408,25 @@ def _positive_evidence(
     """Gate booleans cannot override failed or unrelated referenced results."""
     candidate_id = _text(candidate["candidate_id"], "candidate_id")
     gates = _object(candidate["gates"], "gates")
+    from .training.admission import resolve_model_binding
+
+    admitted = [resolve_model_binding("primary"), resolve_model_binding("challenger")]
+    bindings = [
+        binding
+        for binding in admitted
+        if candidate["base_model"]
+        in {
+            binding.native_repository,
+            f"{binding.native_repository}@{binding.native_revision}",
+        }
+    ]
+    if len(bindings) != 1:
+        raise AdmissionPackageError(
+            "positive base model is not an admitted immutable student identity"
+        )
+    binding = bindings[0]
     selected: dict[str, list[JsonObject]] = {}
+    selected_paths: dict[str, list[str]] = {}
     for path in _strings(candidate["evidence_refs"], "evidence_refs"):
         kind = references[path]
         if kind in {
@@ -390,8 +435,20 @@ def _positive_evidence(
             "export-parity",
             "human-ratings",
             "runtime-measurements",
+            "run-manifest",
         }:
             selected.setdefault(kind, []).append(load_package(root / path))
+            selected_paths.setdefault(kind, []).append(path)
+    if any(
+        value.get("passed") is not True for value in selected.get("export-parity", [])
+    ):
+        raise AdmissionPackageError(
+            "positive admission contradicts failed export parity"
+        )
+    for value in selected.get("export-parity", []):
+        for case in _array(value.get("cases"), "parity cases"):
+            _verify_parity_comparison(_object(case, "parity case"))
+    _positive_provenance(selected, selected_paths, root, revision, binding)
     policies: list[JsonObject] = []
     for report in selected.get("frozen-evaluation", []):
         cases = [
@@ -487,12 +544,6 @@ def _positive_evidence(
         raise AdmissionPackageError(
             "candidate identity does not match its evaluation policies"
         )
-    if any(
-        value.get("passed") is not True for value in selected.get("export-parity", [])
-    ):
-        raise AdmissionPackageError(
-            "positive admission contradicts failed export parity"
-        )
     for kind, gate in (
         ("human-ratings", "human_review"),
         ("runtime-measurements", "runtime"),
@@ -527,6 +578,179 @@ def _positive_evidence(
                 ):
                     raise AdmissionPackageError(
                         "positive admission contradicts original runtime targets"
+                    )
+
+
+def _positive_provenance(
+    selected: dict[str, list[JsonObject]],
+    paths: dict[str, list[str]],
+    root: Path,
+    revision: str,
+    binding: ModelBinding,
+) -> None:
+    """Bind a positive policy to its real canonical training/export identity."""
+    from .training.admission import load_training_config
+    from .training.campaign_integrity import expected_training_identity
+    from .training.model import TrainingMix
+
+    manifests: list[RunManifest] = []
+    for value in selected.get("run-manifest", []):
+        record = load_record(value, expected_type=RunManifest)
+        if not isinstance(record, RunManifest):
+            raise AdmissionPackageError(
+                "positive provenance requires a canonical RunManifest"
+            )
+        manifests.append(record)
+    if not manifests:
+        raise AdmissionPackageError(
+            "positive provenance requires a canonical source-bound RunManifest"
+        )
+    for report in selected.get("closed-loop", []):
+        evidence = _object(report.get("evidence"), "closed-loop evidence")
+        metadata = _object(evidence.get("candidate_metadata"), "candidate metadata")
+        if metadata.get("base_checkpoint") != binding.to_object():
+            raise AdmissionPackageError(
+                "candidate base binding contradicts closed-loop metadata"
+            )
+        training_run = _text(metadata.get("training_run"), "candidate training_run")
+        policy = _object(evidence.get("policy"), "candidate policy")
+        if policy.get("revision") != training_run:
+            raise AdmissionPackageError(
+                "candidate policy revision contradicts its training run"
+            )
+        matching = [
+            (manifest, path)
+            for manifest, path in zip(
+                manifests, paths.get("run-manifest", []), strict=True
+            )
+            if manifest.run_id == training_run
+        ]
+        if not matching:
+            raise AdmissionPackageError(
+                "candidate training run lacks matching canonical provenance"
+            )
+        for manifest, path in matching:
+            generator = manifest.generator_config
+            if (
+                manifest.git_commit != revision
+                or generator.get("model_binding") != binding.to_object()
+            ):
+                raise AdmissionPackageError("provenance source/model binding mismatch")
+            dataset = _object(generator.get("dataset_identity"), "provenance dataset")
+            _keys(
+                dataset,
+                {"manifest_sha256", "dataset_hash", "shard_hashes", "split_identity"},
+                "provenance dataset",
+            )
+            dataset_hash = _sha(dataset["dataset_hash"])
+            manifest_hash = _sha(dataset["manifest_sha256"])
+            if metadata.get("dataset_hash") != dataset_hash:
+                raise AdmissionPackageError(
+                    "provenance dataset contradicts candidate metadata"
+                )
+            for digest in _object(
+                dataset["shard_hashes"], "dataset shard hashes"
+            ).values():
+                _sha(digest)
+            _object(dataset["split_identity"], "dataset split identity")
+            seed = manifest.seeds.get("training")
+            if type(seed) is not int or seed < 0:
+                raise AdmissionPackageError(
+                    "provenance training seed must be a nonnegative integer"
+                )
+            try:
+                config = load_training_config(
+                    binding.model_key,
+                    mix=TrainingMix(
+                        _text(metadata.get("variant"), "candidate variant")
+                    ),
+                    seed=seed,
+                )
+            except ValueError as exc:
+                raise AdmissionPackageError(
+                    f"invalid provenance training configuration: {exc}"
+                ) from exc
+            if (
+                generator.get("phase") != "train-export"
+                or generator.get("training_config") != config.to_object()
+                or generator.get("template_strategy") != config.template_strategy
+                or manifest.seeds.get("sampling_order") != seed
+                or manifest.runtime.get("backend") != config.backend
+                or manifest.runtime.get("parity_passed") is not True
+            ):
+                raise AdmissionPackageError(
+                    "provenance training configuration mismatch"
+                )
+            expected_run_hash = content_hash(
+                {
+                    "phase": "train-export",
+                    "model_binding": binding.to_object(),
+                    "training_config": config.to_object(),
+                    "dataset_identity": dataset,
+                    "git_commit": revision,
+                    "backend": config.backend,
+                }
+            )
+            if manifest.run_id != f"ttt-012-train-export-{expected_run_hash[:16]}":
+                raise AdmissionPackageError(
+                    "provenance run ID contradicts its source/config/dataset"
+                )
+            from .training.model import DatasetIdentity
+
+            identity = DatasetIdentity(
+                manifest_hash,
+                dataset_hash,
+                tuple(
+                    (name, _sha(digest))
+                    for name, digest in sorted(
+                        _object(dataset["shard_hashes"], "shard hashes").items()
+                    )
+                ),
+                _object(dataset["split_identity"], "split identity"),
+            )
+            training_identities = {
+                _sha(
+                    expected_training_identity(
+                        binding=binding,
+                        config=config,
+                        dataset=identity,
+                        source_revision=source,
+                    )["training_identity"]
+                )
+                for source in (None, revision)
+            }
+            if (
+                _sha(manifest.runtime.get("training_identity"))
+                not in training_identities
+            ):
+                raise AdmissionPackageError("provenance training identity mismatch")
+            if not {
+                f"model-cast:{binding.model_cast_sha256}",
+                f"dataset-manifest:{manifest_hash}",
+                f"dataset:{dataset_hash}",
+            } <= set(manifest.source_refs):
+                raise AdmissionPackageError(
+                    "provenance source references contradict model/dataset"
+                )
+            for parity_path in paths.get("export-parity", []):
+                try:
+                    relative = (
+                        PurePosixPath(parity_path)
+                        .relative_to(PurePosixPath(path).parent)
+                        .as_posix()
+                    )
+                except ValueError as exc:
+                    raise AdmissionPackageError(
+                        "export parity is outside its provenance run"
+                    ) from exc
+                if (
+                    manifest.artifact_hashes.get(relative)
+                    != evidence_reference(root, parity_path, kind="export-parity")[
+                        "sha256"
+                    ]
+                ):
+                    raise AdmissionPackageError(
+                        "export parity hash is not bound by provenance"
                     )
 
 
@@ -651,7 +875,7 @@ def _verify_contents(package: JsonObject, *, evidence_root: Path) -> JsonObject:
                 "frozen-evaluation",
                 "closed-loop",
                 "export-parity",
-                "provenance",
+                "run-manifest",
             }
             if not required <= kinds or unavailable:
                 raise AdmissionPackageError(

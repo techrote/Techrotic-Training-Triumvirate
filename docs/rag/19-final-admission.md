@@ -62,6 +62,30 @@ policy identity and source commit as the package; `candidate_id` must exactly
 equal their `policy.policy_id`. A failed parity report cannot support a true
 export-parity gate.
 
+Every positive outcome, including conditional admission with deferred runtime,
+must resolve `base_model` to an admitted student repository or that repository
+followed by `@` and its exact admitted native revision. Mutable revisions,
+unadmitted models and teacher-only models refuse. The full immutable binding
+must equal the substantive closed-loop report's `candidate_metadata.base_checkpoint`.
+
+A true provenance gate requires evidence of kind `run-manifest` containing a
+canonical source-bound `RunManifest`; a text document labelled `provenance`
+cannot fill this gate. The manifest must match the package source revision,
+admitted native binding, complete training profile/mix/seed, dataset identity,
+training/run identity and the closed-loop metadata's `dataset_hash` and
+`training_run`. The policy revision must equal that training run. Model-cast and
+dataset source references are cross-checked, and the selected parity file's
+actual SHA-256 must occur in that run manifest's artifact inventory. Completed
+historical v1 and source-bound v2 training identities are supported through the
+canonical source-bearing manifest.
+
+For positive qualification, passing export parity requires comparable pre/post
+strings (`pre_export` and `post_export`) or the tiny export's SHA pair (`pre_export_sha256` and
+`exported_sha256`). The compared values must match; `equal=true` alone is
+insufficient. When both representations are supplied their hashes must also
+match the strings. Negative packages may retain failed parity records and
+unrelated historical provenance without claiming positive admission.
+
 An empty blinded packet is not completed human evaluation. Evidence labelled
 `human-ratings` must have schema `ttt.human_ratings`, integer `schema_version=1`,
 the matching `candidate_id`, and a nonempty `ratings` array. Every rating has a

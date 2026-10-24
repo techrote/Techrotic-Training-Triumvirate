@@ -30,16 +30,74 @@ def _positive_package(root: Path) -> JsonObject:
         ClosedLoopBaseline,
         run_closed_loop,
     )
+    from techrotic_training_triumvirate.training import (
+        DatasetIdentity,
+        TrainingMix,
+        load_training_config,
+        resolve_model_binding,
+    )
+    from techrotic_training_triumvirate.training.campaign_integrity import (
+        expected_training_identity,
+    )
+    from techrotic_training_triumvirate.training.export import build_run_manifest
+    from techrotic_training_triumvirate.training.model import BudgetAuthorization
+
+    # Entirely synthetic fixture records exercise readback contracts; these are
+    # never published as actual training, hardware, human or model-quality evidence.
+    binding = resolve_model_binding("primary")
+    config = load_training_config("primary", mix=TrainingMix.JOINT)
+    dataset = DatasetIdentity("d" * 64, "e" * 64, (("fixture.jsonl", "f" * 64),), {})
+    parity = {
+        "schema_version": 1,
+        "passed": True,
+        "cases": [
+            {
+                "example_id": "synthetic-fixture",
+                "equal": True,
+                "pre_export": "fixture",
+                "post_export": "fixture",
+            }
+        ],
+    }
+    (root / "parity.json").write_text(canonical_json(parity), encoding="utf-8")
+    manifest = build_run_manifest(
+        phase="train-export",
+        binding=binding,
+        config=config,
+        dataset=dataset,
+        git_commit="a" * 40,
+        backend=config.backend,
+        artifact_hashes={
+            "parity.json": evidence_reference(
+                root, "parity.json", kind="export-parity"
+            )["sha256"]
+        },
+        budget=BudgetAuthorization(0.01, 0.0, 0.0),
+        command_line=("synthetic-test-fixture-only",),
+        extra_runtime={
+            "parity_passed": True,
+            "training_identity": expected_training_identity(
+                binding=binding,
+                config=config,
+                dataset=dataset,
+                source_revision="a" * 40,
+            )["training_identity"],
+        },
+    )
 
     class FrozenFixture(ScriptedCommanderBaseline):
         @property
         def identity(self) -> PolicyIdentity:
-            return PolicyIdentity("pilot-fixture", "recorded-policy-fixture", "v1")
+            return PolicyIdentity(
+                "pilot-fixture", "recorded-policy-fixture", manifest.run_id
+            )
 
     class ClosedFixture(ClosedLoopBaseline):
         @property
         def identity(self) -> PolicyIdentity:
-            return PolicyIdentity("pilot-fixture", "recorded-policy-fixture", "v1")
+            return PolicyIdentity(
+                "pilot-fixture", "recorded-policy-fixture", manifest.run_id
+            )
 
     package = _package(root)
     package["outcome"] = "ADMITTED"
@@ -59,11 +117,18 @@ def _positive_package(root: Path) -> JsonObject:
             run_closed_loop(
                 ClosedFixture(),
                 code_revision="a" * 40,
-                candidate_metadata={"variant": "joint", "substantive": True},
+                candidate_metadata={
+                    "variant": "joint",
+                    "substantive": True,
+                    "base_checkpoint": binding.to_object(),
+                    "dataset_hash": dataset.dataset_hash,
+                    "training_run": manifest.run_id,
+                },
                 measure_runtime=False,
             ).to_dict(),
         ),
-        "parity.json": ("export-parity", {"passed": True, "cases": [{"equal": True}]}),
+        "parity.json": ("export-parity", parity),
+        "training-run.json": ("run-manifest", manifest.to_dict()),
         "human.json": (
             "human-ratings",
             {
@@ -348,3 +413,165 @@ def test_conditional_admission_may_defer_only_runtime_and_human_review(
     ]
     result = write_package(tmp_path / "admission.json", package, evidence_root=tmp_path)
     assert result["outcome"] == "CONDITIONALLY ADMITTED"
+
+
+@pytest.mark.parametrize("outcome", ["ADMITTED", "CONDITIONALLY ADMITTED"])
+@pytest.mark.parametrize(
+    "base_model",
+    [
+        "Unadmitted/Completely-Different-Model@main",
+        "LiquidAI/LFM2.5-1.2B-Instruct@main",
+        "kandivault/sprocket-500m",
+    ],
+)
+def test_every_positive_outcome_requires_admitted_immutable_student(
+    tmp_path: Path,
+    outcome: str,
+    base_model: str,
+) -> None:
+    package = _positive_package(tmp_path)
+    package["outcome"] = outcome
+    candidate = package["candidates"][0]
+    candidate.update(outcome=outcome, base_model=base_model)
+    if outcome == "CONDITIONALLY ADMITTED":
+        candidate["constraints"] = ["Awaiting runtime and human qualification."]
+        candidate["gates"].update(runtime=False, human_review=False)
+    with pytest.raises(AdmissionPackageError, match="admitted immutable student"):
+        write_package(tmp_path / "admission.json", package, evidence_root=tmp_path)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        {"equal": True},
+        {"equal": True, "pre_export": "before", "post_export": "after"},
+        {"equal": True, "pre_export_sha256": "a" * 64, "exported_sha256": "b" * 64},
+        {
+            "equal": True,
+            "pre_export": "matching",
+            "post_export": "matching",
+            "pre_export_sha256": "a" * 64,
+            "exported_sha256": "a" * 64,
+        },
+    ],
+)
+def test_passing_parity_requires_consistent_comparable_values(
+    tmp_path: Path,
+    case: dict[str, object],
+) -> None:
+    package = _positive_package(tmp_path)
+    _replace_evidence(
+        tmp_path, package, "parity.json", {"passed": True, "cases": [case]}
+    )
+    with pytest.raises(AdmissionPackageError, match="parity"):
+        write_package(tmp_path / "admission.json", package, evidence_root=tmp_path)
+
+
+def test_positive_provenance_cannot_be_replaced_by_plain_kind_label(
+    tmp_path: Path,
+) -> None:
+    package = _positive_package(tmp_path)
+    for reference in package["evidence"]:
+        if reference["path"] == "training-run.json":
+            reference["kind"] = "provenance"
+    with pytest.raises(AdmissionPackageError, match="lacks verifiable evidence"):
+        write_package(tmp_path / "admission.json", package, evidence_root=tmp_path)
+
+
+@pytest.mark.parametrize(
+    "change,match",
+    [
+        ("source", "source/model binding"),
+        ("model", "source/model binding"),
+        ("config", "configuration mismatch"),
+        ("dataset", "dataset contradicts"),
+        ("run", "matching canonical provenance"),
+        ("training-identity", "training identity mismatch"),
+        ("parity-hash", "parity hash is not bound"),
+    ],
+)
+def test_positive_provenance_must_match_actual_candidate_identity(
+    tmp_path: Path,
+    change: str,
+    match: str,
+) -> None:
+    package = _positive_package(tmp_path)
+    value = json.loads((tmp_path / "training-run.json").read_text())
+    payload = value["payload"]
+    if change == "source":
+        payload["git_commit"] = "c" * 40
+    elif change == "model":
+        payload["generator_config"]["model_binding"]["native_revision"] = "main"
+    elif change == "config":
+        payload["generator_config"]["training_config"]["mix"] = "operational"
+    elif change == "dataset":
+        payload["generator_config"]["dataset_identity"]["dataset_hash"] = "c" * 64
+    elif change == "run":
+        payload["run_id"] = "another-run"
+    elif change == "training-identity":
+        payload["runtime"]["training_identity"] = "0" * 64
+    elif change == "parity-hash":
+        payload["artifact_hashes"]["parity.json"] = "0" * 64
+    _replace_evidence(tmp_path, package, "training-run.json", value)
+    with pytest.raises(AdmissionPackageError, match=match):
+        write_package(tmp_path / "admission.json", package, evidence_root=tmp_path)
+
+
+def test_positive_closed_loop_metadata_must_identify_same_base(tmp_path: Path) -> None:
+    from techrotic_training_triumvirate.evaluation.closedloop import ClosedLoopReport
+
+    package = _positive_package(tmp_path)
+    value = json.loads((tmp_path / "closed.json").read_text())
+    value["evidence"]["candidate_metadata"]["base_checkpoint"]["native_revision"] = (
+        "main"
+    )
+    resealed = ClosedLoopReport(value["evidence"], value["runtime"]).to_dict()
+    _replace_evidence(tmp_path, package, "closed.json", resealed)
+    with pytest.raises(AdmissionPackageError, match="base binding contradicts"):
+        write_package(tmp_path / "admission.json", package, evidence_root=tmp_path)
+
+
+def test_negative_package_preserves_failed_and_legacy_parity(tmp_path: Path) -> None:
+    package = _package(tmp_path)
+    failed = {"schema_version": 1, "passed": False, "cases": [{"equal": False}]}
+    (tmp_path / "failed-parity.json").write_text(
+        canonical_json(failed), encoding="utf-8"
+    )
+    package["evidence"].append(
+        evidence_reference(tmp_path, "failed-parity.json", kind="export-parity")
+    )
+    package["candidates"][0]["evidence_refs"].append("failed-parity.json")
+    package["candidates"][0]["gates"]["export_parity"] = False
+    legacy = {"passed": True, "cases": [{"equal": True}]}
+    (tmp_path / "legacy-parity.json").write_text(
+        canonical_json(legacy), encoding="utf-8"
+    )
+    package["evidence"].append(
+        evidence_reference(tmp_path, "legacy-parity.json", kind="export-parity")
+    )
+    package["candidates"][0]["evidence_refs"].append("legacy-parity.json")
+    result = write_package(tmp_path / "admission.json", package, evidence_root=tmp_path)
+    assert result["verified"] is True
+    assert result["outcome"] == "NOT ADMITTED"
+
+
+def test_positive_tiny_sha_parity_comparison_is_supported(tmp_path: Path) -> None:
+    package = _positive_package(tmp_path)
+    parity = {
+        "passed": True,
+        "cases": [
+            {
+                "equal": True,
+                "pre_export_sha256": "b" * 64,
+                "exported_sha256": "b" * 64,
+            }
+        ],
+    }
+    _replace_evidence(tmp_path, package, "parity.json", parity)
+    manifest = json.loads((tmp_path / "training-run.json").read_text())
+    manifest["payload"]["artifact_hashes"]["parity.json"] = evidence_reference(
+        tmp_path, "parity.json", kind="export-parity"
+    )["sha256"]
+    _replace_evidence(tmp_path, package, "training-run.json", manifest)
+    result = write_package(tmp_path / "admission.json", package, evidence_root=tmp_path)
+    assert result["outcome"] == "ADMITTED"
