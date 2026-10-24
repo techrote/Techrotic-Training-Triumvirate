@@ -10,6 +10,7 @@ from techrotic_training_triumvirate.commands import (
     CommandParseError,
     parse_command_envelope,
 )
+from techrotic_training_triumvirate.evaluation.guard import frozen_evaluation_guard
 from techrotic_training_triumvirate.schemas import (
     EpisodeRecord,
     JsonObject,
@@ -496,8 +497,10 @@ def validate_source(source: CorpusSource) -> tuple[CorpusIssue, ...]:
 
 def _split_for(source: CorpusSource, config: CorpusConfig) -> CorpusSplit:
     identity = source.episode.scenario.identity
+    guard = frozen_evaluation_guard()
     if (
-        identity.scenario_id in config.frozen_scenario_ids
+        guard.is_reserved(family=identity.family, seed=identity.seed)
+        or identity.scenario_id in config.frozen_scenario_ids
         or identity.family in config.frozen_families
     ):
         return CorpusSplit.FROZEN_EVAL
@@ -698,6 +701,7 @@ def _manifest(
         for enrichment in source.teacher_enrichments
     }
 
+    guard = frozen_evaluation_guard()
     manifest: JsonObject = {
         "manifest_version": 1,
         "config": {
@@ -708,6 +712,11 @@ def _manifest(
                 sorted(config.frozen_scenario_ids)
             ),
             "frozen_families": _json_string_list(sorted(config.frozen_families)),
+            "frozen_evaluation_guard": {
+                "benchmark_id": guard.benchmark_id,
+                "benchmark_version": guard.benchmark_version,
+                "benchmark_hash": guard.benchmark_hash,
+            },
         },
         "counts": {
             "admitted_episodes": len(admitted_sources),
