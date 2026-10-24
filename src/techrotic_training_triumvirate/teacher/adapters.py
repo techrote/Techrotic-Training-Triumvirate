@@ -21,15 +21,12 @@ from .model import (
 
 class TeacherAdapter(Protocol):
     @property
-    def adapter_id(self) -> str:
-        ...
+    def adapter_id(self) -> str: ...
 
     @property
-    def model_ref(self) -> str:
-        ...
+    def model_ref(self) -> str: ...
 
-    def generate(self, request: TeacherRequest) -> TeacherBatch:
-        ...
+    def generate(self, request: TeacherRequest) -> TeacherBatch: ...
 
 
 class TeacherUnavailableError(RuntimeError):
@@ -181,9 +178,7 @@ class SyntheticTeacherAdapter:
         elif request.task is TeacherTask.PERSONA_INVENTION:
             payload = {
                 "archetype_seed": f"{voice}-{archetype}",
-                "temperament": self._VOICES[
-                    rng.randrange(len(self._VOICES))
-                ],
+                "temperament": self._VOICES[rng.randrange(len(self._VOICES))],
                 "codeword_seed": codeword,
             }
         elif request.task is TeacherTask.PERSONA_MUTATION:
@@ -191,9 +186,7 @@ class SyntheticTeacherAdapter:
                 "dimension": "temperament",
                 "value": voice,
                 "source_persona_id": (
-                    request.persona.persona_id
-                    if request.persona is not None
-                    else None
+                    request.persona.persona_id if request.persona is not None else None
                 ),
             }
         else:
