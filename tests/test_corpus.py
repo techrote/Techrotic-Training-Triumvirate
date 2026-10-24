@@ -82,7 +82,10 @@ def test_rebuild_is_content_deterministic_and_targets_only_student_emissions() -
         (item.name, item.sha256) for item in second.shards
     ]
     assert first.examples
-    assert all(set(example.target) == {"commands", "communications"} for example in first.examples)
+    assert all(
+        set(example.target) == {"commands", "communications"}
+        for example in first.examples
+    )
     target_text = canonical_json([example.target for example in first.examples])
     assert "interpreter_result" not in target_text
     assert "world_events" not in target_text
@@ -270,7 +273,16 @@ def test_manifest_reports_composition_teacher_contribution_and_rejections() -> N
         "examples": 1,
         "source_count": 1,
     }
-    assert build.manifest["rejection_reasons"] == {"LICENSE_UNADMITTED": 1}
+    rejection_reasons = build.manifest["rejection_reasons"]
+    assert isinstance(rejection_reasons, dict)
+    assert rejection_reasons["LICENSE_UNADMITTED"] == 1
+    assert build.manifest["content_composition"] == {
+        "command_count": 2,
+        "communication_count": 2,
+        "examples_with_commands": 2,
+        "examples_with_communications": 2,
+        "teacher_enriched_examples": 1,
+    }
 
 
 def test_write_corpus_emits_reproducible_jsonl_and_manifest(tmp_path: Path) -> None:
