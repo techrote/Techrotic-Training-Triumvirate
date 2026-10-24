@@ -818,7 +818,7 @@ class SourceProvenance(SchemaRecord):
     uri: str | None
     revision: str | None
     license_id: str | None
-    content_hash: str | None
+    source_content_hash: str | None
     metadata: JsonObject
 
     def to_payload(self) -> JsonObject:
@@ -828,7 +828,7 @@ class SourceProvenance(SchemaRecord):
             "uri": self.uri,
             "revision": self.revision,
             "license_id": self.license_id,
-            "content_hash": self.content_hash,
+            "source_content_hash": self.source_content_hash,
             "metadata": self.metadata,
         }
 
@@ -842,7 +842,7 @@ class SourceProvenance(SchemaRecord):
                 "uri",
                 "revision",
                 "license_id",
-                "content_hash",
+                "source_content_hash",
                 "metadata",
             },
         )
@@ -858,8 +858,8 @@ class SourceProvenance(SchemaRecord):
             license_id=require_optional_str(
                 payload["license_id"], field="license_id"
             ),
-            content_hash=require_optional_str(
-                payload["content_hash"], field="content_hash"
+            source_content_hash=require_optional_str(
+                payload["source_content_hash"], field="source_content_hash"
             ),
             metadata=require_json_object(payload["metadata"], field="metadata"),
         )
