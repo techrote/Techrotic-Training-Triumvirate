@@ -178,9 +178,7 @@ def test_frozen_evaluation_world_cannot_enter_train_or_dev() -> None:
     build = assemble_corpus((_source(),), config=config)
 
     assert build.examples
-    assert {example.split for example in build.examples} == {
-        CorpusSplit.FROZEN_EVAL
-    }
+    assert {example.split for example in build.examples} == {CorpusSplit.FROZEN_EVAL}
     assert all(example.split is not CorpusSplit.TRAIN for example in build.examples)
     assert all(example.split is not CorpusSplit.DEV for example in build.examples)
 
@@ -266,9 +264,7 @@ def test_manifest_reports_composition_teacher_contribution_and_rejections() -> N
 
     assert build.manifest["tier_composition"] == {"T2": 2}
     assert build.manifest["world_distribution"] == {"t0-relay": 2}
-    assert build.manifest["persona_distribution"] == {
-        "persona-goblin-mechanic-01": 2
-    }
+    assert build.manifest["persona_distribution"] == {"persona-goblin-mechanic-01": 2}
     assert build.manifest["teacher_contribution"] == {
         "examples": 1,
         "source_count": 1,
