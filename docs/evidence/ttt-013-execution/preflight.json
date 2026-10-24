@@ -1,0 +1,24 @@
+{
+  "conservative_gpu_hours": 0.01,
+  "external_compute_cost_gbp": 0,
+  "initial_preconstraint_device": "Tesla V100-SXM2-16GB",
+  "later_uuid_verification": {
+    "name": "NVIDIA TITAN RTX",
+    "uuid": "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8",
+    "visible_device_count": 1
+  },
+  "measurement_source": "Preserved assistant tool execution outputs; conservative allowance rather than claimed exact GPU utilization integral.",
+  "native_architecture": "Lfm2ForCausalLM",
+  "native_dtype": "float32",
+  "native_repository": "LiquidAI/LFM2.5-1.2B-Instruct",
+  "native_revision": "205939ab34ce3eaa85f527376fe3f425fcefa782",
+  "native_sha256": "1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a",
+  "observed_load_seconds": 6.45,
+  "observed_model_allocated_gpu_bytes": 4681366528,
+  "paid_model_api_cost_gbp": 0,
+  "parameter_count": 1170340608,
+  "schema": "ttt.pilot_preflight",
+  "schema_version": 1,
+  "substantial_training_performed": false,
+  "timing": "Native load check before campaign launch and before owner TITAN-only constraint; later TITAN UUID routing verification included in same conservative allowance."
+}

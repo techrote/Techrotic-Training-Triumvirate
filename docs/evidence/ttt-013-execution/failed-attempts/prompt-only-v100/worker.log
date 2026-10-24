@@ -1,0 +1,98 @@
+Starting real variant prompt-only
+`torch_dtype` is deprecated! Use `dtype` instead!
+pilot-prompt-only: evaluated 10 actions
+pilot-prompt-only: evaluated 20 actions
+pilot-prompt-only: evaluated 30 actions
+pilot-prompt-only: evaluated 40 actions
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\src\techrotic_training_triumvirate\training\campaign.py", line 890, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\src\techrotic_training_triumvirate\training\campaign.py", line 869, in main
+    result = run_variant_worker(
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\src\techrotic_training_triumvirate\training\campaign.py", line 554, in run_variant_worker
+    report = run_benchmark(adapter, code_revision=git_commit)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\src\techrotic_training_triumvirate\evaluation\runner.py", line 589, in run_benchmark
+    action = adapter.act(context)
+             ^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\src\techrotic_training_triumvirate\training\campaign.py", line 470, in act
+    text = _predict(
+           ^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\src\techrotic_training_triumvirate\training\hf_peft.py", line 104, in _predict
+    output = model.generate(
+             ^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\torch\utils\_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\generation\utils.py", line 2566, in generate
+    result = decoding_method(
+             ^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\generation\utils.py", line 2786, in _sample
+    outputs = self(**model_inputs, return_dict=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\torch\nn\modules\module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\torch\nn\modules\module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\utils\generic.py", line 918, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\models\lfm2\modeling_lfm2.py", line 725, in forward
+    outputs: BaseModelOutputWithPast = self.model(
+                                       ^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\torch\nn\modules\module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\torch\nn\modules\module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\utils\generic.py", line 1072, in wrapper
+    outputs = func(self, *args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\models\lfm2\modeling_lfm2.py", line 660, in forward
+    hidden_states = decoder_layer(
+                    ^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\modeling_layers.py", line 94, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\torch\nn\modules\module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\torch\nn\modules\module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\utils\deprecation.py", line 172, in wrapped_func
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\models\lfm2\modeling_lfm2.py", line 563, in forward
+    hidden_states = self.conv(
+                    ^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\torch\nn\modules\module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\torch\nn\modules\module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\utils\deprecation.py", line 172, in wrapped_func
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\models\lfm2\modeling_lfm2.py", line 524, in forward
+    return self.slow_forward(hidden_states, past_key_values, cache_position, attention_mask)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\utils\deprecation.py", line 172, in wrapped_func
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\transformers\models\lfm2\modeling_lfm2.py", line 491, in slow_forward
+    if past_key_values is not None and cache_position[0] > 0:
+                                       ^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: CUDA error: unknown error
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+

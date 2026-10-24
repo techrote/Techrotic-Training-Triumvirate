@@ -1,0 +1,164 @@
+Starting real variant operational
+`torch_dtype` is deprecated! Use `dtype` instead!
+Unable to determine the device handle for GPU0: 0000:05:00.0: GPU is lost.  Reboot the system to recover this GPU
+
+
+
+  0%|          | 0/27 [00:00<?, ?it/s]
+  4%|3         | 1/27 [00:02<01:10,  2.71s/it]
+                                              
+{'loss': 3.0881, 'grad_norm': 9.409890174865723, 'learning_rate': 0.0002, 'epoch': 0.04}
+
+  4%|3         | 1/27 [00:02<01:10,  2.71s/it]
+  7%|7         | 2/27 [00:04<00:55,  2.21s/it]
+                                              
+{'loss': 2.1786, 'grad_norm': 5.122716903686523, 'learning_rate': 0.0001925925925925926, 'epoch': 0.08}
+
+  7%|7         | 2/27 [00:04<00:55,  2.21s/it]
+ 11%|#1        | 3/27 [00:06<00:49,  2.06s/it]
+                                              
+{'loss': 1.5188, 'grad_norm': 3.0452234745025635, 'learning_rate': 0.0001851851851851852, 'epoch': 0.11}
+
+ 11%|#1        | 3/27 [00:06<00:49,  2.06s/it]
+ 15%|#4        | 4/27 [00:08<00:45,  1.98s/it]
+                                              
+{'loss': 1.1539, 'grad_norm': 2.8665125370025635, 'learning_rate': 0.00017777777777777779, 'epoch': 0.15}
+
+ 15%|#4        | 4/27 [00:08<00:45,  1.98s/it]
+ 19%|#8        | 5/27 [00:10<00:43,  1.96s/it]
+                                              
+{'loss': 0.8098, 'grad_norm': 3.138976812362671, 'learning_rate': 0.00017037037037037037, 'epoch': 0.19}
+
+ 19%|#8        | 5/27 [00:10<00:43,  1.96s/it]
+ 22%|##2       | 6/27 [00:12<00:41,  1.99s/it]
+                                              
+{'loss': 0.5732, 'grad_norm': 2.512599468231201, 'learning_rate': 0.00016296296296296295, 'epoch': 0.23}
+
+ 22%|##2       | 6/27 [00:12<00:41,  1.99s/it]
+ 26%|##5       | 7/27 [00:14<00:40,  2.03s/it]
+                                              
+{'loss': 0.5299, 'grad_norm': 3.8942666053771973, 'learning_rate': 0.00015555555555555556, 'epoch': 0.27}
+
+ 26%|##5       | 7/27 [00:14<00:40,  2.03s/it]
+ 30%|##9       | 8/27 [00:16<00:39,  2.07s/it]
+                                              
+{'loss': 0.2914, 'grad_norm': 1.9496387243270874, 'learning_rate': 0.00014814814814814815, 'epoch': 0.3}
+
+ 30%|##9       | 8/27 [00:16<00:39,  2.07s/it]
+ 33%|###3      | 9/27 [00:18<00:35,  2.00s/it]
+                                              
+{'loss': 0.1429, 'grad_norm': 1.6197855472564697, 'learning_rate': 0.00014074074074074076, 'epoch': 0.34}
+
+ 33%|###3      | 9/27 [00:18<00:35,  2.00s/it]
+ 37%|###7      | 10/27 [00:20<00:33,  1.94s/it]
+                                               
+{'loss': 0.2095, 'grad_norm': 2.0384461879730225, 'learning_rate': 0.00013333333333333334, 'epoch': 0.38}
+
+ 37%|###7      | 10/27 [00:20<00:33,  1.94s/it]
+ 41%|####      | 11/27 [00:22<00:30,  1.94s/it]
+                                               
+{'loss': 0.0859, 'grad_norm': 0.928848922252655, 'learning_rate': 0.00012592592592592592, 'epoch': 0.42}
+
+ 41%|####      | 11/27 [00:22<00:30,  1.94s/it]
+ 44%|####4     | 12/27 [00:24<00:28,  1.93s/it]
+                                               
+{'loss': 0.0455, 'grad_norm': 1.0688592195510864, 'learning_rate': 0.00011851851851851852, 'epoch': 0.46}
+
+ 44%|####4     | 12/27 [00:24<00:28,  1.93s/it]
+ 48%|####8     | 13/27 [00:25<00:26,  1.91s/it]
+                                               
+{'loss': 0.0388, 'grad_norm': 0.905922532081604, 'learning_rate': 0.00011111111111111112, 'epoch': 0.5}
+
+ 48%|####8     | 13/27 [00:25<00:26,  1.91s/it]
+ 52%|#####1    | 14/27 [00:27<00:24,  1.92s/it]
+                                               
+{'loss': 0.0204, 'grad_norm': 1.0073715448379517, 'learning_rate': 0.0001037037037037037, 'epoch': 0.53}
+
+ 52%|#####1    | 14/27 [00:27<00:24,  1.92s/it]
+ 56%|#####5    | 15/27 [00:29<00:22,  1.91s/it]
+                                               
+{'loss': 0.0206, 'grad_norm': 1.0091191530227661, 'learning_rate': 9.62962962962963e-05, 'epoch': 0.57}
+
+ 56%|#####5    | 15/27 [00:29<00:22,  1.91s/it]
+ 59%|#####9    | 16/27 [00:31<00:21,  1.92s/it]
+                                               
+{'loss': 0.0094, 'grad_norm': 0.21582923829555511, 'learning_rate': 8.888888888888889e-05, 'epoch': 0.61}
+
+ 59%|#####9    | 16/27 [00:31<00:21,  1.92s/it]
+ 63%|######2   | 17/27 [00:33<00:19,  1.93s/it]
+                                               
+{'loss': 0.0098, 'grad_norm': 0.33491250872612, 'learning_rate': 8.148148148148148e-05, 'epoch': 0.65}
+
+ 63%|######2   | 17/27 [00:33<00:19,  1.93s/it]
+ 67%|######6   | 18/27 [00:35<00:17,  1.93s/it]
+                                               
+{'loss': 0.0078, 'grad_norm': 0.2796604037284851, 'learning_rate': 7.407407407407407e-05, 'epoch': 0.69}
+
+ 67%|######6   | 18/27 [00:35<00:17,  1.93s/it]
+ 70%|#######   | 19/27 [00:37<00:15,  1.95s/it]
+                                               
+{'loss': 0.0067, 'grad_norm': 0.2317776381969452, 'learning_rate': 6.666666666666667e-05, 'epoch': 0.72}
+
+ 70%|#######   | 19/27 [00:37<00:15,  1.95s/it]
+ 74%|#######4  | 20/27 [00:39<00:13,  1.99s/it]
+                                               
+{'loss': 0.0075, 'grad_norm': 0.34591567516326904, 'learning_rate': 5.925925925925926e-05, 'epoch': 0.76}
+
+ 74%|#######4  | 20/27 [00:39<00:13,  1.99s/it]
+ 78%|#######7  | 21/27 [00:42<00:13,  2.22s/it]
+                                               
+{'loss': 0.006, 'grad_norm': 0.18393464386463165, 'learning_rate': 5.185185185185185e-05, 'epoch': 0.8}
+
+ 78%|#######7  | 21/27 [00:42<00:13,  2.22s/it]
+ 81%|########1 | 22/27 [00:44<00:11,  2.21s/it]
+                                               
+{'loss': 0.0071, 'grad_norm': 0.2587876319885254, 'learning_rate': 4.4444444444444447e-05, 'epoch': 0.84}
+
+ 81%|########1 | 22/27 [00:44<00:11,  2.21s/it]
+ 85%|########5 | 23/27 [00:46<00:08,  2.15s/it]
+                                               
+{'loss': 0.0051, 'grad_norm': 0.1550157070159912, 'learning_rate': 3.7037037037037037e-05, 'epoch': 0.88}
+
+ 85%|########5 | 23/27 [00:46<00:08,  2.15s/it]
+ 89%|########8 | 24/27 [00:48<00:06,  2.12s/it]
+                                               
+{'loss': 0.0042, 'grad_norm': 0.2418164312839508, 'learning_rate': 2.962962962962963e-05, 'epoch': 0.91}
+
+ 89%|########8 | 24/27 [00:48<00:06,  2.12s/it]
+ 93%|#########2| 25/27 [00:50<00:04,  2.06s/it]
+                                               
+{'loss': 0.0031, 'grad_norm': 0.09882622957229614, 'learning_rate': 2.2222222222222223e-05, 'epoch': 0.95}
+
+ 93%|#########2| 25/27 [00:50<00:04,  2.06s/it]
+ 96%|#########6| 26/27 [00:52<00:02,  2.02s/it]
+                                               
+{'loss': 0.0054, 'grad_norm': 0.3296334147453308, 'learning_rate': 1.4814814814814815e-05, 'epoch': 0.99}
+
+ 96%|#########6| 26/27 [00:52<00:02,  2.02s/it]
+100%|##########| 27/27 [00:53<00:00,  1.57s/it]
+                                               
+{'loss': 0.0072, 'grad_norm': 0.7725020051002502, 'learning_rate': 7.4074074074074075e-06, 'epoch': 1.0}
+
+100%|##########| 27/27 [00:53<00:00,  1.57s/it]C:\cybernpc2\Techrotic-Training-Triumvirate\.venv-training\Lib\site-packages\huggingface_hub\file_download.py:143: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\_\.cache\huggingface\hub\models--LiquidAI--LFM2.5-1.2B-Instruct. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+
+                                               
+{'train_runtime': 53.4709, 'train_samples_per_second': 3.927, 'train_steps_per_second': 0.505, 'train_loss': 0.39950884938998904, 'epoch': 1.0}
+
+100%|##########| 27/27 [00:53<00:00,  1.57s/it]
+100%|##########| 27/27 [00:53<00:00,  1.98s/it]
+pilot-operational: evaluated 10 actions
+pilot-operational: evaluated 20 actions
+pilot-operational: evaluated 30 actions
+pilot-operational: evaluated 40 actions
+pilot-operational: evaluated 50 actions
+pilot-operational: evaluated 60 actions
+pilot-operational: evaluated 70 actions
+pilot-operational: evaluated 80 actions
+pilot-operational: evaluated 90 actions
+pilot-operational: evaluated 100 actions
+pilot-operational: evaluated 110 actions
+pilot-operational: evaluated 120 actions
+pilot-operational: evaluated 130 actions
+pilot-operational: evaluated 140 actions

@@ -1,0 +1,11 @@
+{
+  "portable_file": "LFM-Open-License-v1.0.txt",
+  "portable_sha256": "55a61add48383d18363d9c80355acc747a1b0fb2bdb527964ce0583bb54b689d",
+  "purpose": "Carry upstream model-license notice alongside exported tokenizer and adapter metadata; no model weights are published.",
+  "repository": "LiquidAI/LFM2.5-1.2B-Instruct",
+  "revision": "205939ab34ce3eaa85f527376fe3f425fcefa782",
+  "schema": "ttt.model_license_provenance",
+  "schema_version": 1,
+  "upstream_file": "LICENSE",
+  "upstream_sha256": "5188f2b355da20647257a3156db5834c794e5fb5e6d8dc4d4cdbb3180e75b85b"
+}

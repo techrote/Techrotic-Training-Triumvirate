@@ -1,0 +1,364 @@
+{
+  "captured_at_utc": "2026-10-24T11:33:19.601126+00:00",
+  "declared_worker_semantic_source": "11e70686b09a27cf7c784beaf8d7a46717b345a0",
+  "working_tree_fully_clean": false,
+  "source_files": [
+    {
+      "path": "src/techrotic_training_triumvirate/__init__.py",
+      "sha256": "3dd0f2395c244039fd32bc9c0a82c716693f2cddc71e9aa93e979479ae509a97",
+      "size_bytes": 77
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/__main__.py",
+      "sha256": "3a92546532d0c3e5d20e4734e811ef28bc2d2c5666b0897766df976027d8b1f8",
+      "size_bytes": 146
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/admission.py",
+      "sha256": "71405d628d60f512eb06b6d34d9ba8bf1554e34925c559886307abe50da5b531",
+      "size_bytes": 27730
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/cli.py",
+      "sha256": "2a0a7642a8d5924eb5526a90a2ceab46dd1770df44f7235df22ac3c9eaab531f",
+      "size_bytes": 8519
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/commands/__init__.py",
+      "sha256": "260a897a638b5799f106b0cb93e69534e0b595667b3f97ce593b0c949e64b620",
+      "size_bytes": 1284
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/commands/interpreter.py",
+      "sha256": "f8201d55cc1cba91ab97fd1677705798b91df4591679f28a1b96be6b5111547a",
+      "size_bytes": 7258
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/commands/model.py",
+      "sha256": "8416f06db11c8475a4a27a4cb184804915a76b5c0e65e5797b7bba1c93b005e5",
+      "size_bytes": 5956
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/commands/parser.py",
+      "sha256": "0c22c01ad1a965812c3aca089c5de48b553c55c522a7251668fab718e11250c1",
+      "size_bytes": 9244
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/commands/schema.py",
+      "sha256": "521a334a787e252b20bd616af13b5ff1534d4e04d307b65cb36b8304c64efdf3",
+      "size_bytes": 3521
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/commands/world.py",
+      "sha256": "fb9a26f4319826ff7bf92a7a76561caf6e7d9439ff00e4e9336e199ec5ca7f53",
+      "size_bytes": 1406
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/corpus/__init__.py",
+      "sha256": "4da18b1603d58cc450e80df863dd20c0db345044a3ccbc0ae7b5092833a8eb8d",
+      "size_bytes": 706
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/corpus/assembler.py",
+      "sha256": "a0162c48ab3615e215890565eee959d77276e42e48f920284c63388fa1655b31",
+      "size_bytes": 34847
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/corpus/model.py",
+      "sha256": "71cfa2899e20bcbfdb7c235869e110e2fe097237c5e5c705f65e6fcb18596165",
+      "size_bytes": 6039
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/determinism.py",
+      "sha256": "6f0bd61770d808f4abd457b4adac711b61f451e142e976551237a6b553db4d50",
+      "size_bytes": 732
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/evaluation/__init__.py",
+      "sha256": "f9aec2b9c9bd48bb90ff4348b3fd6ca7aa8edefc7964e8039029b00a5b53e23e",
+      "size_bytes": 1146
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/evaluation/baselines.py",
+      "sha256": "1dbdd3be7f9acd31ff6847625fd876065e3280d1c24fd4de466c48c819db7f3e",
+      "size_bytes": 7239
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/evaluation/benchmark_v1.json",
+      "sha256": "dc7503c0ef848b78c43b1c4bd02718738501ac2324a505a5f50e5d0ea084596c",
+      "size_bytes": 5175
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/evaluation/closedloop.py",
+      "sha256": "3bcb67a709cb08de63dd371899c6382d252502fb3979f083f65d7ed7ab3d42d5",
+      "size_bytes": 39764
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/evaluation/guard.py",
+      "sha256": "8c4350dc556fb291e1f1071b4cb7fe8541a37cbf61a73d049c156298fde1d100",
+      "size_bytes": 2830
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/evaluation/model.py",
+      "sha256": "47081b63985c47dfd8ea7d9b0b2a840ee54cc390ef066c18263066933a626106",
+      "size_bytes": 6522
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/evaluation/runner.py",
+      "sha256": "20ad1e165b926e7df2692ebebca7a9e6626c24f3da2706481c93591d0dfff217",
+      "size_bytes": 21036
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/evaluation/suite.py",
+      "sha256": "a47de53e080f89a0f2c1742c7853b36155107b339795b154682eec1ce94bfb68",
+      "size_bytes": 7815
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/intercepts/__init__.py",
+      "sha256": "e782d7c167588ff0a85e75e4dcab11fc0d39124ae5169b3275e7243dcc824044",
+      "size_bytes": 724
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/intercepts/codec.py",
+      "sha256": "899d760e35e737ca3d6b148fe04ccb969f2a28d3ca9520c0d4835f0f0145b8a5",
+      "size_bytes": 3561
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/intercepts/model.py",
+      "sha256": "5e41abbe67c868fbaa77e60e3515f96e39e1829fb39d46340ed99f2533f1ebe8",
+      "size_bytes": 4979
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/intercepts/policy.py",
+      "sha256": "39346e127419919a2c70981e90aa2f5644274f5e6480bced330e8fe93519e81b",
+      "size_bytes": 5115
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/model_admission.py",
+      "sha256": "0c3d2846b0187d9154a5c7ded90adc7333fee2216547628cb65d2c0da388f38b",
+      "size_bytes": 6256
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/model_cast_v1.json",
+      "sha256": "d196d976407af2b62bb6a727ad4a2a54089ed7de93ab8f4720189c10bb6020dd",
+      "size_bytes": 9909
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/recovery/__init__.py",
+      "sha256": "a3579b6eab05d02dfb4a48a69d065048510e52e1c58606663383f99cecc25741",
+      "size_bytes": 684
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/recovery/adapters.py",
+      "sha256": "4a5d66486a4eb221cf796fff41a8ba95dbb10447ab256798628c7752c239e251",
+      "size_bytes": 5304
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/recovery/langgraph_runner.py",
+      "sha256": "d7a25001a1b50b7627b00ee4340e24a2c03a5b472529c7fb4d5b70f445431554",
+      "size_bytes": 24029
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/recovery/model.py",
+      "sha256": "cc4f694285ed5828669b4315e0747fd768151c3a26a715362ad2710f916db9b3",
+      "size_bytes": 4340
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/recovery/oracle.py",
+      "sha256": "f6959576382a307a40591e6f3832b36577ee896c1741aaea8910e1989d1332c4",
+      "size_bytes": 3763
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/runtime/__init__.py",
+      "sha256": "d36858be6101cb57121e0c4cbfdbfd1a9cffb781425dbf791f9e9d21a51805fa",
+      "size_bytes": 1537
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/runtime/bridge.py",
+      "sha256": "6b3243c17297417547b53c1fb33a162ff7b1e3786ab2bfdc0024e1544c58cf0f",
+      "size_bytes": 14716
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/runtime/export.py",
+      "sha256": "ec18899aa12dc1279b8b4dca95047d3d2dfecd4ba087408b01fdafbee2bb5174",
+      "size_bytes": 10955
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/runtime/host.py",
+      "sha256": "483f247db121986548fe51ad976a6286228b2464c63eea095c26821197443289",
+      "size_bytes": 6266
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/runtime/protocol.py",
+      "sha256": "fd4141ad557cb5a2b49b22a2c98af2a4f8f4ab3dc9b77f8334757e074b164098",
+      "size_bytes": 15929
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/schemas/__init__.py",
+      "sha256": "e63edebde6d36af1c0bf0b9df2cab0034a99b526cef28fb1d559a20c3c6e1d7d",
+      "size_bytes": 1757
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/schemas/base.py",
+      "sha256": "b26683b06fe5210fd308ec27a749af4aa1a43776341611881b4a4233d74b948d",
+      "size_bytes": 8314
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/schemas/fixtures.py",
+      "sha256": "b26fc08d6f83a1681bd2416ddfaa97e39dfc9a78ae4e9975ae54176850f617a7",
+      "size_bytes": 11199
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/schemas/records.py",
+      "sha256": "606d58a6bb55c2b3ab28271c6877994a4ffdfbba23552cd082c31659c6656647",
+      "size_bytes": 32839
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/schemas/schema_export.py",
+      "sha256": "4daf63a331abd69435cd1ce778c5e88a690355debbc6eeaa117791dac7e2cb0f",
+      "size_bytes": 8344
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/session/__init__.py",
+      "sha256": "334b7c424fbbc18f5444446ef5986edf8e021ac8c2b8d8339ad18b0ef9639b64",
+      "size_bytes": 921
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/session/langgraph_backend.py",
+      "sha256": "02386e4aebfd02a9d1e43f6cffb530308665fedc6038b1e98b17678846b03e26",
+      "size_bytes": 12502
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/session/recording.py",
+      "sha256": "1d57570630f947e5bae3bea4c72a85355ea6e7e811a10d975c719342d78ac4b5",
+      "size_bytes": 21269
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/session/render.py",
+      "sha256": "4691e4cc1574ebe3d3b2a98530f5e2fd58f51d94e15484de6984d5e21833e6b5",
+      "size_bytes": 7915
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/teacher/__init__.py",
+      "sha256": "6c4698ca78a5da964c56aa0ea650aeff50e21a347a6cf73ac1f45742fb991414",
+      "size_bytes": 1440
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/teacher/adapters.py",
+      "sha256": "8dd06d4916466d293a95691ad66aaf041e4ff40805e8d16bc3b3274b015ecd77",
+      "size_bytes": 8842
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/teacher/model.py",
+      "sha256": "a2a91402b2e5ed62346738d8de39dc4044cce471030a7e154028c7663ac2ceb1",
+      "size_bytes": 5009
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/teacher/persona.py",
+      "sha256": "85e7c2cc8544f016b8e221294c02ad2bad65c156d38d63b81719a4d56ef07dd4",
+      "size_bytes": 3910
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/teacher/validation.py",
+      "sha256": "5f9ba2352b47ebeedd1292085ea0157235fbdba0fdfa2e49779f9a4af1d0578d",
+      "size_bytes": 5259
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/__init__.py",
+      "sha256": "40b0f43cd907fc304cef698b373b7aefa173a13655b62a93d14a0d5ee712fb58",
+      "size_bytes": 1701
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/admission.py",
+      "sha256": "dfd312f655f2b6ad5e9b9a894009749085ea6cb0a33fef6a800f2b570b4aaea2",
+      "size_bytes": 9847
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/campaign.py",
+      "sha256": "ffe06014a43583c33d2259a91c27e06c7d984cb24793e0328fa9c42aa415e24a",
+      "size_bytes": 33554
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/campaign_integrity.py",
+      "sha256": "e3b743fd57487b764f274a7c95061d9c06e6d6af0a97343e7325df5f5caf390b",
+      "size_bytes": 7785
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/cli.py",
+      "sha256": "62ed2e25f3712d5a9f6af88fb6a950953dcf538a46ecd4c4d97a0608c3e1de99",
+      "size_bytes": 8882
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/data.py",
+      "sha256": "b5788c9837f9c96064839778095cbf2f812923ba5ed5720b3fe8813820160dd2",
+      "size_bytes": 13445
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/device_admission.py",
+      "sha256": "26dfecbb7a33c033f6c194fbe26ad47e38876391617fa2d6a0e40fc0c442b6c0",
+      "size_bytes": 5734
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/export.py",
+      "sha256": "244350b3049b6999a9acb9f0b5b0724ad2e2c20d6d0380823e12fb1683a3d9c4",
+      "size_bytes": 8682
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/hf_peft.py",
+      "sha256": "5bc807d065585eccaee7ab83aac68f5b6db66a1aa4d4b8bcd1448b00854c2d37",
+      "size_bytes": 15960
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/model.py",
+      "sha256": "13ac8b16eeded28270477550d60d02578a99d1ad67c7f505541bf529a91b8859",
+      "size_bytes": 6109
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/pilot.py",
+      "sha256": "df04a4a3e32dc99f3d40c32003f6e015fa2399e9fb95b4a3453f3f81e6e791cd",
+      "size_bytes": 14103
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/profiles_v1.json",
+      "sha256": "a51834a3d7e13a98a8878e2482514cd690bf0149ef78e93613f58cb5ddfd4afa",
+      "size_bytes": 1346
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/training/tiny.py",
+      "sha256": "f3ad8b7ba70d05ef7f2c4d39c1a9117d8a9f442801de5600d303f05744f7b014",
+      "size_bytes": 5226
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/world/__init__.py",
+      "sha256": "28a3ec781c0ac8bf579f02a45b1d99198d141b465987489deff33e4be4553602",
+      "size_bytes": 1198
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/world/authority.py",
+      "sha256": "3481acf5d102134631b889744f7834dcf1c4145ee3e534566112b239dee350fe",
+      "size_bytes": 22940
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/world/concordia_host.py",
+      "sha256": "ad09008a7534fc11fabfed2564e0685f462d08f5df42ab6f74053925a4ea105b",
+      "size_bytes": 6568
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/world/driver.py",
+      "sha256": "7193d238de898edaa5c1fbeff8a91a72acdfda2abe23cd6ab5c94e36af95ac9d",
+      "size_bytes": 4551
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/world/model.py",
+      "sha256": "5020bf0e2f58087125a667e3776c5cafb7bcb247db596f047313241d8f148924",
+      "size_bytes": 3351
+    },
+    {
+      "path": "src/techrotic_training_triumvirate/world/scenario.py",
+      "sha256": "58706bf487fc20adde4e7e4ea3cb7986ead0330c27bb5099c75a50c3762ccfe3",
+      "size_bytes": 7247
+    }
+  ],
+  "patch_sha256": "fc1b6e56d3fad5e25ece269900ae4f42491336a971f0e24351b813808f27c825",
+  "disposition": "Optional uncalled session LangGraph backend lazy-import/type annotation changed during running campaign; semantic training/evaluation/world/schema/render/recording modules unchanged. Preserve this live-tree caveat; remaining workers will use archived immutable source via PYTHONPATH."
+}

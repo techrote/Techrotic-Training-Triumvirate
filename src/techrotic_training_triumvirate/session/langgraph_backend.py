@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+import importlib
+from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
-from typing import Any, TypedDict, cast
-
-from langgraph.checkpoint.memory import InMemorySaver  # type: ignore[import-not-found]
-from langgraph.graph import START, StateGraph  # type: ignore[import-not-found]
+from typing import Protocol, TypedDict, cast
 
 from techrotic_training_triumvirate.schemas import (
     CommandEnvelope,
@@ -22,6 +20,43 @@ from .recording import SessionRecording, execute_turn
 class SessionGraphState(TypedDict, total=False):
     recording: JsonObject
     next_command: JsonObject | None
+
+
+class _GraphSnapshot(Protocol):
+    """Only the framework checkpoint fields used by the semantic session."""
+
+    @property
+    def config(self) -> Mapping[str, object]: ...
+
+    @property
+    def values(self) -> object: ...
+
+    @property
+    def next(self) -> tuple[str, ...]: ...
+
+
+class _SessionGraph(Protocol):
+    """Bound the optional framework's dynamic import to a small typed surface.
+
+    RunnableConfig is a third-party TypedDict whose static availability varies
+    with the optional extra. LangGraph accepts these ordinary config mappings at
+    runtime; the TTT-facing interface remains typed without importing that extra
+    during base-package type checking.
+    """
+
+    def invoke(
+        self, state: SessionGraphState | None, config: Mapping[str, object]
+    ) -> SessionGraphState: ...
+
+    def get_state(self, config: Mapping[str, object]) -> _GraphSnapshot: ...
+
+    def get_state_history(
+        self, config: Mapping[str, object]
+    ) -> Iterator[_GraphSnapshot]: ...
+
+    def update_state(
+        self, config: Mapping[str, object], values: SessionGraphState
+    ) -> Mapping[str, object]: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,7 +75,7 @@ class BranchResult:
     original_recording_hash: str
 
 
-def _checkpoint_id(config: Mapping[str, Any]) -> str:
+def _checkpoint_id(config: Mapping[str, object]) -> str:
     configurable = config.get("configurable")
     if not isinstance(configurable, Mapping):
         raise SchemaValidationError("LangGraph checkpoint config missing configurable")
@@ -76,11 +111,22 @@ def _execute_turn_node(state: SessionGraphState) -> SessionGraphState:
 class LangGraphSession:
     """Own LangGraph checkpoint mechanics without making them semantic identity."""
 
-    def __init__(self, checkpointer: InMemorySaver | None = None) -> None:
-        builder = StateGraph(SessionGraphState)
+    def __init__(self, checkpointer: object | None = None) -> None:
+        graph_module = importlib.import_module("langgraph.graph")
+        memory_module = importlib.import_module("langgraph.checkpoint.memory")
+        builder = graph_module.StateGraph(SessionGraphState)
         builder.add_node("execute_turn", _execute_turn_node)
-        builder.add_edge(START, "execute_turn")
-        self.graph = builder.compile(checkpointer=checkpointer or InMemorySaver())
+        builder.add_edge(graph_module.START, "execute_turn")
+        self.graph = cast(
+            _SessionGraph,
+            builder.compile(
+                checkpointer=(
+                    memory_module.InMemorySaver()
+                    if checkpointer is None
+                    else checkpointer
+                )
+            ),
+        )
 
     def run_commands(
         self,
@@ -109,7 +155,7 @@ class LangGraphSession:
         *,
         thread_id: str,
         command_id: str,
-    ) -> Any:
+    ) -> _GraphSnapshot:
         config = thread_config(thread_id)
         for snapshot in self.graph.get_state_history(config):
             values = snapshot.values

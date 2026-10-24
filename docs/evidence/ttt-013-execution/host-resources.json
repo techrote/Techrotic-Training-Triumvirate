@@ -1,0 +1,17 @@
+{
+  "admitted_titan_inventory_before_failure": [
+    "1, NVIDIA TITAN RTX, GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8, 24576 MiB, 581.80"
+  ],
+  "captured_at_utc": "2026-10-24T11:44:20.607980+00:00",
+  "cpu_name": "AMD Ryzen 5 5600X 6-Core Processor",
+  "driver_version_source": "Initial admitted campaign hardware probe; targeted nvidia-smi later failed globally because V100 was lost.",
+  "gpu_constraint": "TITAN only after owner instruction; no V100 reset or subsequent execution authorized",
+  "hostname": "DESKTOP-JF530LS",
+  "logical_cpu_cores": 12,
+  "physical_cpu_cores": 6,
+  "physical_memory_bytes": 68638220288,
+  "reference_gpu_uuid": "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8",
+  "targeted_gpu_inventory": "Problem with GPU 0000:05:00.0: GPU is lost.  Reboot the system to recover this GPU",
+  "targeted_gpu_probe_returncode": 255,
+  "targeted_gpu_probe_stderr": ""
+}
