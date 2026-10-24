@@ -15,9 +15,9 @@ from techrotic_training_triumvirate.schemas import (
     CommanderObservation,
     InterpreterResult,
     JsonObject,
+    ScenarioSpec,
     SchemaRecord,
     SchemaValidationError,
-    ScenarioSpec,
     WorldPrivateReference,
     canonical_json,
     content_hash,
@@ -458,7 +458,9 @@ class SessionRecording:
         if orchestration["backend"] != "langgraph":
             raise SchemaValidationError("unsupported orchestration backend")
         refs = orchestration["checkpoint_refs"]
-        if not isinstance(refs, list) or any(not isinstance(item, str) for item in refs):
+        if not isinstance(refs, list) or any(
+            not isinstance(item, str) for item in refs
+        ):
             raise SchemaValidationError("checkpoint_refs must be an array of strings")
         recording = cls(
             session_id=_expect_str(payload["session_id"], field="session_id"),
@@ -493,9 +495,8 @@ class SessionRecording:
             raise SchemaValidationError("session scenario seed mismatch")
         if self.initial_world.scenario != self.scenario.identity:
             raise SchemaValidationError("session initial world scenario mismatch")
-        expected_turn_id = 0
         expected_observation = self.initial_observation
-        for turn in self.turns:
+        for expected_turn_id, turn in enumerate(self.turns):
             if turn.turn_id != expected_turn_id:
                 raise SchemaValidationError("session turn_ids must be contiguous")
             if turn.observation != expected_observation:
@@ -503,7 +504,6 @@ class SessionRecording:
                     f"turn {turn.turn_id} observation does not continue prior turn"
                 )
             turn.verify_hashes()
-            expected_turn_id += 1
             expected_observation = turn.next_observation
 
 
@@ -516,7 +516,9 @@ def _rebuild_world(recording: SessionRecording) -> WorldAuthority:
         raise SchemaValidationError("scenario regeneration does not match recording")
     world = WorldAuthority(blueprint)
     if world.world_private_reference() != recording.initial_world:
-        raise SchemaValidationError("initial world regeneration does not match recording")
+        raise SchemaValidationError(
+            "initial world regeneration does not match recording"
+        )
     for prior in recording.turns:
         if len(prior.action.commands) != 1:
             raise SchemaValidationError(
