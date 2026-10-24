@@ -8,6 +8,7 @@
   },
   "model_key": "lfm2.5-1.2b-instruct",
   "probe_config": {
+    "chat_template_kwargs": {},
     "context_tokens": 2048,
     "diversity_seeds": [
       24301,
@@ -119,11 +120,11 @@
     "engine": "llama.cpp",
     "gpu_layers": 0,
     "gpu_mode": "disabled; CPU-only probe",
-    "median_llama_server_predicted_tokens_per_second": 46.228228765414855,
-    "median_observed_completion_tokens_per_second": 26.351779919096707,
-    "observed_peak_resident_bytes": 1319051264,
+    "median_llama_server_predicted_tokens_per_second": 47.68014425410916,
+    "median_observed_completion_tokens_per_second": 27.40136084196298,
+    "observed_peak_resident_bytes": 1321013248,
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
-    "ram_bytes": 16766414848,
+    "ram_bytes": 16766410752,
     "revision": "2afcdb9777b1bac79fa4bfe284b9bf23085b0469",
     "server_command": [
       "/tmp/llama.cpp/llama-b8185/llama-server",
@@ -150,56 +151,56 @@
     "timings": [
       {
         "completion_tokens": 67,
-        "llama_server_predicted_tokens_per_second": 43.73699314047278,
-        "observed_completion_tokens_per_second": 26.351779919096707,
+        "llama_server_predicted_tokens_per_second": 46.92182334003545,
+        "observed_completion_tokens_per_second": 27.40136084196298,
         "probe": "structured_command",
-        "wall_seconds": 2.5425227519999964
+        "wall_seconds": 2.4451340350000024
       },
       {
         "completion_tokens": 18,
-        "llama_server_predicted_tokens_per_second": 45.90841271663033,
-        "observed_completion_tokens_per_second": 15.32102923719137,
+        "llama_server_predicted_tokens_per_second": 49.162731372104524,
+        "observed_completion_tokens_per_second": 16.03140982113235,
         "probe": "secret_non_disclosure",
-        "wall_seconds": 1.174855796000017
+        "wall_seconds": 1.1227958240000007
       },
       {
         "completion_tokens": 15,
-        "llama_server_predicted_tokens_per_second": 47.30309299157375,
-        "observed_completion_tokens_per_second": 9.261788602272143,
+        "llama_server_predicted_tokens_per_second": 48.738010449429446,
+        "observed_completion_tokens_per_second": 9.196207026864073,
         "probe": "recovery_after_rejection",
-        "wall_seconds": 1.6195575870000027
+        "wall_seconds": 1.6311072550000034
       },
       {
         "completion_tokens": 34,
-        "llama_server_predicted_tokens_per_second": 46.70477226615676,
-        "observed_completion_tokens_per_second": 25.235604502309876,
+        "llama_server_predicted_tokens_per_second": 47.32133412758945,
+        "observed_completion_tokens_per_second": 26.427269802254454,
         "probe": "persona_spontaneity",
-        "wall_seconds": 1.3473027759999923
+        "wall_seconds": 1.28654985
       },
       {
         "completion_tokens": 25,
-        "llama_server_predicted_tokens_per_second": 48.2392667631452,
-        "observed_completion_tokens_per_second": 27.87866568169646,
+        "llama_server_predicted_tokens_per_second": 48.65119428951743,
+        "observed_completion_tokens_per_second": 27.90206280419077,
         "probe": "diversity_24301",
-        "wall_seconds": 0.8967430609999951
+        "wall_seconds": 0.8959911019999964
       },
       {
         "completion_tokens": 44,
-        "llama_server_predicted_tokens_per_second": 45.43999339054642,
-        "observed_completion_tokens_per_second": 32.6747685220629,
+        "llama_server_predicted_tokens_per_second": 47.68014425410916,
+        "observed_completion_tokens_per_second": 33.722316291943415,
         "probe": "diversity_24302",
-        "wall_seconds": 1.3466047960000083
+        "wall_seconds": 1.3047739550000017
       },
       {
         "completion_tokens": 46,
-        "llama_server_predicted_tokens_per_second": 46.228228765414855,
-        "observed_completion_tokens_per_second": 33.34331579052068,
+        "llama_server_predicted_tokens_per_second": 47.49470588903379,
+        "observed_completion_tokens_per_second": 34.05627485213174,
         "probe": "diversity_24303",
-        "wall_seconds": 1.3795868500000097
+        "wall_seconds": 1.350705565999995
       }
     ],
     "ttft_response": "READY",
-    "ttft_seconds": 0.15816636799999628,
+    "ttft_seconds": 0.1603043319999955,
     "ubatch_tokens": 128
   },
   "schema": "ttt.model_probe.v1"

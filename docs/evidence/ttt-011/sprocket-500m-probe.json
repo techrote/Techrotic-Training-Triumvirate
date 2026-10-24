@@ -8,6 +8,7 @@
   },
   "model_key": "sprocket-500m",
   "probe_config": {
+    "chat_template_kwargs": {},
     "context_tokens": 2048,
     "diversity_seeds": [
       24301,
@@ -112,11 +113,11 @@
     "engine": "llama.cpp",
     "gpu_layers": 0,
     "gpu_mode": "disabled; CPU-only probe",
-    "median_llama_server_predicted_tokens_per_second": 92.67921118406382,
-    "median_observed_completion_tokens_per_second": 66.30800784696083,
-    "observed_peak_resident_bytes": 642875392,
+    "median_llama_server_predicted_tokens_per_second": 97.19296217880353,
+    "median_observed_completion_tokens_per_second": 68.84810049542118,
+    "observed_peak_resident_bytes": 641933312,
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
-    "ram_bytes": 16766414848,
+    "ram_bytes": 16766410752,
     "revision": "2afcdb9777b1bac79fa4bfe284b9bf23085b0469",
     "server_command": [
       "/tmp/llama.cpp/llama-b8185/llama-server",
@@ -143,56 +144,56 @@
     "timings": [
       {
         "completion_tokens": 96,
-        "llama_server_predicted_tokens_per_second": 91.98071854187566,
-        "observed_completion_tokens_per_second": 60.82636694866341,
+        "llama_server_predicted_tokens_per_second": 94.46364330528287,
+        "observed_completion_tokens_per_second": 61.58193688582989,
         "probe": "structured_command",
-        "wall_seconds": 1.578262928000001
+        "wall_seconds": 1.5588986780000056
       },
       {
         "completion_tokens": 78,
-        "llama_server_predicted_tokens_per_second": 94.02778882805211,
-        "observed_completion_tokens_per_second": 71.96949613873451,
+        "llama_server_predicted_tokens_per_second": 97.28621354573325,
+        "observed_completion_tokens_per_second": 73.80208577354263,
         "probe": "secret_non_disclosure",
-        "wall_seconds": 1.083792497999994
+        "wall_seconds": 1.0568806990000041
       },
       {
         "completion_tokens": 96,
-        "llama_server_predicted_tokens_per_second": 83.83195883850821,
-        "observed_completion_tokens_per_second": 55.253266946533,
+        "llama_server_predicted_tokens_per_second": 91.18965453369316,
+        "observed_completion_tokens_per_second": 58.262559425367805,
         "probe": "recovery_after_rejection",
-        "wall_seconds": 1.737453825000003
+        "wall_seconds": 1.6477134020000008
       },
       {
         "completion_tokens": 11,
-        "llama_server_predicted_tokens_per_second": 100.85266342715688,
-        "observed_completion_tokens_per_second": 29.65253864184723,
+        "llama_server_predicted_tokens_per_second": 102.80277754413508,
+        "observed_completion_tokens_per_second": 29.627006252992572,
         "probe": "persona_spontaneity",
-        "wall_seconds": 0.3709631790000003
+        "wall_seconds": 0.3712828729999984
       },
       {
         "completion_tokens": 37,
-        "llama_server_predicted_tokens_per_second": 92.27139761241524,
-        "observed_completion_tokens_per_second": 66.30800784696083,
+        "llama_server_predicted_tokens_per_second": 97.19296217880353,
+        "observed_completion_tokens_per_second": 68.84810049542118,
         "probe": "diversity_24301",
-        "wall_seconds": 0.5580019850000042
+        "wall_seconds": 0.5374149720000005
       },
       {
         "completion_tokens": 64,
-        "llama_server_predicted_tokens_per_second": 92.67921118406382,
-        "observed_completion_tokens_per_second": 90.94898689656739,
+        "llama_server_predicted_tokens_per_second": 90.98094517829422,
+        "observed_completion_tokens_per_second": 89.33778083793732,
         "probe": "diversity_24302",
-        "wall_seconds": 0.7036911810000106
+        "wall_seconds": 0.7163822450000055
       },
       {
         "completion_tokens": 13,
-        "llama_server_predicted_tokens_per_second": 101.82342252020804,
-        "observed_completion_tokens_per_second": 92.67239051746786,
+        "llama_server_predicted_tokens_per_second": 99.70013267786888,
+        "observed_completion_tokens_per_second": 89.69117135717799,
         "probe": "diversity_24303",
-        "wall_seconds": 0.14027910499999052
+        "wall_seconds": 0.14494180199999818
       }
     ],
     "ttft_response": "Oi, that's a proper well",
-    "ttft_seconds": 0.08698624800000232,
+    "ttft_seconds": 0.08673461800000126,
     "ubatch_tokens": 128
   },
   "schema": "ttt.model_probe.v1"
