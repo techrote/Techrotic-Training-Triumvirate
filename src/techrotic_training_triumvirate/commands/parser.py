@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+
 from techrotic_training_triumvirate.schemas import CommandEnvelope, JsonObject
 from techrotic_training_triumvirate.schemas.base import (
     require_exact_keys,
