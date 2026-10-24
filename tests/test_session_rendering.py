@@ -10,6 +10,12 @@ from techrotic_training_triumvirate.commands import (
     RequestStatusCommand,
 )
 from techrotic_training_triumvirate.schemas import SchemaValidationError
+from techrotic_training_triumvirate.schemas.fixtures import (
+    EVALUATOR_SENTINEL,
+    PRIVATE_SENTINEL,
+    t0_hidden_information_turn,
+    t0_normal_turn,
+)
 from techrotic_training_triumvirate.session import (
     DeterministicRenderer,
     SessionRecording,
@@ -56,15 +62,37 @@ def test_structured_compact_and_delta_rendering_are_deterministic() -> None:
     delta = compute_delta(observation, next_observation)
 
     assert renderer.structured_observation(observation) == observation.to_payload()
-    assert renderer.compact_observation(observation) == (
-        renderer.compact_observation(observation)
-    )
-    assert renderer.compact_delta(delta) == renderer.compact_delta(delta)
+    assert renderer.compact_delta(delta).startswith("DELTA ")
     assert apply_delta(observation, delta) == next_observation.to_payload()
     assert delta.base_hash == observation.content_hash()
     assert delta.target_hash == next_observation.content_hash()
     assert "" not in delta.set_values
     assert "/facts/units/unit-2/energy" not in delta.set_values
+
+
+def test_compact_observation_has_stable_golden_rendering() -> None:
+    observation = t0_normal_turn().observation
+
+    assert DeterministicRenderer().compact_observation(observation) == (
+        "TURN 0 | STATE world-0 | ENTITIES squad-alpha,relay-east | "
+        "OBJECTIVES secure-relay-east | EVENTS - | "
+        'FACTS {"relay_status":"contested","route_status":{"north":"open"}}'
+    )
+
+
+def test_rendering_excludes_evaluation_and_private_fixture_fields() -> None:
+    turn = t0_hidden_information_turn()
+    renderer = DeterministicRenderer()
+    structured = json.dumps(
+        renderer.structured_observation(turn.observation),
+        sort_keys=True,
+    )
+    compact = renderer.compact_observation(turn.observation)
+
+    assert EVALUATOR_SENTINEL not in structured
+    assert EVALUATOR_SENTINEL not in compact
+    assert PRIVATE_SENTINEL not in structured
+    assert PRIVATE_SENTINEL not in compact
 
 
 def test_console_result_text_is_exactly_derived_from_interpreter_result() -> None:
@@ -75,7 +103,9 @@ def test_console_result_text_is_exactly_derived_from_interpreter_result() -> Non
         observation_generation=world.observation_generation,
         entity_ids=("unit-1",),
     )
-    accepted_result = CommandInterpreter().interpret(accepted.to_envelope(), world).result
+    accepted_result = CommandInterpreter().interpret(
+        accepted.to_envelope(), world
+    ).result
     assert renderer.compact_result(accepted_result).startswith("ACK status-ok OK ")
 
     stale = RequestStatusCommand(
