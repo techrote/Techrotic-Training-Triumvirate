@@ -111,14 +111,10 @@ def _parse_body(command_id: str, body: JsonObject) -> TypedCommand:
             command_id=command_id,
             observation_generation=_generation(body),
             unit_id=_nonempty(body["unit_id"], field="unit_id"),
-            objective_kind=_nonempty(
-                body["objective_kind"], field="objective_kind"
-            ),
+            objective_kind=_nonempty(body["objective_kind"], field="objective_kind"),
             target_id=_nonempty(body["target_id"], field="target_id"),
             approach=approach,
-            constraints=require_str_tuple(
-                body["constraints"], field="constraints"
-            ),
+            constraints=require_str_tuple(body["constraints"], field="constraints"),
         )
 
     if op is Operation.SET_CONSTRAINTS:
@@ -127,9 +123,7 @@ def _parse_body(command_id: str, body: JsonObject) -> TypedCommand:
             required=common | {"unit_id", "constraints"},
             where="command body",
         )
-        constraints = require_json_object(
-            body["constraints"], field="constraints"
-        )
+        constraints = require_json_object(body["constraints"], field="constraints")
         if not constraints:
             raise ValueError("constraints must not be empty")
         return SetConstraintsCommand(
@@ -145,9 +139,7 @@ def _parse_body(command_id: str, body: JsonObject) -> TypedCommand:
             required=common | {"unit_ids", "trigger", "objective_id"},
             where="command body",
         )
-        objective_id = require_optional_str(
-            body["objective_id"], field="objective_id"
-        )
+        objective_id = require_optional_str(body["objective_id"], field="objective_id")
         if objective_id is not None and not objective_id.strip():
             raise ValueError("objective_id must be null or non-empty")
         return CoordinateCommand(
@@ -209,9 +201,7 @@ def _parse_body(command_id: str, body: JsonObject) -> TypedCommand:
         return TransmitCommand(
             command_id=command_id,
             observation_generation=_generation(body),
-            recipients=_nonempty_tuple(
-                body["recipients"], field="recipients"
-            ),
+            recipients=_nonempty_tuple(body["recipients"], field="recipients"),
             channel=_nonempty(body["channel"], field="channel"),
             message=_nonempty(body["message"], field="message"),
         )
@@ -225,9 +215,7 @@ def _parse_body(command_id: str, body: JsonObject) -> TypedCommand:
         return RequestStatusCommand(
             command_id=command_id,
             observation_generation=_generation(body),
-            entity_ids=_nonempty_tuple(
-                body["entity_ids"], field="entity_ids"
-            ),
+            entity_ids=_nonempty_tuple(body["entity_ids"], field="entity_ids"),
         )
 
     raise AssertionError(f"unhandled operation: {op}")
