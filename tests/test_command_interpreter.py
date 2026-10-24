@@ -33,21 +33,15 @@ class FakeWorld:
     def target_exists(self, target_id: str) -> bool:
         return target_id in self.targets
 
-    def check_preconditions(
-        self, command: TypedCommand
-    ) -> ValidationFailure | None:
+    def check_preconditions(self, command: TypedCommand) -> ValidationFailure | None:
         del command
         return self.precondition_failure
 
-    def check_resources(
-        self, command: TypedCommand
-    ) -> ValidationFailure | None:
+    def check_resources(self, command: TypedCommand) -> ValidationFailure | None:
         del command
         return self.resource_failure
 
-    def check_order_conflict(
-        self, command: TypedCommand
-    ) -> ValidationFailure | None:
+    def check_order_conflict(self, command: TypedCommand) -> ValidationFailure | None:
         del command
         return self.conflict_failure
 
