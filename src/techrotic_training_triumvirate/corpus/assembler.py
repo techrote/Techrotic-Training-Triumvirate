@@ -42,6 +42,21 @@ _EXTERNAL_SOURCE_CLASSES = frozenset(
     }
 )
 _ADMITTED_LICENSE_DISPOSITIONS = frozenset({"admitted", "compatible"})
+_EXTERNAL_SOURCE_MARKERS = (
+    "external",
+    "third-party",
+    "teacher",
+    "model",
+    "game-derived",
+)
+
+
+def _requires_license(source_class: str) -> bool:
+    normalized = source_class.strip().lower()
+    return (
+        normalized in _EXTERNAL_SOURCE_CLASSES
+        or any(marker in normalized for marker in _EXTERNAL_SOURCE_MARKERS)
+    )
 
 
 def _sha256_text(text: str) -> str:
@@ -163,11 +178,12 @@ def _provenance_issues(source: CorpusSource) -> list[CorpusIssue]:
         )
 
     for provenance in source.provenance:
-        if provenance.source_class not in _EXTERNAL_SOURCE_CLASSES:
+        if not _requires_license(provenance.source_class):
             continue
         disposition = provenance.metadata.get("license_disposition")
         if (
             provenance.license_id is None
+            or not provenance.license_id.strip()
             or disposition not in _ADMITTED_LICENSE_DISPOSITIONS
         ):
             issues.append(
@@ -176,6 +192,16 @@ def _provenance_issues(source: CorpusSource) -> list[CorpusIssue]:
                     (
                         f"{provenance.source_id} ({provenance.source_class}) lacks "
                         "an admitted license disposition"
+                    ),
+                )
+            )
+        if provenance.revision is None or provenance.source_content_hash is None:
+            issues.append(
+                CorpusIssue(
+                    "PROVENANCE_INCOMPLETE",
+                    (
+                        f"{provenance.source_id} ({provenance.source_class}) lacks "
+                        "revision or source content hash"
                     ),
                 )
             )
@@ -647,6 +673,22 @@ def _manifest(
         if not result.accepted
     ]
     teacher_example_count = sum(bool(item.teacher_source_ids) for item in examples)
+    command_count = sum(
+        len(item.target.get("commands", []))
+        for item in examples
+        if isinstance(item.target.get("commands"), list)
+    )
+    communication_count = sum(
+        len(item.target.get("communications", []))
+        for item in examples
+        if isinstance(item.target.get("communications"), list)
+    )
+    examples_with_commands = sum(
+        bool(item.target.get("commands")) for item in examples
+    )
+    examples_with_communications = sum(
+        bool(item.target.get("communications")) for item in examples
+    )
     teacher_source_ids = {
         enrichment.source_id
         for source in admitted_sources
@@ -674,6 +716,13 @@ def _manifest(
         "teacher_contribution": {
             "examples": teacher_example_count,
             "source_count": len(teacher_source_ids),
+        },
+        "content_composition": {
+            "command_count": command_count,
+            "communication_count": communication_count,
+            "examples_with_commands": examples_with_commands,
+            "examples_with_communications": examples_with_communications,
+            "teacher_enriched_examples": teacher_example_count,
         },
         "rejection_reasons": _count(rejection_codes),
         "split_distribution": _count(item.split.value for item in examples),
