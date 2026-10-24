@@ -13,10 +13,7 @@ def test_command_schema_is_versioned_and_covers_operation_family() -> None:
     assert COMMAND_PROTOCOL_VERSION in schema["title"]
     variants = schema["oneOf"]
     assert isinstance(variants, list)
-    operations = {
-        variant["properties"]["op"]["const"]
-        for variant in variants
-    }
+    operations = {variant["properties"]["op"]["const"] for variant in variants}
     assert operations == {operation.value for operation in Operation}
 
 
