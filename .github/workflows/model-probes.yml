@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: ttt-011-model-probes-${{ github.event.pull_request.number || github.ref }}-${{ github.actor }}
+  cancel-in-progress: true
+
 jobs:
   live-model-probes:
     if: >-
@@ -148,7 +152,7 @@ jobs:
               runtime = probe["runtime"]
               speed = runtime.get("median_observed_completion_tokens_per_second") or 0.0
               ttft = runtime.get("ttft_seconds") or 0.0
-              rss = runtime.get("peak_resident_bytes", 0) / (1024 * 1024)
+              rss = runtime.get("observed_peak_resident_bytes", 0) / (1024 * 1024)
               lines.append(
                   "| {model} | {structured} | {secret} | {recovery} | "
                   "{ttft:.3f} | {speed:.2f} | {rss:.1f} |".format(
