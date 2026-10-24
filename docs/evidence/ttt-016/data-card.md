@@ -92,3 +92,12 @@ The abstract world has no low-level physics and does not establish CyberSand
 performance. String-based secrecy checks cannot prove absence of paraphrased or
 encoded disclosure. Development loss, training loss and export parity do not
 establish command competence, character quality or runtime admission.
+
+Training observations encode generation in their `world_state_id` (`:gN`),
+whereas evaluation additionally supplies an explicit `observation_generation`
+scalar and introduces prelude/reopened-objective offsets over longer sessions.
+This admitted but shifted input distribution is a limitation of the short
+one-epoch recipe. Failures do not establish an intrinsic capability limit of
+the base model. Joint excludes corrective examples (180 mapped training rows,
+23 optimizer steps); the other mixes use 210 rows and 27 steps, so T3 content
+and extra exposure are not independently controlled.

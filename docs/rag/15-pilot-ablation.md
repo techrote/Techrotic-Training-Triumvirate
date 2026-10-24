@@ -1,5 +1,27 @@
 # TTT-013 pilot corpus and ablation campaign
 
+## Current disposition
+
+The preparation described below is historical. The substantive TTT-013E / #37
+campaign subsequently completed through
+[PR #39](https://github.com/techrote/Techrotic-Training-Triumvirate/pull/39): four
+real LoRA variants of the admitted native LFM checkpoint and a prompt-only
+control each completed the frozen benchmark and full 24-turn suite, for 745
+completed model actions. The 252-example corpus contains T1/T2/T3 examples and no
+reserved benchmark worlds. The conservative total charge was 0.962306 GPU-hours
+including preflight and the preserved failed V100 attempt, with £0 external
+compute and £0 paid APIs. All completed candidates used the TITAN RTX.
+
+The final programme decision through
+[PR #40](https://github.com/techrote/Techrotic-Training-Triumvirate/pull/40) is
+**NOT ADMITTED**. No real candidate passed the 24-turn objective/recovery gates.
+Human ratings remain unfilled and trained Q4 runtime qualification is not
+claimed. See [actual execution](18-pilot-execution.md),
+[portable execution evidence](../evidence/ttt-013-execution/README.md) and the
+[final comparative report](../evidence/ttt-016/report.md) for the actual results
+and limitations. The preparation-only smoke result below remains distinct from
+those native-model measurements.
+
 ## Purpose
 
 TTT-013 is the first controlled comparison of operational-only, persona-only,
@@ -53,8 +75,9 @@ itself a compute allocation.
 
 ## Execution state at TTT-013 preparation merge
 
-No repository document or workflow currently names an admitted TTT-013 GPU host
-or allocation identifier. Therefore the substantive LFM2.5-1.2B-Instruct
+At the preparation merge, no repository document or workflow named an admitted
+TTT-013 GPU host or allocation identifier. Therefore the substantive
+LFM2.5-1.2B-Instruct
 four-way fine-tune campaign is **not executed or claimed** by this preparation
 merge.
 
@@ -72,7 +95,7 @@ ttt-train pilot-plan \
   --external-cost-gbp 75
 ```
 
-Once an admitted host/allocation is recorded, the plan can be regenerated with
+For later execution, an admitted host/allocation allowed regeneration with
 `--execution-host` and `--allocation-id`. Actual heavyweight training remains
 an explicit opt-in invocation; the plan does not spend the budget.
 
@@ -97,7 +120,7 @@ quality evidence.
 
 ## Evaluation and reporting contract
 
-Every **real** candidate produced by the eventual substantive campaign must run
+Every **real** candidate produced by a substantive campaign must run
 the frozen TTT-009 benchmark. Mechanical/closed-loop/hidden-information metrics
 remain separate from persona/repetition/diversity proxies. Catastrophic style
 collapse, repetition, and command regression must be called out explicitly.

@@ -3,7 +3,7 @@
 ## Contents
 
 1. Programme principles — sequencing and merge discipline.
-2. Current implementation status — completed waves and immediately ready work.
+2. Current implementation status — completed waves and final outcome.
 3. Issue map — TTT-001 through TTT-016, GitHub numbers and state.
 4. Execution waves — safe parallelism.
 5. Dependency graph — explicit blockers.
@@ -25,11 +25,17 @@ Issues should be executed from current `main`; agents must reconcile work merged
 
 ## 2. Current implementation status
 
-As of 24 October 2026, **Waves 0–7 are merged**. TTT-012 supplies admitted-model
-training/export, and TTT-015's runtime bridge merged through PR #38. TTT-013's
-preparation-only issue closed through PR #36; substantive execution is tracked
-separately by TTT-013E / #37. Long-session comparison and final admission must
-consume that actual evidence rather than substituting smoke output.
+As of 24 October 2026, **all initial programme waves are implemented and their
+evidence is complete**. TTT-012 supplies admitted-model training/export, and
+TTT-015's runtime bridge is recorded in
+[PR #38](https://github.com/techrote/Techrotic-Training-Triumvirate/pull/38).
+TTT-013's preparation-only issue closed through PR #36; the later real TTT-013E
+campaign and TTT-014 comparison are recorded in
+[PR #39](https://github.com/techrote/Techrotic-Training-Triumvirate/pull/39).
+The final TTT-016 outcome through
+[PR #40](https://github.com/techrote/Techrotic-Training-Triumvirate/pull/40) is
+**NOT ADMITTED**. This is a completed negative experiment, with no claim that a
+trained candidate is ready for game integration.
 
 | Wave | Issues | State | Result |
 |---|---|---|---|
@@ -41,9 +47,28 @@ consume that actual evidence rather than substituting smoke output.
 | 5 | TTT-010 / #11 | Complete | LangGraph-backed student-visited correction branches and validated T3 recovery corpus |
 | 6 | TTT-011 / #12 | Complete | Initial model-cast admission, immutable artifact identities, licensing and live characterization evidence |
 | 7 | TTT-012 / #13 + TTT-015 / #16 | Complete | Training/export plus bounded game-facing runtime and intercept bridge |
-| 8 | TTT-013 / #14 + TTT-013E / #37 | Preparation merged; real execution in progress | Benchmark-clean local corpus and four-way native LoRA campaign |
-| 9 | TTT-014 / #15 | Evaluation implemented; comparison in progress | Frozen 24-turn candidate/baseline traces and human packet |
-| 10 | TTT-016 / #17 | Evidence tooling implemented; final package pending | Cards, comparative admission decision and verified readback |
+| 8 | TTT-013 / #14 + TTT-013E / #37 | Complete / PR #39 | Preparation history, benchmark-clean corpus, four real native LoRA variants and prompt-only control |
+| 9 | TTT-014 / #15 | Complete / PR #39 | Full frozen 24-turn candidate/reference comparisons, replayable traces and unfilled human packet |
+| 10 | TTT-016 / #17 | Complete / PR #40 | Model/data cards, comparative **NOT ADMITTED** decision and verified readback |
+
+The substantive campaign produced four real LoRA exports from the same admitted
+LFM native checkpoint and evaluated them alongside its prompt-only control.
+All five completed the 77-action frozen benchmark and 72-action long-session
+suite: **745 completed model actions**. The corpus has 252 examples (210 train /
+42 development), T1/T2/T3 coverage and zero reserved benchmark examples. All
+completed candidates used the TITAN RTX. The conservative total charge was
+**0.962306 GPU-hours**, including preflight and the preserved failed V100 attempt;
+external compute and paid API costs were both **£0**.
+
+Every real candidate had zero objective completion and execution-failure recovery
+in the 24-turn suite. The report preserves stale-generation failures, repetition,
+formatting regressions and empty-command metric conventions. Human ratings remain
+unfilled and trained-candidate Q4 runtime qualification is not complete. Read the
+[execution evidence](../evidence/ttt-013-execution/README.md),
+[long-session comparison](../evidence/ttt-014/comparison/comparison.md),
+[final comparative report](../evidence/ttt-016/report.md) and
+[admission package](../evidence/ttt-016/admission-package.json) for the measured
+result, source audit, limits and readback contract.
 
 Wave 3 merged evidence:
 
@@ -80,11 +105,11 @@ TTT-011 admits identities and characterization only; it does **not** authorize a
 | TTT-010 | #11 | Complete | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
 | TTT-011 | #12 | Complete | Initial model-cast admission: owner-delegated teacher/student selection, licensing/runtime probes, frozen decision record |
 | TTT-012 | #13 | Complete | Reproducible fine-tuning/export harness for the admitted cast |
-| TTT-013 | #14 | Complete under preparation-only rule | Pilot admission and fixed four-way plan |
-| TTT-013E | #37 | Real execution in progress | Named local allocation, actual adapters and source-bound evaluation |
-| TTT-014 | #15 | Full comparison in progress | Closed-loop 20–30 turn commander benchmark and comparative report |
+| TTT-013 | #14 | Complete under preparation-only rule | Historical pilot admission and fixed four-way plan; actual execution is TTT-013E |
+| TTT-013E | #37 | Complete / PR #39 | Named local allocation, four real adapters, parity and complete source-bound evaluation |
+| TTT-014 | #15 | Complete / PR #39 | Frozen 24-turn candidate/reference benchmark, traces, comparison and human packet |
 | TTT-015 | #16 | Complete / PR #38 | Runtime export/bridge contract plus reference intercept integration |
-| TTT-016 | #17 | Final evidence pending #37/#15 | Model/data cards, explicit admission/rejection and reproducibility |
+| TTT-016 | #17 | Complete / PR #40 | Model/data cards, explicit **NOT ADMITTED** outcome and reproducible evidence readback |
 
 ## 4. Execution waves
 
@@ -104,13 +129,14 @@ TTT-011 admits identities and characterization only; it does **not** authorize a
 
 **Wave 7, parallel:** TTT-012 / #13 and TTT-015 / #16 are complete.
 
-**Wave 8:** TTT-013 / #14 preparation is complete; TTT-013E / #37 executes the
-real fixed campaign under the recorded local allocation and budget.
+**Wave 8:** TTT-013 / #14 preparation and the later TTT-013E / #37 real fixed
+campaign are complete under the recorded local allocation and budget.
 
-**Wave 9:** TTT-014 / #15 consumes actual TTT-013E candidates and preserved
-prompt-only/scripted controls.
+**Wave 9:** TTT-014 / #15 completed comparisons of actual TTT-013E candidates and
+preserved prompt-only/scripted controls.
 
-**Wave 10:** TTT-016 / #17 after TTT-014/015.
+**Wave 10:** TTT-016 / #17 completed the final evidence package and **NOT ADMITTED**
+decision after TTT-014/015.
 
 ## 5. Dependency graph
 
@@ -128,8 +154,8 @@ prompt-only/scripted controls.
 006+007+009+010 -> 011
 011 -> 012
 011+008+009 -> 015
-012 -> 013
-013 -> 014
+012 -> 013 -> 013E
+013E -> 014
 014+015 -> 016
 ```
 
@@ -155,6 +181,9 @@ runtime targets and bounded downstream budgets live in
 `12-candidate-model-zoo.md` remains characterization/planning history and is
 not an independent admission source.
 
+These role selections do not qualify a trained checkpoint for runtime use.
+The completed TTT-016 evaluation admits none of the pilot candidates.
+
 ## 7. Expensive-work gate
 
 Before substantial corpus generation or GPU fine-tuning:
@@ -168,7 +197,7 @@ Default CI remains CPU-small and model-download-free.
 
 ## 8. Completion target
 
-Programme completion yields:
+The completed initial programme provides:
 - a deterministic synthetic command world;
 - persona/teacher generation adapters;
 - a validated, provenance-rich corpus pipeline;
@@ -177,9 +206,11 @@ Programme completion yields:
 - a compact commander candidate experiment and an explicit evidence-based
   admission, conditional-admission or rejection decision;
 - player-facing grounded tactical intercepts;
-- reproducible runtime/export artifacts ready for downstream game integration.
+- reproducible runtime/export interfaces and verified research artifacts.
 
 A negative research result is a valid TTT-016 completion under issue #17.
 It completes the evidence programme without claiming the rejected candidate
 is ready for game integration. Original model-cast selection, actual fine-tuned
 candidate evidence and final runtime admission are separate decisions.
+Human quality ratings and trained-candidate Q4 qualification remain uncompleted;
+they are not positive evidence or hidden waivers of the failed operational gates.
