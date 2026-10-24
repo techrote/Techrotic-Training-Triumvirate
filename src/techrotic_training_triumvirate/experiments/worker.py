@@ -47,12 +47,13 @@ class WorkerSpec:
     source_hash: str
     config_hash: str
     launch_nonce: str
+    grace_seconds: float = 5.0
 
     @classmethod
     def from_object(cls, value: object) -> WorkerSpec:
         if not isinstance(value, dict):
             raise WorkerHostError("worker spec must be an object")
-        expected = {
+        required = {
             "attempt_id",
             "argv",
             "cwd",
@@ -63,7 +64,8 @@ class WorkerSpec:
             "config_hash",
             "launch_nonce",
         }
-        if set(value) != expected:
+        optional = {"grace_seconds"}
+        if not required.issubset(value) or set(value) - required - optional:
             raise WorkerHostError("worker spec has invalid fields")
         raw_argv = value["argv"]
         if (
@@ -85,6 +87,13 @@ class WorkerSpec:
             or not 0 < float(deadline) <= 86400
         ):
             raise WorkerHostError("worker deadline must be in (0, 86400]")
+        grace = value.get("grace_seconds", 5.0)
+        if (
+            isinstance(grace, bool)
+            or not isinstance(grace, (int, float))
+            or not 0 < float(grace) <= 60
+        ):
+            raise WorkerHostError("worker grace period must be in (0, 60]")
         fields = {
             name: value[name]
             for name in ("attempt_id", "cwd", "artifact_root", "launch_nonce")
@@ -103,6 +112,7 @@ class WorkerSpec:
             source_hash=_sha256(value["source_hash"], "source_hash"),
             config_hash=_sha256(value["config_hash"], "config_hash"),
             launch_nonce=cast(str, value["launch_nonce"]),
+            grace_seconds=float(grace),
         )
 
     def to_object(self) -> JsonObject:
@@ -117,6 +127,7 @@ class WorkerSpec:
             "source_hash": self.source_hash,
             "config_hash": self.config_hash,
             "launch_nonce": self.launch_nonce,
+            "grace_seconds": self.grace_seconds,
         }
 
     def validated_paths(self) -> tuple[Path, Path]:
@@ -163,6 +174,10 @@ def process_creation_token(pid: int) -> str:
         kernel32: Any = ctypes.WinDLL(  # type: ignore[attr-defined]
             "kernel32", use_last_error=True
         )
+        kernel32.OpenProcess.restype = ctypes.c_void_p
+        kernel32.GetProcessTimes.restype = ctypes.c_int
+        kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+        kernel32.CloseHandle.restype = ctypes.c_int
         process_query_limited_information = 0x1000
         handle = kernel32.OpenProcess(process_query_limited_information, False, pid)
         if not handle:
@@ -175,6 +190,13 @@ def process_creation_token(pid: int) -> str:
         exited = FileTime()
         kernel = FileTime()
         user = FileTime()
+        kernel32.GetProcessTimes.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(FileTime),
+            ctypes.POINTER(FileTime),
+            ctypes.POINTER(FileTime),
+            ctypes.POINTER(FileTime),
+        ]
         try:
             ok = kernel32.GetProcessTimes(
                 handle,
@@ -208,6 +230,25 @@ class _WindowsJob:
         self._kernel32: Any = ctypes.WinDLL(  # type: ignore[attr-defined]
             "kernel32", use_last_error=True
         )
+        self._kernel32.CreateJobObjectW.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_wchar_p,
+        ]
+        self._kernel32.CreateJobObjectW.restype = ctypes.c_void_p
+        self._kernel32.OpenProcess.restype = ctypes.c_void_p
+        self._kernel32.SetInformationJobObject.restype = ctypes.c_int
+        self._kernel32.AssignProcessToJobObject.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+        ]
+        self._kernel32.AssignProcessToJobObject.restype = ctypes.c_int
+        self._kernel32.TerminateJobObject.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+        ]
+        self._kernel32.TerminateJobObject.restype = ctypes.c_int
+        self._kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+        self._kernel32.CloseHandle.restype = ctypes.c_int
         self._job: Any = self._kernel32.CreateJobObjectW(None, None)
         if not self._job:
             raise WorkerHostError("CreateJobObjectW failed")
@@ -247,6 +288,12 @@ class _WindowsJob:
 
         info = ExtendedLimitInformation()
         info.BasicLimitInformation.LimitFlags = 0x00002000
+        self._kernel32.SetInformationJobObject.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+        ]
         ok = self._kernel32.SetInformationJobObject(
             self._job, 9, ctypes.byref(info), ctypes.sizeof(info)
         )
@@ -276,11 +323,22 @@ class _WindowsJob:
 
 
 def _terminate_process_tree(
-    process: subprocess.Popen[bytes], job: _WindowsJob | None
+    process: subprocess.Popen[bytes],
+    job: _WindowsJob | None,
+    *,
+    grace_seconds: float,
 ) -> None:
     if process.poll() is not None:
         return
     if job is not None:
+        break_signal = getattr(signal, "CTRL_BREAK_EVENT", None)
+        if break_signal is not None:
+            try:
+                os.kill(process.pid, break_signal)
+                process.wait(timeout=grace_seconds)
+                return
+            except (OSError, subprocess.TimeoutExpired):
+                pass
         job.terminate()
         return
     try:
@@ -288,7 +346,7 @@ def _terminate_process_tree(
     except ProcessLookupError:
         return
     try:
-        process.wait(timeout=5)
+        process.wait(timeout=grace_seconds)
     except subprocess.TimeoutExpired:
         try:
             os.killpg(process.pid, signal.SIGKILL)
@@ -298,8 +356,14 @@ def _terminate_process_tree(
 
 def _write_json(path: Path, value: JsonObject) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(canonical_json(value) + "\n", encoding="utf-8", newline="\n")
-    temporary.replace(path)
+    try:
+        with temporary.open("w", encoding="utf-8", newline="\n") as handle:
+            handle.write(canonical_json(value) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def run_host(spec_path: str | Path) -> int:
@@ -348,11 +412,19 @@ def run_host(spec_path: str | Path) -> int:
             while process.poll() is None:
                 if cancel_path.exists():
                     reason = "cancelled"
-                    _terminate_process_tree(process, job)
+                    _terminate_process_tree(
+                        process,
+                        job,
+                        grace_seconds=spec.grace_seconds,
+                    )
                     break
                 if time.monotonic() - started >= spec.deadline_seconds:
                     reason = "deadline"
-                    _terminate_process_tree(process, job)
+                    _terminate_process_tree(
+                        process,
+                        job,
+                        grace_seconds=spec.grace_seconds,
+                    )
                     break
                 time.sleep(0.05)
             returncode = process.wait()
@@ -405,7 +477,9 @@ def launch_worker_host(spec_path: str | Path) -> WorkerOwnership:
     spec.validated_paths()
     creationflags = 0
     if os.name == "nt":
-        creationflags = int(getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0))
+        creationflags = int(
+            getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+        ) | int(getattr(subprocess, "DETACHED_PROCESS", 0))
     host = subprocess.Popen(
         [
             sys.executable,
