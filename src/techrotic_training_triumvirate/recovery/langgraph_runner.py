@@ -127,9 +127,7 @@ class CorrectiveRun:
                 item.alternative_index,
             ),
         )
-        return tuple(
-            (item.observation_hash, item.corrected_action) for item in ordered
-        )
+        return tuple((item.observation_hash, item.corrected_action) for item in ordered)
 
 
 _COMMAND_CATEGORIES: dict[str, FailureCategory] = {
@@ -306,9 +304,7 @@ def _episode_from_recording(
             world.events.append(outcome.dispatch_event)
         world.step()
         events = tuple(world.events[before_events:])
-        next_observation = world.commander_observation(
-            turn_id=session_turn.turn_id + 1
-        )
+        next_observation = world.commander_observation(turn_id=session_turn.turn_id + 1)
         if (outcome.result,) != session_turn.results:
             raise SchemaValidationError("corrected branch interpreter result drifted")
         if events != session_turn.events:
@@ -367,9 +363,7 @@ def _provenance(
     branch: BranchResult,
 ) -> SourceProvenance:
     branch_recording = branch.recording
-    source_id = (
-        f"t3:{config.run_id}:{failure.turn_id:03d}:{alternative_index:02d}"
-    )
+    source_id = f"t3:{config.run_id}:{failure.turn_id:03d}:{alternative_index:02d}"
     semantic_source_hash = content_hash(
         {
             "recording_hash": branch_recording.semantic_hash(),
