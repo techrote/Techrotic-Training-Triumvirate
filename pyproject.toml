@@ -16,6 +16,9 @@ dev = [
   "pytest>=8.4,<9",
   "ruff>=0.14,<0.15",
 ]
+concordia = [
+  "gdm-concordia==2.4.0",
+]
 
 [project.scripts]
 ttt = "techrotic_training_triumvirate.cli:main"

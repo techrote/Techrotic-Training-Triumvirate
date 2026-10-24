@@ -18,6 +18,15 @@ The base runtime has no third-party dependencies. Developer tools live in the `d
 
 The architecture spikes under `spikes/` remain isolated packages with their own dependency pins and workflows.
 
+The implemented World Authority has a dependency-free native path. To run the optional Concordia parity host:
+
+```bash
+python -m pip install -e ".[dev,concordia]"
+python -m pytest tests/test_world_concordia.py
+```
+
+The optional group pins `gdm-concordia==2.4.0`, matching the admitted architecture spike.
+
 ## Canonical checks
 
 Run each check from the repository root:
@@ -38,9 +47,10 @@ ttt --version
 ttt seed-demo --seed 24301 --count 5
 ttt schema-bundle --pretty
 ttt command-schema --pretty
+ttt world-demo --seed 24301 --turns 24
 ```
 
-The seed demo exists to make deterministic plumbing observable without requiring a simulator or model. The schema-bundle command emits the canonical durable-record JSON Schema bundle. The command-schema command emits the independently versioned TTT command-body contract.
+The seed demo exists to make deterministic plumbing observable without requiring a simulator or model. The schema-bundle command emits the canonical durable-record JSON Schema bundle. The command-schema command emits the independently versioned TTT command-body contract. The world-demo command runs the model-free deterministic reference episode and emits state/event hashes.
 
 ## Reproducibility rule
 
