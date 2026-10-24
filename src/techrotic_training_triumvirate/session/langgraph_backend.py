@@ -208,10 +208,19 @@ class LangGraphSession:
         original_command_id: str,
         corrected_command: CommandEnvelope,
         branch_id: str,
+        original_checkpoint_id: str | None = None,
     ) -> BranchResult:
         """Correct one historical command without mutating its original final state."""
         config = thread_config(thread_id)
-        original_final = self.graph.get_state(config)
+        original_config = config
+        if original_checkpoint_id is not None:
+            original_config = {
+                "configurable": {
+                    "thread_id": thread_id,
+                    "checkpoint_id": original_checkpoint_id,
+                }
+            }
+        original_final = self.graph.get_state(original_config)
         original_values = original_final.values
         if not isinstance(original_values, Mapping):
             raise SchemaValidationError("LangGraph final state is not a mapping")
