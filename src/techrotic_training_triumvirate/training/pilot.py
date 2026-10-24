@@ -49,9 +49,7 @@ def pilot_budget_limits() -> JsonObject:
     budget = cast(dict[str, Any], cast_data["training_budget"])
     return {
         "gpu_hours_max": float(budget["ttt_013_initial_pilot_gpu_hours_max"]),
-        "external_compute_cost_gbp_max": float(
-            budget["external_compute_cost_gbp_max"]
-        ),
+        "external_compute_cost_gbp_max": float(budget["external_compute_cost_gbp_max"]),
         "paid_model_api_cost_gbp_max": float(budget["paid_model_api_cost_gbp_max"]),
         "rule": str(budget["rule"]),
     }
