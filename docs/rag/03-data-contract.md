@@ -219,9 +219,11 @@ Rejected commands are retained as failure/recovery context but are not emitted a
 ordinary supervised targets. Environment results, next-state observations and
 authoritative events never appear in the target.
 
-Splitting is deterministic and scenario-family-aware. A configured frozen scenario
-ID or family is routed only to `frozen_eval`; turns from one episode are never
-randomly divided among partitions.
+Splitting is deterministic and scenario-family-aware. TTT-009's immutable
+family/seed reservations are automatically routed only to `frozen_eval`;
+caller-configured frozen scenario IDs or families receive the same treatment, and
+turns from one episode are never randomly divided among partitions. Corpus manifests
+bind the frozen benchmark ID, version and content hash used for that decision.
 
 Exact episode hashes and normalized near-exact fingerprints are both checked before
 admission. Duplicates are quarantined rather than silently crossing train/dev.
