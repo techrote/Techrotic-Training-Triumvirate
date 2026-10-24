@@ -1,84 +1,198 @@
 # Persona and creative-teacher policy
 
-## Purpose
+## Contents
 
-Use unusual small models and other generators to supply the thing deterministic simulators cannot: surprising voice, metaphors, obsessions, doctrine, humour, riddles, grudges, imperfect priorities, and unconventional plan proposals.
+1. Purpose and trust boundary — what Creative Teachers are allowed to do.
+2. Persona conventions — structured dimensions and mutation.
+3. Teacher tasks — supported candidate-generation jobs.
+4. Adapter contract — replay, synthetic, local and API surfaces.
+5. Provenance and diversity — preserving multiple candidates.
+6. Validation — style and operational admission remain separate.
+7. Secret discipline — preventing accidental disclosure in generated material.
+8. Model-selection boundary — Sprocket and other models remain candidates only.
+9. Corpus handoff — how later issues consume teacher output.
 
-Sprocket 500M is an example/possible teacher because its model card reports persistent persona behaviour and narrow tool-call learning despite weak general competence. It is not selected by this document.
+## 1. Purpose and trust boundary
 
-## Persona specification
+Creative Teachers supply the parts a deterministic simulator cannot: unusual
+voice, metaphors, obsessions, doctrine, humour, riddles, grudges, imperfect
+priorities and unconventional tactical proposals.
 
-Represent persona as structured traits plus optional natural-language seed material. Candidate fields:
-- archetype;
-- worldview/metaphor system;
-- temperament;
-- obsessions;
-- taboos/secrets;
-- preferred tactics;
-- irrational biases;
-- favored/scapegoated units;
-- speech constraints;
-- doctrine/codeword lexicon;
-- humour modes;
-- deception propensity;
-- persistence/volatility controls.
+A teacher is **never authoritative** for:
 
-The system should support mutation of individual dimensions so datasets contain families of characters rather than one goblin imitation.
-
-## Teacher tasks
-
-A teacher adapter may be asked to:
-- write several in-character utterances for an authoritative event;
-- transform neutral communication into a persona style;
-- create codewords/rituals with explicit semantic mappings;
-- propose several tactical candidate commands;
-- react to failure while preserving specified secrets;
-- invent a persona from a structured seed;
-- rank/select among style candidates.
-
-The deterministic environment still validates operational proposals.
-
-## Do not over-distil
-
-The goal is not to force every output toward one polished "best" answer. Corpus assembly should preserve controlled diversity.
-
-Keep metadata for:
-- sampling parameters;
-- teacher identity/version;
-- prompt/template version;
-- candidate count;
-- validator outcomes;
-- selection method.
-
-Where practical, retain rejected candidate metadata/reason without redistributing restricted source text.
-
-## Competence versus madness
-
-Separate:
-- **mechanical incompetence:** malformed commands, false entities, forgotten constraints;
-- **intentional irrationality:** risky but valid tactics, grudges, theatrics, sacrifice, obsession.
-
-Training should reduce the first without erasing the second.
-
-## Teacher trust policy
-
-A teacher is never authoritative for:
 - state transitions;
 - entity capabilities;
 - command success;
 - secret visibility;
 - player knowledge.
 
-If teacher prose contradicts authoritative facts, reject, repair, or mark it as explicit in-world deception/delusion.
+Teacher outputs are immutable candidate records. Operational truth remains
+`UNVALIDATED` until a separate operational validator explicitly accepts a
+candidate.
 
-## Model-agnostic adapters
+## 2. Persona conventions
 
-Teacher interface should support:
-- recorded/replay fixture;
-- local Transformers/llama.cpp style backends later;
-- external API backend later if admitted;
-- multiple candidates per request;
-- timeouts/retries outside deterministic core;
-- provenance capture.
+The durable `PersonaSpec` remains the canonical persona record. TTT-006 adds
+named mutation dimensions over that generic schema:
 
-Default tests use replay fixtures/doubles, not live model calls.
+- archetype;
+- worldview;
+- temperament;
+- obsessions;
+- taboos;
+- favourites;
+- scapegoats;
+- humour modes;
+- speech constraints;
+- codewords;
+- secret IDs;
+- preferred tactics;
+- irrational biases;
+- deception propensity;
+- persistence;
+- volatility.
+
+`mutate_persona()` creates a new persona ID and changes exactly the declared
+dimension while copying the other structured fields. This allows controlled
+persona families rather than a single fixed "goblin" imitation.
+
+## 3. Teacher tasks
+
+`TeacherTask` currently supports:
+
+| Task | Expected role |
+|---|---|
+| `event_reaction` | In-character reaction to an admitted event |
+| `persona_rewrite` | Rewrite neutral text through a persona voice |
+| `codeword_doctrine` | Propose doctrine/codeword mappings |
+| `tactical_candidate` | Propose a tactic for later operational validation |
+| `persona_invention` | Generate a structured character seed |
+| `persona_mutation` | Suggest a controlled persona change |
+
+These tasks create proposals only. For example, a tactical candidate does not
+become a command or world event merely because a teacher produced it.
+
+## 4. Adapter contract
+
+`TeacherAdapter` exposes:
+
+- stable `adapter_id`;
+- `model_ref`;
+- `generate(TeacherRequest) -> TeacherBatch`.
+
+The base package provides:
+
+### ReplayTeacherAdapter
+
+Replays exact recorded candidate specifications for deterministic tests and
+readback.
+
+### SyntheticTeacherAdapter
+
+Uses only a seeded local PRNG and fixed templates. It exercises multi-candidate
+plumbing, persona styling, provenance and secret redaction without a model.
+
+### LocalModelTeacherStub
+
+Dependency-free placeholder for a future admitted local model runtime.
+
+### ApiTeacherStub
+
+Dependency-free placeholder for a future admitted external service.
+
+The two external stubs refuse execution until configured/admitted. Default CI
+therefore performs no model download or network generation.
+
+## 5. Provenance and diversity
+
+Every `TeacherCandidate` carries `TeacherProvenance`:
+
+- adapter ID;
+- model/checkpoint reference or deterministic placeholder;
+- template version;
+- generation/settings object;
+- request ID;
+- candidate index;
+- seed.
+
+Candidate IDs are unique within a batch. Multiple candidates are retained in
+order rather than automatically collapsing to one "best" response.
+
+A candidate can be converted to canonical `SourceProvenance`, including a
+content hash and the generation metadata. Licensing remains unresolved until a
+real model/source is admitted; later corpus admission must apply the licensing
+gate.
+
+## 6. Validation
+
+Style and operational validation use distinct protocols.
+
+### Style validation
+
+Examples:
+
+- task/output shape;
+- persona constraints;
+- forbidden disclosure detection;
+- later repetition or lexical-quality checks.
+
+### Operational validation
+
+Examples for later issues:
+
+- proposed entities exist;
+- candidate tactic can map to a legal command;
+- world capabilities support the proposal;
+- proposed factual claims match authoritative state.
+
+If no operational validator is supplied, status is exactly:
+
+```text
+UNVALIDATED
+```
+
+A stylish or structurally valid teacher response therefore cannot silently
+become operational truth.
+
+## 7. Secret discipline
+
+`TeacherRequest` contains an explicit `forbidden_disclosures` list for
+request-scoped values that must not appear in candidate text or payloads.
+
+The deterministic synthetic adapter redacts those strings before generating
+candidate material. `ForbiddenDisclosureValidator` independently checks the
+result surface.
+
+The request also copies its admitted authoritative context on construction.
+Adapters receive the copy, not a World Authority object, so teacher code has no
+direct mutation path into authoritative world state.
+
+Secret IDs may exist in `PersonaSpec`, but actual hidden values should only be
+provided to a teacher when the experiment explicitly requires them.
+
+## 8. Model-selection boundary
+
+Sprocket 500M remains an example/high-interest possible Creative Teacher because
+of its observed persistent and surprising persona behaviour. It is **not** a
+dependency or selected model.
+
+The same applies to Liquid, Qwen, Gemma/NPC and other models in the candidate
+zoo. TTT-011 remains the only model-cast admission gate.
+
+The local/API adapter stubs deliberately use caller-supplied model references
+without selecting a checkpoint.
+
+## 9. Corpus handoff
+
+TTT-007 may consume:
+
+- the original `TeacherRequest`;
+- all generated `TeacherCandidate` variants;
+- candidate provenance/content hashes;
+- style-validation decisions;
+- operational-validation decisions;
+- explicit rejection reasons.
+
+Rejected candidates may remain useful as labelled negative/recovery evidence,
+subject to provenance and licensing rules. They must not be silently converted
+into ordinary supervised targets.
