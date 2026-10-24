@@ -140,7 +140,8 @@ def verify_selected_cuda(
     if cuda.device_count() != 1:
         raise DeviceAdmissionError("worker must expose exactly one admitted CUDA GPU")
     properties = cuda.get_device_properties(0)
-    actual = _uuid(properties.uuid)
+    # torch 2.7 exposes _CUuuid, whose canonical value is its string form.
+    actual = _uuid(str(properties.uuid))
     if actual != expected:
         raise DeviceAdmissionError(
             "actual CUDA GPU UUID differs from the admitted physical device"

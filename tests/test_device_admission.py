@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from types import SimpleNamespace
 
 import pytest
 
@@ -87,6 +88,30 @@ def test_raw_torch_uuid_without_gpu_prefix_can_match_physical_inventory() -> Non
         environment=selected.environment({}),
     )
     assert actual["actual_cuda_uuid"] == TITAN
+
+
+@pytest.mark.parametrize("physical", [TITAN, V100])
+def test_native_torch_uuid_object_preserves_physical_identity(physical: str) -> None:
+    class NativeUUID:
+        def __str__(self) -> str:
+            return physical.removeprefix("GPU-")
+
+    class NativeCuda:
+        def device_count(self) -> int:
+            return 1
+
+        def get_device_properties(self, device: int) -> SimpleNamespace:
+            assert device == 0
+            return SimpleNamespace(uuid=NativeUUID(), name="native torch property")
+
+    environment = GPUSelection.from_uuid(TITAN).environment({})
+    if physical != TITAN:
+        with pytest.raises(DeviceAdmissionError, match="actual CUDA GPU UUID differs"):
+            verify_cuda_environment(cuda=NativeCuda(), environment=environment)
+    else:
+        assert verify_cuda_environment(cuda=NativeCuda(), environment=environment)[
+            "actual_cuda_uuid"
+        ] == TITAN
 
 
 @pytest.mark.parametrize(
