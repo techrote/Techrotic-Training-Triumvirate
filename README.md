@@ -59,6 +59,8 @@ Smoke-test the CLI and deterministic seed plumbing:
 ttt --version
 ttt seed-demo --seed 24301 --count 5
 ttt schema-bundle --pretty
+ttt command-schema --pretty
+ttt world-demo --seed 24301 --turns 24
 ```
 
 See [docs/development.md](docs/development.md) for the supported-Python, dependency and artifact-hygiene policy.
