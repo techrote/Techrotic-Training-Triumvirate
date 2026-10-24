@@ -171,7 +171,7 @@ acknowledgements.
 
 TTT-005 exposes a replaceable `SessionRenderer`. The default deterministic renderer has two commander-facing views:
 
-- canonical structured rendering from `CommanderObservation.to_payload()`;
+- canonical structured rendering from the full versioned `CommanderObservation.to_dict()` envelope;
 - compact deterministic text with stable field order and canonical JSON for facts.
 
 Only the admitted commander observation is rendered. Private World Authority state and evaluation-only annotations are not renderer inputs. ANSI escape sequences, framebuffer rows, terminal copy operations, and any other UI encoding are presentation details rather than canonical state.
