@@ -57,13 +57,14 @@ Smoke-test the CLI and deterministic seed plumbing:
 ```bash
 ttt --version
 ttt seed-demo --seed 24301 --count 5
+ttt schema-bundle --pretty
 ```
 
 See [docs/development.md](docs/development.md) for the supported-Python, dependency and artifact-hygiene policy.
 
 ## Current status
 
-TTT-001 establishes the reproducible package/tooling/CI foundation. After it merges, **TTT-002 / issue #3** is the next sequential programme dependency; TTT-003 and TTT-006 can begin in parallel after TTT-002.
+TTT-001 established the reproducible package/tooling/CI foundation. TTT-002 adds the canonical versioned schema v1 records, strict serialization/hash rules, T0 fixtures and machine-readable schema export. After TTT-002 merges, **TTT-003 / #4 and TTT-006 / #7 are the next parallel wave**.
 
 The initial model cast remains deliberately **UNSELECTED** and is admitted only at TTT-011 / issue #12 after the model-independent command, corpus, recovery, and evaluation foundations exist.
 

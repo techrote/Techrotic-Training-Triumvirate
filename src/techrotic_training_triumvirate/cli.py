@@ -29,6 +29,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     seed_demo.add_argument("--seed", type=int, default=DEFAULT_TEST_SEED)
     seed_demo.add_argument("--count", type=int, default=5)
+
+    schema = subparsers.add_parser(
+        "schema-bundle",
+        help="emit the canonical JSON Schema bundle",
+    )
+    schema.add_argument(
+        "--pretty",
+        action="store_true",
+        help="pretty-print instead of canonical compact JSON",
+    )
     return parser
 
 
@@ -50,6 +60,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                 separators=(",", ":"),
             )
         )
+        return 0
+
+    if args.command == "schema-bundle":
+        from .schemas import schema_bundle
+
+        bundle = schema_bundle()
+        if args.pretty:
+            print(json.dumps(bundle, indent=2, sort_keys=True))
+        else:
+            print(
+                json.dumps(
+                    bundle,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+            )
         return 0
 
     parser.print_help()
