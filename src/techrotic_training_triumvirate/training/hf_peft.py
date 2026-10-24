@@ -32,8 +32,7 @@ class HFTrainingError(RuntimeError):
 
 def _messages(example: MappedExample) -> list[dict[str, str]]:
     return [
-        {"role": item.role, "content": item.content}
-        for item in example.prompt_messages
+        {"role": item.role, "content": item.content} for item in example.prompt_messages
     ]
 
 
@@ -220,9 +219,7 @@ def run_hf_peft_training(
             attention_mask[row_index, :length] = torch.tensor(
                 row["attention_mask"], dtype=torch.long
             )
-            labels[row_index, :length] = torch.tensor(
-                row["labels"], dtype=torch.long
-            )
+            labels[row_index, :length] = torch.tensor(row["labels"], dtype=torch.long)
         return {
             "input_ids": input_ids,
             "attention_mask": attention_mask,
