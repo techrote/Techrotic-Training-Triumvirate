@@ -22,8 +22,7 @@ class StyleValidator(Protocol):
         self,
         candidate: TeacherCandidate,
         request: TeacherRequest,
-    ) -> ValidationDecision:
-        ...
+    ) -> ValidationDecision: ...
 
 
 class OperationalValidator(Protocol):
@@ -94,9 +93,7 @@ class ForbiddenDisclosureValidator:
             }
         )
         disclosed = tuple(
-            secret
-            for secret in request.forbidden_disclosures
-            if secret in surface
+            secret for secret in request.forbidden_disclosures if secret in surface
         )
         if disclosed:
             return ValidationDecision(
