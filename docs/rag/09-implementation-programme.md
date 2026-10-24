@@ -3,12 +3,13 @@
 ## Contents
 
 1. Programme principles — sequencing and merge discipline.
-2. Issue map — TTT-001 through TTT-016 and GitHub numbers.
-3. Execution waves — safe parallelism.
-4. Dependency graph — explicit blockers.
-5. Model-selection gate — where owner choice enters.
-6. Expensive-work gate — what must exist before training campaigns.
-7. Completion target — what the programme delivers.
+2. Current implementation status — completed waves and immediately ready work.
+3. Issue map — TTT-001 through TTT-016, GitHub numbers and state.
+4. Execution waves — safe parallelism.
+5. Dependency graph — explicit blockers.
+6. Model-selection gate — where owner choice enters.
+7. Expensive-work gate — what must exist before training campaigns.
+8. Completion target — what the programme delivers.
 
 Programme tracker: #1.
 
@@ -22,28 +23,49 @@ Each TTT issue is a merge-sized unit with a self-contained agent prompt. It must
 
 Issues should be executed from current `main`; agents must reconcile work merged by parallel branches.
 
-## 2. Issue map
+## 2. Current implementation status
 
-| ID | Issue | Deliverable |
-|---|---:|---|
-| TTT-001 | #2 | Repository/package bootstrap, deterministic dev tooling and CI |
-| TTT-002 | #3 | Versioned canonical schemas for scenarios, observations, episodes, provenance |
-| TTT-003 | #4 | Typed command IR, deterministic interpreter, stable error taxonomy |
-| TTT-004 | #5 | Framework-neutral abstract battlefield World Authority, procedural scenarios, and optional Concordia host parity |
-| TTT-005 | #6 | LangGraph-backed session/checkpoint/replay orchestration plus console/delta views |
-| TTT-006 | #7 | Model-agnostic creative-teacher/persona mutation subsystem |
-| TTT-007 | #8 | Corpus assembler, validators, provenance, dedup and split discipline |
-| TTT-008 | #9 | Player intercept/telegraph semantic codec and explicit deception model |
-| TTT-009 | #10 | Evaluation harness, frozen generated/handwritten suites and baselines |
-| TTT-010 | #11 | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
-| TTT-011 | #12 | Initial model-cast admission: owner-selected teacher/student candidates, licensing/runtime probes, frozen decision record |
-| TTT-012 | #13 | Reproducible fine-tuning/export harness for the admitted cast |
-| TTT-013 | #14 | Pilot corpus generation and smoke/ablation fine-tunes |
-| TTT-014 | #15 | Closed-loop 20–30 turn commander benchmark and comparative report |
-| TTT-015 | #16 | Runtime export/bridge contract plus reference intercept integration |
-| TTT-016 | #17 | Release/admission package: model/data cards, manifests, benchmarks and reproducibility |
+As of 24 October 2026, **Waves 0–3 are complete**.
 
-## 3. Execution waves
+| Wave | Issues | State | Result |
+|---|---|---|---|
+| 0 | TTT-001 / #2 | Complete | Root package, deterministic tooling and base CI |
+| 1 | TTT-002 / #3 | Complete | Canonical versioned schemas, T0 fixtures and content hashes |
+| 2 | TTT-003 / #4 + TTT-006 / #7 | Complete | Typed command/interpreter layer plus Creative Teacher/persona layer |
+| 3 | TTT-004 / #5 + TTT-008 / #9 | Complete | Deterministic World Authority + grounded player-intercept/deception codec |
+| 4 | TTT-005 / #6 + TTT-007 / #8 + TTT-009 / #10 | **Ready** | Next parallel implementation wave |
+
+Wave 3 merged evidence:
+
+- TTT-004 / #5: merge `ffdffb4d0f877a1fc04ad308d15d66dbef6f0cdd`; Base CI and `World Concordia parity` both green on the final PR head.
+- TTT-008 / #9: merge `a70eb28a39527aeb40b69a2e9543eb54a9212b69`; Base CI green after reconciling onto the merged TTT-004 head.
+- The native World Authority remains the canonical dependency-light execution path. Concordia is optional and parity-checked.
+- Ordinary player intercepts are grounded in real `command-dispatched` events; false tactical messages require explicit authoritative deception events.
+
+Do not start model-specific training merely because the model zoo exists. TTT-011 remains downstream of TTT-007, TTT-009 and TTT-010.
+
+## 3. Issue map
+
+| ID | Issue | State | Deliverable |
+|---|---:|---|---|
+| TTT-001 | #2 | Complete | Repository/package bootstrap, deterministic dev tooling and CI |
+| TTT-002 | #3 | Complete | Versioned canonical schemas for scenarios, observations, episodes, provenance |
+| TTT-003 | #4 | Complete | Typed command IR, deterministic interpreter, stable error taxonomy |
+| TTT-004 | #5 | Complete | Framework-neutral abstract battlefield World Authority, procedural scenarios, and optional Concordia host parity |
+| TTT-005 | #6 | Ready | LangGraph-backed session/checkpoint/replay orchestration plus console/delta views |
+| TTT-006 | #7 | Complete | Model-agnostic creative-teacher/persona mutation subsystem |
+| TTT-007 | #8 | Ready | Corpus assembler, validators, provenance, dedup and split discipline |
+| TTT-008 | #9 | Complete | Player intercept/telegraph semantic codec and explicit deception model |
+| TTT-009 | #10 | Ready | Evaluation harness, frozen generated/handwritten suites and baselines |
+| TTT-010 | #11 | Blocked by #8/#10 | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
+| TTT-011 | #12 | Blocked / model cast unselected | Initial model-cast admission: owner-selected teacher/student candidates, licensing/runtime probes, frozen decision record |
+| TTT-012 | #13 | Blocked by #12 | Reproducible fine-tuning/export harness for the admitted cast |
+| TTT-013 | #14 | Blocked by #13 | Pilot corpus generation and smoke/ablation fine-tunes |
+| TTT-014 | #15 | Blocked by #14 | Closed-loop 20–30 turn commander benchmark and comparative report |
+| TTT-015 | #16 | Blocked by #10/#12 | Runtime export/bridge contract plus reference intercept integration |
+| TTT-016 | #17 | Blocked by #15/#16 | Release/admission package: model/data cards, manifests, benchmarks and reproducibility |
+
+## 4. Execution waves
 
 **Wave 0:** TTT-001 / #2.
 
@@ -67,7 +89,7 @@ Issues should be executed from current `main`; agents must reconcile work merged
 
 **Wave 10:** TTT-016 / #17 after TTT-014/015.
 
-## 4. Dependency graph
+## 5. Dependency graph
 
 ```
 001 -> 002
@@ -88,7 +110,7 @@ Issues should be executed from current `main`; agents must reconcile work merged
 014+015 -> 016
 ```
 
-## 5. Model-selection gate
+## 6. Model-selection gate
 
 No teacher/student lineup is selected in this programme document.
 
@@ -105,7 +127,7 @@ Possible roles to fill:
 
 A role may be "none/deterministic" where appropriate.
 
-## 6. Expensive-work gate
+## 7. Expensive-work gate
 
 Before substantial corpus generation or GPU fine-tuning:
 - TTT-007 corpus validation/provenance is merged;
@@ -116,7 +138,7 @@ Before substantial corpus generation or GPU fine-tuning:
 
 Default CI remains CPU-small and model-download-free.
 
-## 7. Completion target
+## 8. Completion target
 
 Programme completion yields:
 - a deterministic synthetic command world;
