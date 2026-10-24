@@ -1,3 +1,22 @@
+> **Status: RESOLVED / historical handover.**
+>
+> Wave 3 completed on 24 October 2026. The blockers recorded below were fixed and
+> must not be treated as current work instructions.
+>
+> - TTT-004 / #5 merged through PR #27 as
+>   `ffdffb4d0f877a1fc04ad308d15d66dbef6f0cdd`.
+>   Final Base CI and World Concordia parity were green.
+> - TTT-008 / #9 merged through PR #26 as
+>   `a70eb28a39527aeb40b69a2e9543eb54a9212b69`.
+>   Its branch was reconciled onto the merged TTT-004 head and final Base CI was green.
+> - The intercept forbidden-value question was resolved in favor of the documented
+>   visibility-surface contract: forbidden-value refusal applies to fields actually
+>   admitted to the player-visible intercept surface.
+> - Current programme status and next work are authoritative in
+>   `docs/rag/09-implementation-programme.md`.
+>
+> The remainder of this file is retained only as a record of the mid-Wave-3 state.
+
 # 2026-10-24 Wave 3 implementation handover
 
 ## Repository state
