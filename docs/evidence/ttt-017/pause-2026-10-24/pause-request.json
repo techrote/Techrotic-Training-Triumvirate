@@ -1,0 +1,42 @@
+{
+  "requested_at_unix": 1792854786.9462328,
+  "earliest_stop_after_seconds": 600,
+  "hard_pause_after_seconds": 1740,
+  "milestone": "completed three epochs plus canonical training/adapter inventory and exact reload parity, before full evaluation",
+  "fallback": "latest fully written Trainer checkpoint with model/optimizer/RNG state",
+  "worker": {
+    "pid": 32216,
+    "create_time": 1792851769.4452362,
+    "command": [
+      "C:\\Users\\_\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "C:\\cybernpc2\\Techrotic-Training-Triumvirate\\artifacts\\ttt-017\\source-f152cafc59bda5207b8cb1c5ef7d6d60133d1b41\\scripts\\train_commander.py",
+      "--corpus",
+      "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/corpus-v4",
+      "--output",
+      "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/attempt-04",
+      "--git-commit",
+      "f152cafc59bda5207b8cb1c5ef7d6d60133d1b41",
+      "--gpu-uuid",
+      "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8",
+      "--hours",
+      "2",
+      "--epochs",
+      "3",
+      "--frozen",
+      "--worker"
+    ]
+  },
+  "continuation": {
+    "pid": 21260,
+    "create_time": 1792851801.013342,
+    "command": [
+      "C:\\Users\\_\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "-u",
+      "artifacts/ttt-017/continue_qualification_04.py"
+    ]
+  },
+  "training_source": "f152cafc59bda5207b8cb1c5ef7d6d60133d1b41",
+  "driver_source": "8ba6a515f6a163642f945a3786b6b44044a2f2b4",
+  "reporter_source": "c4ce567d59d947d8c07ab98282eafb970e69f12e",
+  "reason": "Explicit owner request to pause in 10-30 minutes; preserve exact continuation state"
+}

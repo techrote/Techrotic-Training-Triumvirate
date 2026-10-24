@@ -21,9 +21,12 @@ class TrainingAdmissionError(ValueError):
     """Raised when a training request violates an admission or budget contract."""
 
 
-def _load_profiles() -> dict[str, Any]:
+def _load_profiles(profile_version: int = 1) -> dict[str, Any]:
+    if type(profile_version) is not int or profile_version not in {1, 2}:
+        raise TrainingAdmissionError("unsupported training profile version")
     raw = (
-        files("techrotic_training_triumvirate.training") / "profiles_v1.json"
+        files("techrotic_training_triumvirate.training")
+        / f"profiles_v{profile_version}.json"
     ).read_text(encoding="utf-8")
     parsed: object = json.loads(raw)
     if not isinstance(parsed, dict):
@@ -113,11 +116,14 @@ def load_training_config(
     *,
     mix: TrainingMix = TrainingMix.JOINT_CORRECTIVE,
     seed: int = 24301,
+    profile_version: int = 1,
 ) -> TrainingConfig:
     """Load the selected model's versioned PEFT profile."""
 
     binding = resolve_model_binding(selector)
-    document = _load_profiles()
+    document = _load_profiles(profile_version)
+    if profile_version == 2 and mix is not TrainingMix.JOINT_CORRECTIVE:
+        raise TrainingAdmissionError("repair profile admits only joint+corrective")
     if document.get("schema_version") != 1:
         raise TrainingAdmissionError("unsupported training profile schema version")
     profiles = document.get("profiles")
@@ -140,7 +146,7 @@ def load_training_config(
         raise TrainingAdmissionError("LoRA target_modules must be strings")
 
     return TrainingConfig(
-        profile_version=1,
+        profile_version=profile_version,
         model_key=binding.model_key,
         backend=str(profile["backend"]),
         method=str(profile["method"]),

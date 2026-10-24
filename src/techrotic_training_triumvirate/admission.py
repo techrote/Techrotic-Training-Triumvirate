@@ -659,12 +659,20 @@ def _positive_provenance(
                     "provenance training seed must be a nonnegative integer"
                 )
             try:
+                recorded_config = _object(
+                    generator.get("training_config"),
+                    "provenance training configuration",
+                )
+                profile_version = recorded_config.get("profile_version")
+                if type(profile_version) is not int:
+                    raise ValueError("missing profile version")
                 config = load_training_config(
                     binding.model_key,
                     mix=TrainingMix(
                         _text(metadata.get("variant"), "candidate variant")
                     ),
                     seed=seed,
+                    profile_version=profile_version,
                 )
             except ValueError as exc:
                 raise AdmissionPackageError(

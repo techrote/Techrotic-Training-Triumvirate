@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "profile_version": 2,
+  "admission": "TTT-017 issue41; exact repair recipe recorded before execution in docs/rag/21-commander-repair.md",
+  "profiles": {
+    "lfm2.5-1.2b-instruct": {
+      "backend": "hf-transformers-peft",
+      "method": "lora",
+      "template_strategy": "native-apply-chat-template",
+      "max_sequence_tokens": 2048,
+      "learning_rate": 0.0002,
+      "epochs": 3,
+      "micro_batch_size": 4,
+      "gradient_accumulation_steps": 2,
+      "save_steps": 50,
+      "lora": {"rank": 16, "alpha": 32, "dropout": 0.0, "target_modules": ["all-linear"]},
+      "parity_max_new_tokens": 192
+    }
+  }
+}

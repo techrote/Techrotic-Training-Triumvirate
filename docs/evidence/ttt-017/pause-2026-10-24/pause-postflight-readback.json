@@ -1,0 +1,25 @@
+{
+  "canonical_training_reuse_verified": true,
+  "training_run": "ttt-012-train-export-791d6d18b367582e",
+  "steps": 1473,
+  "epochs": 3.0,
+  "parity_cases": 3,
+  "actual_gpu": {
+    "actual_cuda_name": "NVIDIA TITAN RTX",
+    "actual_cuda_uuid": "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8",
+    "driver_index": null,
+    "identity_verified": true,
+    "name": null,
+    "pci_bus_id": null,
+    "uuid": "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8",
+    "visible_cuda_ordinal": 0
+  },
+  "saved_artifact_count": 9,
+  "paused_utc": "2026-10-24T15:28:28.605431+00:00",
+  "minutes_after_request": 15.360986630121866,
+  "native_evaluation_started": false,
+  "worker_complete_marker": false,
+  "lease_present": false,
+  "continuation_lock_present": false,
+  "resume_action": "Reuse the verified completed adapter for native evaluation; no further SFT required"
+}

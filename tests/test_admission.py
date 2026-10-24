@@ -19,7 +19,7 @@ from techrotic_training_triumvirate.cli import main
 from techrotic_training_triumvirate.schemas import JsonObject, canonical_json
 
 
-def _positive_package(root: Path) -> JsonObject:
+def _positive_package(root: Path, *, profile_version: int = 1) -> JsonObject:
     """Synthetic positive evidence tests validation, never model qualification."""
     from techrotic_training_triumvirate.evaluation import (
         PolicyIdentity,
@@ -45,7 +45,11 @@ def _positive_package(root: Path) -> JsonObject:
     # Entirely synthetic fixture records exercise readback contracts; these are
     # never published as actual training, hardware, human or model-quality evidence.
     binding = resolve_model_binding("primary")
-    config = load_training_config("primary", mix=TrainingMix.JOINT)
+    config = load_training_config(
+        "primary",
+        profile_version=profile_version,
+        mix=TrainingMix.JOINT if profile_version == 1 else TrainingMix.JOINT_CORRECTIVE,
+    )
     dataset = DatasetIdentity("d" * 64, "e" * 64, (("fixture.jsonl", "f" * 64),), {})
     parity = {
         "schema_version": 1,
@@ -118,7 +122,7 @@ def _positive_package(root: Path) -> JsonObject:
                 ClosedFixture(),
                 code_revision="a" * 40,
                 candidate_metadata={
-                    "variant": "joint",
+                    "variant": config.mix.value,
                     "substantive": True,
                     "base_checkpoint": binding.to_object(),
                     "dataset_hash": dataset.dataset_hash,
@@ -168,6 +172,20 @@ def _positive_package(root: Path) -> JsonObject:
         package["evidence"].append(evidence_reference(root, name, kind=kind))
         candidate["evidence_refs"].append(name)
     return package
+
+
+def test_registered_repair_profile_has_the_same_positive_evidence_gates(
+    tmp_path: Path,
+) -> None:
+    package = _positive_package(tmp_path, profile_version=2)
+    path = tmp_path / "repair-package.json"
+    write_package(path, package, evidence_root=tmp_path)
+    assert verify_package(path, evidence_root=tmp_path)["outcome"] == "ADMITTED"
+    run = load_package(tmp_path / "training-run.json")
+    run["payload"]["generator_config"]["training_config"]["epochs"] = 2
+    _replace_evidence(tmp_path, package, "training-run.json", run)
+    with pytest.raises(AdmissionPackageError, match="configuration mismatch"):
+        write_package(path, package, evidence_root=tmp_path)
 
 
 def _replace_evidence(
