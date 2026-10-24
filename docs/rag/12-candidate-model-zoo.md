@@ -12,17 +12,20 @@
 
 ## 1. Status
 
-This document records the current **candidate characterization shelf** for the first small-model phase.
+This document records the **candidate characterization shelf** that fed the first small-model decision.
 
-It is **not** a model-cast admission.
+It is **not** an admission source. TTT-011 / issue #12 has now selected and
+frozen the initial cast; the authoritative record is
+[11-model-cast-admission.md](11-model-cast-admission.md) plus the committed
+machine-readable model-cast manifest.
 
-- No model listed here is selected as a production/runtime model.
-- No model listed here is selected as an authoritative teacher.
-- TTT-011 / issue #12 remains the formal selection/admission gate.
-- Exact repository revisions, licenses, GGUF filenames, hashes, context settings, runtime backends and training-use disposition must still be verified during TTT-011.
-- No downloads or training are authorized merely by this document.
+- A model is not selected merely because it appears in this shelf.
+- TTT-011 selected Sprocket 500M, LFM2.5-1.2B-Instruct and Qwen3.5-4B for explicit roles after reviewing characterization/provenance evidence.
+- Exact admitted repositories, revisions, artifacts, hashes, licensing dispositions and runtime paths are recorded by TTT-011, not by the planning estimates below.
+- Remaining entries stay challenger/quarantine candidates unless a later admission change explicitly promotes them.
+- No substantial training is authorized merely by this document or by model admission.
 
-The immediate goal is to compare small models cheaply and empirically before selecting the first training cast.
+The shelf remains useful as the historical comparison space for later ablations and challengers.
 
 ## 2. Candidate shelf
 
@@ -60,7 +63,10 @@ For Qwen3.5-4B, Qwen-3B-Intent-Microplan-v2, Gemma4NPC-E2B and Gemma3NPC variant
 
 ### Deliberately outside the ~20 GB accounting
 
-**Sprocket 500M** remains a high-interest creative-teacher/reference candidate because of its observed spontaneous persona behaviour, but it is not counted in this shelf until a current usable inference artifact/revision is explicitly admitted.
+**Sprocket 500M** was deliberately outside the original shelf accounting. TTT-011
+subsequently admitted a hash-pinned native checkpoint and tool-capable Q4_K_M
+GGUF for the creative-teacher/reference role; that admission does not alter the
+historical ~20 GB shelf total.
 
 Larger teacher/editor candidates such as LFM2.5-24B-A2B, Ornith/Qwen MoEs, 9B creative tunes and 20B–35B editors remain later-phase options. The first phase intentionally prioritizes fast iteration.
 
@@ -131,7 +137,9 @@ A useful common qualitative test is to give every model the same "cyber-mechanic
 
 ## 5. Tentative roles and shortlist logic
 
-These are hypotheses only.
+These are the pre-admission hypotheses that informed TTT-011. They are retained
+for provenance but are superseded by the selected roles in
+`11-model-cast-admission.md`.
 
 ### Likely creative/reference models
 
@@ -158,7 +166,8 @@ If characterization supports them, the first native-weight fine-tuning compariso
 
 LFM2.5-8B-A1B may displace one of these if its MoE runtime and fine-tuning path are sufficiently practical.
 
-TTT-011 must replace these hypotheses with evidence-backed selections.
+TTT-011 replaced these hypotheses with evidence-backed selections; later cast
+changes must update the admission record rather than silently editing this shelf.
 
 ## 6. Overall experimental plan
 
@@ -229,6 +238,9 @@ Only after the small-model pipeline works should the programme consider larger/l
 
 The ~20 GB target is an **inference/behavioural-characterization GGUF shelf**.
 
-GGUFs are not assumed to be the artifacts used for fine-tuning. Once finalists are selected, TTT-011/TTT-012 must identify and acquire the exact native checkpoints required by the chosen training method. Native weights, optimizer states, adapters and generated corpora will require additional storage and possibly substantially more VRAM/RAM.
+GGUFs are not assumed to be the artifacts used for fine-tuning. TTT-011 records the exact native checkpoint identities for the admitted initial
+cast. TTT-012 must consume those identities when proving the chosen training and
+export path; native weights, optimizer states, adapters and generated corpora
+will require additional storage and possibly substantially more VRAM/RAM.
 
 The shelf therefore controls the cost of **initial exploration**, not the eventual total training footprint.
