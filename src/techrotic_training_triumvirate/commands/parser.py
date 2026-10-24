@@ -4,11 +4,8 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import cast
-
 from techrotic_training_triumvirate.schemas import CommandEnvelope, JsonObject
 from techrotic_training_triumvirate.schemas.base import (
-    JsonValue,
     require_exact_keys,
     require_int,
     require_json_object,
@@ -264,6 +261,6 @@ def parse_model_command(
     envelope = CommandEnvelope(
         command_id=command_id,
         protocol_version=protocol_version,
-        body=cast(dict[str, JsonValue], body),
+        body=body,
     )
     return parse_command_envelope(envelope)
