@@ -8,6 +8,7 @@ through the stdlib tiny backend without downloading a model.
 from __future__ import annotations
 
 import gc
+import hashlib
 import importlib
 import json
 from pathlib import Path
@@ -128,6 +129,42 @@ def run_hf_peft_training(
     if not train_examples:
         raise HFTrainingError("no training-split examples are available")
 
+    root = Path(output_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    identity_payload: JsonObject = {
+        "model_binding": binding.to_object(),
+        "training_config": config.to_object(),
+        "dataset_identity": dataset.to_object(),
+        "backend": config.backend,
+    }
+    training_identity = hashlib.sha256(
+        canonical_json(identity_payload).encode()
+    ).hexdigest()
+    identity_path = root / "training-identity.json"
+    identity_record: JsonObject = {
+        "schema_version": 1,
+        "training_identity": training_identity,
+        **identity_payload,
+    }
+    if identity_path.exists():
+        parsed_identity: object = json.loads(identity_path.read_text(encoding="utf-8"))
+        if not isinstance(parsed_identity, dict):
+            raise HFTrainingError("existing training identity file is malformed")
+        if parsed_identity.get("training_identity") != training_identity:
+            raise HFTrainingError(
+                "output/resume directory belongs to a different model/config/dataset"
+            )
+    elif resume_from_checkpoint is not None:
+        raise HFTrainingError(
+            "resume requires the TTT training-identity.json from the original run"
+        )
+    else:
+        identity_path.write_text(
+            f"{canonical_json(identity_record)}\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+
     try:
         torch = importlib.import_module("torch")
         transformers = importlib.import_module("transformers")
@@ -211,7 +248,6 @@ def run_hf_peft_training(
     )
     model = peft.get_peft_model(model, lora_config)
 
-    root = Path(output_dir)
     trainer_dir = root / "checkpoints"
     adapter_dir = root / "adapter"
     trainer_dir.mkdir(parents=True, exist_ok=True)
@@ -300,7 +336,10 @@ def run_hf_peft_training(
         newline="\n",
     )
 
-    artifact_hashes: JsonObject = {"parity.json": sha256_file(parity_path)}
+    artifact_hashes: JsonObject = {
+        "parity.json": sha256_file(parity_path),
+        "training-identity.json": sha256_file(identity_path),
+    }
     for path in sorted(adapter_dir.rglob("*")):
         if path.is_file():
             artifact_hashes[str(path.relative_to(root))] = sha256_file(path)
@@ -326,6 +365,7 @@ def run_hf_peft_training(
         ),
         extra_runtime={
             "resume_from_checkpoint": resume_from_checkpoint,
+            "training_identity": training_identity,
             "parity_passed": True,
         },
     )
