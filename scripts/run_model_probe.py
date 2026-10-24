@@ -123,6 +123,7 @@ def chat(
     seed: int,
     temperature: float,
     max_tokens: int,
+    chat_template_kwargs: dict[str, Any] | None = None,
 ) -> tuple[str, float, int | None, float | None]:
     payload: dict[str, Any] = {
         "messages": messages,
@@ -131,6 +132,8 @@ def chat(
         "max_tokens": max_tokens,
         "stream": False,
     }
+    if chat_template_kwargs:
+        payload["chat_template_kwargs"] = chat_template_kwargs
     started = time.perf_counter()
     response = json_request(f"{base_url}/v1/chat/completions", payload)
     wall = time.perf_counter() - started
@@ -146,6 +149,7 @@ def measure_ttft(
     base_url: str,
     *,
     seed: int,
+    chat_template_kwargs: dict[str, Any] | None = None,
 ) -> tuple[float | None, str]:
     payload: dict[str, Any] = {
         "messages": [
@@ -159,6 +163,8 @@ def measure_ttft(
         "max_tokens": 8,
         "stream": True,
     }
+    if chat_template_kwargs:
+        payload["chat_template_kwargs"] = chat_template_kwargs
     request = urllib.request.Request(
         f"{base_url}/v1/chat/completions",
         data=json.dumps(payload).encode(),
@@ -273,6 +279,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         raise RuntimeError(f"unknown admitted model key: {args.model_key}")
     model = models[args.model_key]
     inference = model["inference"]
+    raw_chat_template_kwargs = inference.get("probe_chat_template_kwargs", {})
+    if not isinstance(raw_chat_template_kwargs, dict):
+        raise RuntimeError("probe_chat_template_kwargs must be an object")
+    chat_template_kwargs: dict[str, Any] = dict(raw_chat_template_kwargs)
 
     model_path = Path(args.model_file)
     expected_hash = inference["artifact_sha256"]
@@ -343,6 +353,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                     seed=sample_seed,
                     temperature=temperature,
                     max_tokens=token_limit,
+                    chat_template_kwargs=chat_template_kwargs,
                 )
                 rss_samples.append(observed_rss(process))
                 observed_tps = (
@@ -501,7 +512,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                     {"seed": int(diversity_seed), "output": text}
                 )
 
-            ttft, ttft_text = measure_ttft(base_url, seed=seed)
+            ttft, ttft_text = measure_ttft(
+                base_url,
+                seed=seed,
+                chat_template_kwargs=chat_template_kwargs,
+            )
             rss_samples.append(observed_rss(process))
 
             observed_rates = [
@@ -533,6 +548,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                     "structured_temperature": 0.0,
                     "diversity_temperature": defaults["diversity_temperature"],
                     "diversity_seeds": defaults["diversity_seeds"],
+                    "chat_template_kwargs": chat_template_kwargs,
                 },
                 "runtime": {
                     "engine": "llama.cpp",

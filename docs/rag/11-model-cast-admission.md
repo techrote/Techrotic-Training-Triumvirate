@@ -101,8 +101,10 @@ inference and instruction following.
     `25082a7dd3776cc3c741c6347d3bd04523f05796607b3fbc32fa3a25dfa1418c`
   - size: 2,707,513,696 bytes.
 - Tokenizer/chat/tool format: Qwen3.5 chat template, optional thinking and
-  tool-call surface. TTT probes are text-only and do not require the vision
-  projector.
+  tool-call surface. TTT probes are text-only, do not require the vision
+  projector, and set `chat_template_kwargs.enable_thinking=false` so the
+  bounded behavioral token budget measures direct/instruct output rather than
+  consuming the budget in the hidden reasoning channel.
 - Supported paths: Transformers, vLLM, SGLang and llama.cpp.
 - License: Apache-2.0.
 
@@ -163,7 +165,11 @@ not completed its merge gate.
 
 Behavioural probe failure is evidence, not grounds to alter or cherry-pick the
 output. TTT-011 may reject or reclassify a candidate from complete evidence,
-but it must preserve the failed output.
+but it must preserve the failed output. The first Qwen3.5 run used its default
+thinking mode and exhausted the short token budget before emitting direct
+content; that complete attempt is retained under
+`qwen3.5-4b-probe-thinking-default.json` with its matching historical summary
+and run binding before the documented non-thinking probe is evaluated.
 
 ## Budget
 
