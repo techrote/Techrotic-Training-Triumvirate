@@ -67,7 +67,7 @@ See [docs/development.md](docs/development.md) for the supported-Python, depende
 
 ## Current status
 
-**Programme Waves 0–3 are complete.**
+**Programme Waves 0–3 are complete; Wave 4 is in progress.**
 
 Merged foundations now include:
 
@@ -75,10 +75,12 @@ Merged foundations now include:
 - TTT-002 / #3 — canonical versioned schemas, T0 fixtures and content hashing;
 - TTT-003 / #4 — `ttt-command-v1`, strict typed command parsing and deterministic admission;
 - TTT-004 / #5 — framework-neutral deterministic World Authority, replay, delayed execution failures, visibility projections and optional Concordia parity host;
+- TTT-005 / #6 — optional LangGraph-backed semantic sessions with deterministic structured/text/delta views, hash-verified recording/replay, and historical correction branches;
 - TTT-006 / #7 — model-agnostic persona mutation and Creative Teacher adapters;
+- TTT-007 / #8 — validated deterministic corpus assembly, provenance/license quarantine, deduplication and leak-safe split discipline;
 - TTT-008 / #9 — grounded player intercepts, deterministic doctrine/visibility policies and explicit deception broadcasts.
 
-**Wave 4 is now unblocked.** TTT-005 / #6, TTT-007 / #8 and TTT-009 / #10 may proceed in parallel according to the dependency rules in `docs/rag/09-implementation-programme.md`.
+**Wave 4 is in progress.** TTT-005 / #6 and TTT-007 / #8 are complete; TTT-009 / #10 remains ready according to the dependency rules in `docs/rag/09-implementation-programme.md`.
 
 The initial model cast remains deliberately **UNSELECTED**. Model admission stays gated at TTT-011 / issue #12 after corpus, evaluation and corrective-rollout infrastructure is complete.
 
@@ -90,6 +92,8 @@ Architecture decisions now implemented in production code:
 - **Concordia** remains an optional richer simulation/Game-Master host, with the native TTT World Authority retained as the canonical dependency-light path.
 
 The native abstract World Authority is available through `ttt world-demo --seed 24301 --turns 24`. Player tactical telegraphs are produced by the grounded `InterceptEncoder` from authoritative dispatch/deception events.
+
+The session layer remains optional at install time. Use `python -m pip install -e ".[dev,session]"` to exercise the LangGraph checkpoint/branch/replay backend; semantic rendering and recording remain separated from LangGraph so the World Authority is directly testable without it.
 
 ## Core rule
 

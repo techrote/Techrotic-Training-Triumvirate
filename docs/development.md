@@ -27,6 +27,16 @@ python -m pytest tests/test_world_concordia.py
 
 The optional group pins `gdm-concordia==2.4.0`, matching the admitted architecture spike.
 
+TTT-005 keeps LangGraph optional so the native World Authority remains dependency-free.
+Install and exercise the session/checkpoint integration with:
+
+```bash
+python -m pip install -e ".[dev,session]"
+python -m pytest tests/test_session_rendering.py tests/test_session_langgraph.py
+```
+
+The `session` extra pins `langgraph==1.2.17`, matching SPIKE-LG-001.
+
 ## Canonical checks
 
 Run each check from the repository root:

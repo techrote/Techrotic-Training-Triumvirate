@@ -202,6 +202,31 @@ Recommended tiers:
 
 A run manifest records which tiers were used.
 
+### TTT-007 corpus assembly
+
+TTT-007 implements T0-T3 as derived corpus artifacts under
+`techrotic_training_triumvirate.corpus`. Canonical episode v1 remains the
+authoritative archive format; corpus examples do not redefine world truth.
+
+Each supervised example contains:
+
+- admitted commander observation, commander-private context and persona in the input;
+- optional prior rejected action plus authoritative feedback for recovery examples;
+- only student emissions in the target: command envelopes and allowed communications;
+- source provenance IDs, tier, scenario/family identity and split identity.
+
+Rejected commands are retained as failure/recovery context but are not emitted as
+ordinary supervised targets. Environment results, next-state observations and
+authoritative events never appear in the target.
+
+Splitting is deterministic and scenario-family-aware. A configured frozen scenario
+ID or family is routed only to `frozen_eval`; turns from one episode are never
+randomly divided among partitions.
+
+Exact episode hashes and normalized near-exact fingerprints are both checked before
+admission. Duplicates are quarantined rather than silently crossing train/dev.
+
+
 ## 8. Canonical JSON and hashes
 
 `SchemaRecord.to_json()` uses:
