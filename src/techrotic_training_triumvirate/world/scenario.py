@@ -22,7 +22,6 @@ from .model import (
     WorldBlueprint,
 )
 
-
 SCENARIO_GENERATOR_VERSION = "abstract-world-v1"
 
 
@@ -87,8 +86,9 @@ class ScenarioGenerator:
         self,
         *,
         seed: int,
-        config: ScenarioConfig = ScenarioConfig(),
+        config: ScenarioConfig | None = None,
     ) -> WorldBlueprint:
+        config = config or ScenarioConfig()
         rng = seeded_rng(seed)
         archetypes = default_archetypes()
         objective_id = "relay-east"
@@ -158,16 +158,11 @@ class ScenarioGenerator:
                 )
             )
 
-        objective_status = (
-            ObjectiveStatus.CONTESTED
-            if not config.mid_state
-            else ObjectiveStatus.CONTESTED
-        )
         objectives = (
             ObjectiveSeed(
                 objective_id=objective_id,
                 zone_id="relay-zone",
-                status=objective_status,
+                status=ObjectiveStatus.CONTESTED,
             ),
         )
 
