@@ -23,6 +23,7 @@ from techrotic_training_triumvirate.schemas import (
 )
 from techrotic_training_triumvirate.schemas.fixtures import (
     t0_episode,
+    t0_normal_turn,
     t0_recovery_turn,
     t0_source_provenance,
 )
@@ -172,3 +173,33 @@ def test_external_t3_recovery_context_routes_through_corpus_validation() -> None
     target = canonical_json(example.target)
     assert "interpreter_results" not in target
     assert "world_events" not in target
+
+
+def test_external_recovery_without_authoritative_failure_is_quarantined() -> None:
+    accepted = t0_normal_turn()
+    source = CorpusSource(
+        episode=t0_episode(),
+        tier=CorpusTier.T3,
+        provenance=(t0_source_provenance(),),
+        recovery_contexts=(
+            RecoveryContext(
+                turn_id=0,
+                attempt_id="attempt-invalid",
+                prior_action=accepted.assistant_action,
+                interpreter_results=accepted.interpreter_results,
+                world_events=accepted.world_events,
+                oracle_id="oracle-test-v1",
+                parent_run_id="student-run-invalid",
+                parent_branch_id="main",
+                parent_turn_hash="b" * 64,
+            ),
+        ),
+    )
+
+    build = assemble_corpus((source,), config=CorpusConfig(dev_percent=0))
+
+    assert not build.examples
+    assert build.quarantine
+    assert {
+        issue.code for item in build.quarantine for issue in item.issues
+    } == {"RECOVERY_MALFORMED"}
