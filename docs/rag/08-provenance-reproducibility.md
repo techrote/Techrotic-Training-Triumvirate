@@ -109,3 +109,27 @@ TTT-005 session recordings bind semantic turns to:
 LangGraph thread/checkpoint IDs may be retained as supplementary orchestration references, but they are deliberately excluded from semantic identity. Two runs with different checkpoint IDs must still compare equal when their TTT semantic records are equal.
 
 Readback verification is fail-closed: altered stored hashes, broken delta reconstruction, scenario regeneration drift, turn discontinuity, or replay hash mismatch are errors rather than best-effort warnings.
+
+## Corrective rollout evidence
+
+TTT-010 records student-visited repairs as `student-generated-rollout`
+`SourceProvenance` plus a `RunManifest`. The evidence binds:
+
+- student policy ID, adapter ID and revision;
+- deterministic correction-oracle identity;
+- failure category/code and student attempt identity;
+- iteration number and optional parent corrective-run ID;
+- canonical TTT parent branch ID and parent turn hash;
+- corrected episode/session semantic hashes and corpus-manifest hash;
+- the LangGraph correction checkpoint as supplementary orchestration metadata.
+
+The corrected TTT branch/episode remains authoritative corpus identity. LangGraph
+checkpoint IDs do not enter the model-visible recovery input or semantic hashes, so
+separate orchestration instances may produce different checkpoint IDs while retaining
+the same TTT correction and corpus identities.
+
+The original failed branch is retained and independently readable. Alternative
+corrections from one historical state are separate TTT branches with distinct branch
+identities and provenance; iterative corrective rounds link through `parent_run_ids`
+instead of overwriting earlier evidence.
+
