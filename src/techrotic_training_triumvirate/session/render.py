@@ -119,7 +119,10 @@ def compute_delta(
     )
 
 
-def _parent_for_path(root: JsonObject, parts: tuple[str, ...]) -> tuple[JsonObject, str]:
+def _parent_for_path(
+    root: JsonObject,
+    parts: tuple[str, ...],
+) -> tuple[JsonObject, str]:
     if not parts:
         raise ValueError("root path has no parent")
     current = root
