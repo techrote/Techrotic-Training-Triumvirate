@@ -2,19 +2,17 @@
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from collections.abc import Mapping
 import hashlib
 import json
 import math
-from typing import ClassVar, Self, TypeAlias, TypeVar, cast
+from abc import ABC, abstractmethod
+from collections.abc import Mapping
+from typing import ClassVar, Self, cast
 
 
-JsonScalar: TypeAlias = str | int | float | bool | None
-JsonValue: TypeAlias = (
-    JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
-)
-JsonObject: TypeAlias = dict[str, JsonValue]
+type JsonScalar = str | int | float | bool | None
+type JsonValue = JsonScalar | list[JsonValue] | dict[str, JsonValue]
+type JsonObject = dict[str, JsonValue]
 
 
 class SchemaError(ValueError):
@@ -67,11 +65,12 @@ class SchemaRecord(ABC):
         return content_hash(self)
 
 
-RecordT = TypeVar("RecordT", bound=SchemaRecord)
 _RECORD_TYPES: dict[str, type[SchemaRecord]] = {}
 
 
-def register_record(cls: type[RecordT]) -> type[RecordT]:
+def register_record[RecordT: SchemaRecord](
+    cls: type[RecordT],
+) -> type[RecordT]:
     """Register a durable record class by its stable schema name."""
     if not cls.SCHEMA_NAME:
         raise ValueError("schema name must not be empty")
@@ -199,7 +198,7 @@ def require_json_object(value: object, *, field: str) -> JsonObject:
     return normalized
 
 
-def load_record(
+def load_record[RecordT: SchemaRecord](
     value: object,
     *,
     expected_type: type[RecordT] | None = None,
@@ -234,7 +233,7 @@ def load_record(
     return record
 
 
-def loads_record(
+def loads_record[RecordT: SchemaRecord](
     text: str,
     *,
     expected_type: type[RecordT] | None = None,
