@@ -119,7 +119,9 @@ class _DeterministicGameMaster:
                 )
             )
             if not isinstance(rendered, str):
-                raise TypeError("Concordia action_spec_to_string returned non-string data")
+                raise TypeError(
+                    "Concordia action_spec_to_string returned non-string data"
+                )
             return rendered
         if output_value == "resolve":
             return self._resolve()
