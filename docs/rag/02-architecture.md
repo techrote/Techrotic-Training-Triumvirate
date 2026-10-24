@@ -121,6 +121,15 @@ This does not make LangGraph state canonical TTT state. TTT-owned schemas remain
 
 Use LangGraph checkpoints to answer *where/how should execution resume or fork?* Use TTT records to answer *what semantically happened, under which contracts and evidence?*
 
+TTT-005 implements that boundary in `techrotic_training_triumvirate.session`:
+
+- commander rendering consumes only `CommanderObservation` and deterministic `InterpreterResult` records;
+- semantic deltas are derived from full admitted observations and are independently reconstructible;
+- session recordings persist canonical command/action/result/event/observation records plus TTT content hashes and explicit branch lineage;
+- LangGraph checkpoint IDs are stored only as supplementary orchestration references and are excluded from session semantic identity;
+- historical correction uses LangGraph `update_state`/checkpoint replay while the original checkpoint remains independently readable;
+- the World Authority remains directly callable and testable without importing LangGraph.
+
 Spike evidence and tested implementation: `docs/spikes/langgraph-checkpoint-branch-replay.md`.
 
 ### Optional simulation substrate
