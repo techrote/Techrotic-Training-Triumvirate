@@ -131,11 +131,12 @@ without an explicit new benchmark version/hash fails closed.
 ### Training/corrective-corpus guard
 
 `frozen_evaluation_guard()` returns the exact family/seed reservation set.
-TTT-007 corpus admission and TTT-010 corrective rollout code must call
-`assert_training_allowed(family=..., seed=...)` before admitting generated
-or student-visited cases. Frozen evaluation failures are evaluation evidence
-only; they are not eligible training examples under the same family/seed
-identity.
+TTT-007 corpus assembly consumes it automatically: matching cases are forced to
+`frozen_eval`, and the corpus manifest records the benchmark ID, version and
+content hash that supplied the reservation. TTT-010 corrective rollout code must
+call `assert_training_allowed(family=..., seed=...)` before admitting generated
+or student-visited cases. Frozen evaluation failures are evaluation evidence only;
+they are not eligible training examples under the same family/seed identity.
 
 ### Metrics and reporting
 
