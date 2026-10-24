@@ -90,6 +90,16 @@ def write_completion_marker(
         "inventory_sha256": content_hash(inventory),
     }
     marker = root / "COMPLETE.json"
+    if marker.exists():
+        existing = verify_completion_marker(
+            root,
+            stage_id=stage_id,
+            evidence_class=evidence_class,
+        )
+        if existing != record:
+            raise CompletionMarkerError("existing completion marker differs")
+        return existing
+
     temporary = root / f".COMPLETE.{os.getpid()}.tmp"
     try:
         with temporary.open("w", encoding="utf-8", newline="\n") as handle:

@@ -86,6 +86,13 @@ def test_completion_marker_fails_closed_on_corrupt_or_missing_artifact(
 
     artifact.write_bytes(b"corrupt")
     with pytest.raises(CompletionMarkerError, match="hash differs"):
+        write_completion_marker(
+            tmp_path,
+            stage_id=stage_id,
+            artifact_names=("adapter.bin",),
+            evidence_class=EvidenceClass.SIMULATION,
+        )
+    with pytest.raises(CompletionMarkerError, match="hash differs"):
         verify_completion_marker(
             tmp_path,
             stage_id=stage_id,
