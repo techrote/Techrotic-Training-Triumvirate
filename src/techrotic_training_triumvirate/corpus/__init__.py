@@ -11,6 +11,7 @@ from .model import (
     CorpusSplit,
     CorpusTier,
     QuarantinedSource,
+    RecoveryContext,
     TeacherEnrichment,
 )
 
@@ -24,6 +25,7 @@ __all__ = [
     "CorpusSplit",
     "CorpusTier",
     "QuarantinedSource",
+    "RecoveryContext",
     "TeacherEnrichment",
     "assemble_corpus",
     "validate_source",
