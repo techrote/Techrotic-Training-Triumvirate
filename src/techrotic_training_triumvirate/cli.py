@@ -91,6 +91,10 @@ def build_parser() -> argparse.ArgumentParser:
     runtime_demo.add_argument("--seed", type=int, default=DEFAULT_TEST_SEED)
     runtime_demo.add_argument("--turns", type=int, default=4)
     runtime_demo.add_argument("--output", type=Path)
+
+    from .experiments.cli import add_experiments_parser
+
+    add_experiments_parser(subparsers)
     return parser
 
 
@@ -98,6 +102,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Run the TTT developer CLI."""
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    if args.command == "experiments":
+        from .experiments.cli import run_experiments
+
+        return run_experiments(args, parser)
 
     if args.command == "runtime-demo":
         from .runtime import run_runtime_demo
