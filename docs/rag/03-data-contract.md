@@ -229,6 +229,35 @@ Exact episode hashes and normalized near-exact fingerprints are both checked bef
 admission. Duplicates are quarantined rather than silently crossing train/dev.
 
 
+### TTT-010 student-visited corrective sources
+
+TTT-010 extends T3 without changing the canonical episode-v1 schema. A corrected
+LangGraph fork is materialized as an ordinary canonical TTT episode. The failed
+student branch remains separate and independently readable.
+
+A T3 `RecoveryContext` binds one corrected episode turn to:
+
+- the student's original failed `AssistantAction`;
+- authoritative `InterpreterResult` feedback and world events from that attempt;
+- correction/oracle identity;
+- parent run ID and TTT parent branch/turn semantic hash.
+
+Only the failed action and authoritative feedback/events enter the model-visible
+`prior_failure` input. Oracle identity, parent-run/branch lineage and optional
+LangGraph checkpoint references remain provenance, not student input. The target is
+still only the corrected student emission.
+
+When explicit TTT-010 recovery contexts are present, the assembler emits only the
+corrected turns as supervised examples. It validates that the source is T3, the
+failed context contains authoritative failure evidence, and the corrected turn is
+admissible. The normal TTT-007 provenance, visibility, protocol, deduplication and
+split validators still run.
+
+TTT-010 must call the TTT-009 frozen-evaluation guard before rollout. Frozen
+family/seed identities are refused rather than converted into T3, even though the
+generic corpus assembler can represent frozen-evaluation partitions.
+
+
 ## 8. Canonical JSON and hashes
 
 `SchemaRecord.to_json()` uses:

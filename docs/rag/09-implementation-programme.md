@@ -25,7 +25,7 @@ Issues should be executed from current `main`; agents must reconcile work merged
 
 ## 2. Current implementation status
 
-As of 24 October 2026, **Waves 0–3 are complete and Wave 4 is in progress**. TTT-005 / #6 and TTT-007 / #8 are complete; TTT-009 / #10 remains ready.
+As of 24 October 2026, **Waves 0–5 are complete in this change**. TTT-009 / #10 is merged, and TTT-010 / #11 supplies the student-visited corrective rollout/corpus layer. Wave 6 is the deliberate model-cast admission gate.
 
 | Wave | Issues | State | Result |
 |---|---|---|---|
@@ -33,7 +33,8 @@ As of 24 October 2026, **Waves 0–3 are complete and Wave 4 is in progress**. T
 | 1 | TTT-002 / #3 | Complete | Canonical versioned schemas, T0 fixtures and content hashes |
 | 2 | TTT-003 / #4 + TTT-006 / #7 | Complete | Typed command/interpreter layer plus Creative Teacher/persona layer |
 | 3 | TTT-004 / #5 + TTT-008 / #9 | Complete | Deterministic World Authority + grounded player-intercept/deception codec |
-| 4 | TTT-005 / #6 + TTT-007 / #8 + TTT-009 / #10 | **In progress** | TTT-005 and TTT-007 complete; TTT-009 remains ready |
+| 4 | TTT-005 / #6 + TTT-007 / #8 + TTT-009 / #10 | Complete | Session, corpus and frozen model-agnostic evaluation foundation |
+| 5 | TTT-010 / #11 | Complete in this change | LangGraph-backed student-visited correction branches and validated T3 recovery corpus |
 
 Wave 3 merged evidence:
 
@@ -42,10 +43,15 @@ Wave 3 merged evidence:
 - The native World Authority remains the canonical dependency-light execution path. Concordia is optional and parity-checked.
 - Ordinary player intercepts are grounded in real `command-dispatched` events; false tactical messages require explicit authoritative deception events.
 
-Wave 4 progress:
+Wave 4 merged evidence:
 
 - TTT-005 / #6: PR #30 implements optional LangGraph-backed session checkpoint/history/replay, deterministic structured/text/delta rendering, hash-verified session recording, and non-mutating historical correction branches.
 - TTT-007 / #8: PR #29 implements deterministic T0–T3 corpus assembly, provenance/license quarantine, schema/protocol and leakage validators, exact/near deduplication, family-aware train/dev splits, frozen-evaluation isolation, recovery context and content-addressed JSONL/manifest output.
+- TTT-009 / #10: PR #31 implements the frozen generated/adversarial evaluation suite, deterministic StudentAdapter baselines, recovery/leakage metrics and immutable family/seed training guard.
+
+Wave 5 result:
+
+- TTT-010 / #11 adds deterministic scripted/replay students, failure categorization, simulator-oracle repair, historical LangGraph correction forks, branch-preserving T3 recovery examples, multiple alternatives, iterative parent-run lineage and fail-closed frozen-evaluation refusal.
 
 Do not start model-specific training merely because the model zoo exists. TTT-011 remains downstream of TTT-007, TTT-009 and TTT-010.
 
@@ -61,13 +67,13 @@ Do not start model-specific training merely because the model zoo exists. TTT-01
 | TTT-006 | #7 | Complete | Model-agnostic creative-teacher/persona mutation subsystem |
 | TTT-007 | #8 | Complete | Corpus assembler, validators, provenance, dedup and split discipline |
 | TTT-008 | #9 | Complete | Player intercept/telegraph semantic codec and explicit deception model |
-| TTT-009 | #10 | Ready | Evaluation harness, frozen generated/handwritten suites and baselines |
-| TTT-010 | #11 | Blocked by #10 | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
-| TTT-011 | #12 | Blocked / model cast unselected | Initial model-cast admission: owner-selected teacher/student candidates, licensing/runtime probes, frozen decision record |
+| TTT-009 | #10 | Complete | Evaluation harness, frozen generated/handwritten suites and baselines |
+| TTT-010 | #11 | Complete in this change | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
+| TTT-011 | #12 | Ready for owner model-cast decision | Initial model-cast admission: owner-selected teacher/student candidates, licensing/runtime probes, frozen decision record |
 | TTT-012 | #13 | Blocked by #12 | Reproducible fine-tuning/export harness for the admitted cast |
 | TTT-013 | #14 | Blocked by #13 | Pilot corpus generation and smoke/ablation fine-tunes |
 | TTT-014 | #15 | Blocked by #14 | Closed-loop 20–30 turn commander benchmark and comparative report |
-| TTT-015 | #16 | Blocked by #10/#12 | Runtime export/bridge contract plus reference intercept integration |
+| TTT-015 | #16 | Blocked by #12 | Runtime export/bridge contract plus reference intercept integration |
 | TTT-016 | #17 | Blocked by #15/#16 | Release/admission package: model/data cards, manifests, benchmarks and reproducibility |
 
 ## 4. Execution waves
@@ -80,11 +86,11 @@ Do not start model-specific training merely because the model zoo exists. TTT-01
 
 **Wave 3:** TTT-004 / #5 after TTT-003; TTT-008 / #9 can run in parallel after TTT-003.
 
-**Wave 4, parallel where practical:** TTT-005 / #6 and TTT-007 / #8 are complete; TTT-009 / #10 remains ready after TTT-003/004 and can consume TTT-005.
+**Wave 4:** TTT-005 / #6, TTT-007 / #8 and TTT-009 / #10 are complete.
 
-**Wave 5:** TTT-010 / #11 after TTT-007/009.
+**Wave 5:** TTT-010 / #11 is complete in this change after TTT-007/009.
 
-**Wave 6:** TTT-011 / #12 after TTT-006/007/009/010. This is the deliberate model-selection gate.
+**Wave 6:** TTT-011 / #12 is dependency-unblocked after TTT-006/007/009/010 and awaits the deliberate owner model-cast decision.
 
 **Wave 7, parallel:** TTT-012 / #13 and TTT-015 / #16 after TTT-011 (TTT-015 also requires TTT-008/009).
 
@@ -121,7 +127,7 @@ No teacher/student lineup is selected in this programme document.
 
 A non-authoritative first-pass ~20 GB small-model characterization shelf is recorded in `12-candidate-model-zoo.md`. It exists to make TTT-011 evidence-driven and **must not be interpreted as admission or download authorization**.
 
-TTT-011 / #12 is blocked until the owner records the initial cast decision in `11-model-cast-admission.md` or its issue. Candidate analysis may precede the final decision, but implementation must not silently choose a checkpoint.
+TTT-011 / #12 is dependency-unblocked after TTT-010, but execution still waits until the owner records the initial cast decision in `11-model-cast-admission.md` or its issue. Candidate analysis may precede the final decision, but implementation must not silently choose a checkpoint.
 
 Possible roles to fill:
 - creative teacher(s);

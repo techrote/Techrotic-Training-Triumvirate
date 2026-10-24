@@ -138,6 +138,13 @@ call `assert_training_allowed(family=..., seed=...)` before admitting generated
 or student-visited cases. Frozen evaluation failures are evaluation evidence only;
 they are not eligible training examples under the same family/seed identity.
 
+TTT-010 enforces this before the first student action: the generated scenario
+family/seed is checked with `assert_training_allowed`. A collision raises
+`FrozenEvaluationGuardError`; no rollout, correction branch or T3 source is
+admitted. This is stricter than merely routing the resulting corpus to
+`frozen_eval`, because evaluation failures must not be harvested as corrective
+training examples.
+
 ### Metrics and reporting
 
 The CPU-small runner scores mechanical command competence, closed-loop task and

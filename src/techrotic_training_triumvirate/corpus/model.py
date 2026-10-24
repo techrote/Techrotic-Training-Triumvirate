@@ -11,7 +11,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 from techrotic_training_triumvirate.schemas import (
+    AssistantAction,
+    AuthoritativeEvent,
     EpisodeRecord,
+    InterpreterResult,
     JsonObject,
     SourceProvenance,
 )
@@ -53,13 +56,59 @@ class TeacherEnrichment:
 
 
 @dataclass(frozen=True, slots=True)
+class RecoveryContext:
+    """Student-visited failure evidence attached to a corrected branch turn.
+
+    LangGraph checkpoint IDs are intentionally absent here. Orchestration references
+    belong in source provenance metadata and must not alter model-visible corpus
+    identity.
+    """
+
+    turn_id: int
+    attempt_id: str
+    prior_action: AssistantAction
+    interpreter_results: tuple[InterpreterResult, ...]
+    world_events: tuple[AuthoritativeEvent, ...]
+    oracle_id: str
+    parent_run_id: str
+    parent_branch_id: str
+    parent_turn_hash: str
+
+    def __post_init__(self) -> None:
+        if self.turn_id < 0:
+            raise ValueError("recovery context turn_id must be non-negative")
+        for name, value in (
+            ("attempt_id", self.attempt_id),
+            ("oracle_id", self.oracle_id),
+            ("parent_run_id", self.parent_run_id),
+            ("parent_branch_id", self.parent_branch_id),
+            ("parent_turn_hash", self.parent_turn_hash),
+        ):
+            if not value.strip():
+                raise ValueError(f"{name} must not be empty")
+
+    def to_input(self) -> JsonObject:
+        """Return only student-visible failure/correction context."""
+
+        return {
+            "attempt_id": self.attempt_id,
+            "assistant_action": self.prior_action.to_dict(),
+            "interpreter_results": [
+                result.to_dict() for result in self.interpreter_results
+            ],
+            "world_events": [event.to_dict() for event in self.world_events],
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class CorpusSource:
-    """One candidate episode plus its provenance and accepted enrichments."""
+    """One candidate episode plus provenance and accepted enrichments."""
 
     episode: EpisodeRecord
     tier: CorpusTier
     provenance: tuple[SourceProvenance, ...]
     teacher_enrichments: tuple[TeacherEnrichment, ...] = ()
+    recovery_contexts: tuple[RecoveryContext, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

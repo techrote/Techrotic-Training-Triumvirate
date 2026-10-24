@@ -32,10 +32,10 @@ Install and exercise the session/checkpoint integration with:
 
 ```bash
 python -m pip install -e ".[dev,session]"
-python -m pytest tests/test_session_rendering.py tests/test_session_langgraph.py
+python -m pytest tests/test_session_rendering.py tests/test_session_langgraph.py tests/test_recovery.py tests/test_recovery_langgraph.py
 ```
 
-The `session` extra pins `langgraph==1.2.17`, matching SPIKE-LG-001.
+The `session` extra pins `langgraph==1.2.17`, matching SPIKE-LG-001. TTT-010's LangGraph-backed corrective runner also lives behind this optional extra; the recovery adapter/model/oracle contracts remain importable in the dependency-free base package.
 
 ## Canonical checks
 

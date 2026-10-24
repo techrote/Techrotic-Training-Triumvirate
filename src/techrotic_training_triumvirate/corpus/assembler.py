@@ -426,10 +426,85 @@ def _teacher_issues(source: CorpusSource) -> list[CorpusIssue]:
     return issues
 
 
-def _recovery_issues(source: CorpusSource) -> list[CorpusIssue]:
+def _external_recovery_issues(source: CorpusSource) -> list[CorpusIssue]:
     issues: list[CorpusIssue] = []
+    if source.recovery_contexts and source.tier is not CorpusTier.T3:
+        issues.append(
+            CorpusIssue(
+                "TIER_MISMATCH",
+                "explicit recovery contexts are only valid for T3 sources",
+            )
+        )
+
+    turns = {turn.turn_id: turn for turn in source.episode.turns}
+    seen_turns: set[int] = set()
+    for context in source.recovery_contexts:
+        if context.turn_id in seen_turns:
+            issues.append(
+                CorpusIssue(
+                    "RECOVERY_MALFORMED",
+                    f"turn {context.turn_id} has duplicate recovery contexts",
+                )
+            )
+            continue
+        seen_turns.add(context.turn_id)
+        turn = turns.get(context.turn_id)
+        if turn is None:
+            issues.append(
+                CorpusIssue(
+                    "RECOVERY_MALFORMED",
+                    f"recovery context refers to missing turn {context.turn_id}",
+                )
+            )
+            continue
+        if not context.prior_action.commands:
+            issues.append(
+                CorpusIssue(
+                    "RECOVERY_MALFORMED",
+                    f"turn {context.turn_id} recovery context has no prior command",
+                )
+            )
+        has_failure = any(
+            not result.accepted for result in context.interpreter_results
+        ) or any(event.kind == "execution-failed" for event in context.world_events)
+        if not has_failure:
+            issues.append(
+                CorpusIssue(
+                    "RECOVERY_MALFORMED",
+                    (
+                        f"turn {context.turn_id} recovery context lacks authoritative "
+                        "failure feedback"
+                    ),
+                )
+            )
+        if not turn.assistant_action.commands:
+            issues.append(
+                CorpusIssue(
+                    "RECOVERY_MALFORMED",
+                    f"turn {context.turn_id} correction has no command",
+                )
+            )
+        if any(not result.accepted for result in turn.interpreter_results):
+            issues.append(
+                CorpusIssue(
+                    "RECOVERY_MALFORMED",
+                    f"turn {context.turn_id} corrected command was rejected",
+                )
+            )
+        if any(event.kind == "execution-failed" for event in turn.world_events):
+            issues.append(
+                CorpusIssue(
+                    "RECOVERY_MALFORMED",
+                    f"turn {context.turn_id} corrected continuation still failed",
+                )
+            )
+    return issues
+
+
+def _recovery_issues(source: CorpusSource) -> list[CorpusIssue]:
+    issues = _external_recovery_issues(source)
     prior_rejected: set[str] = set()
-    saw_recovery = False
+    saw_recovery = bool(source.recovery_contexts)
     for turn in source.episode.turns:
         label = turn.annotations.labels.get("recovery_of_command_id")
         if label is not None:
@@ -535,9 +610,21 @@ def _examples_for(
 ) -> tuple[CorpusExample, ...]:
     episode = source.episode
     enrichments = _teacher_by_turn(source)
+    external_recovery = {
+        context.turn_id: context for context in source.recovery_contexts
+    }
     examples: list[CorpusExample] = []
     previous: TurnRecord | None = None
     for turn in episode.turns:
+        recovery_context = external_recovery.get(turn.turn_id)
+        if (
+            source.tier is CorpusTier.T3
+            and external_recovery
+            and recovery_context is None
+        ):
+            previous = turn
+            continue
+
         rejected = tuple(
             result for result in turn.interpreter_results if not result.accepted
         )
@@ -551,7 +638,10 @@ def _examples_for(
             "persona": episode.persona.to_dict(),
         }
         mode = "standard"
-        if previous is not None:
+        if recovery_context is not None:
+            mode = "recovery"
+            input_object["prior_failure"] = recovery_context.to_input()
+        elif previous is not None:
             prior_rejected = tuple(
                 result for result in previous.interpreter_results if not result.accepted
             )
