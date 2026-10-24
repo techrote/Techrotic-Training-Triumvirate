@@ -57,10 +57,7 @@ def _boolean(value: object, *, where: str) -> bool:
 
 
 def _exact_keys(
-    value: dict[str, object],
-    expected: set[str],
-    *,
-    where: str,
+    value: dict[str, object], expected: set[str], *, where: str
 ) -> None:
     actual = set(value)
     if actual != expected:
@@ -145,8 +142,7 @@ def _persona(value: object) -> PersonaSpec:
 
 
 def _validate_reservations(
-    value: object,
-    cases: tuple[BenchmarkCase, ...],
+    value: object, cases: tuple[BenchmarkCase, ...]
 ) -> None:
     reservations = _array(value, where="reservations")
     parsed: list[tuple[str, str, int]] = []
@@ -206,9 +202,7 @@ def load_benchmark_v1() -> BenchmarkManifest:
 
     generated = tuple(
         _case(item, suite="generated", index=index)
-        for index, item in enumerate(
-            _array(raw["generated"], where="generated")
-        )
+        for index, item in enumerate(_array(raw["generated"], where="generated"))
     )
     adversarial = tuple(
         _case(item, suite="adversarial", index=index)
@@ -227,9 +221,7 @@ def load_benchmark_v1() -> BenchmarkManifest:
 
     return BenchmarkManifest(
         benchmark_id=_string(raw["benchmark_id"], where="benchmark_id"),
-        benchmark_version=_string(
-            raw["benchmark_version"], where="benchmark_version"
-        ),
+        benchmark_version=_string(raw["benchmark_version"], where="benchmark_version"),
         manifest_hash=actual_hash,
         generated=generated,
         adversarial=adversarial,
