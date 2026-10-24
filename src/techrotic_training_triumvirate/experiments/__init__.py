@@ -12,8 +12,8 @@ from .adapters import (
 )
 from .engine import Transition, advance
 from .model import (
-    EvidenceClass,
     EventKind,
+    EvidenceClass,
     ExperimentContractError,
     ExperimentPlan,
     ExperimentState,

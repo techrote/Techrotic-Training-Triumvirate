@@ -10,7 +10,12 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import cast
 
-from techrotic_training_triumvirate.schemas import JsonObject, canonical_json, content_hash
+from techrotic_training_triumvirate.schemas import (
+    JsonObject,
+    JsonValue,
+    canonical_json,
+    content_hash,
+)
 
 from .engine import advance
 from .model import (
@@ -104,7 +109,7 @@ class ExperimentStore:
     def close(self) -> None:
         self._connection.close()
 
-    def __enter__(self) -> "ExperimentStore":
+    def __enter__(self) -> ExperimentStore:
         return self
 
     def __exit__(self, *args: object) -> None:
@@ -130,10 +135,15 @@ class ExperimentStore:
             ).fetchone()
             if existing is not None:
                 if existing["plan_json"] != encoded:
-                    raise ExperimentStoreError("experiment ID collides with another plan")
+                    raise ExperimentStoreError(
+                        "experiment ID collides with another plan"
+                    )
                 return plan.experiment_id
             self._connection.execute(
-                "INSERT INTO experiments(experiment_id, plan_json, state) VALUES(?,?,?)",
+                """
+                INSERT INTO experiments(experiment_id,plan_json,state)
+                VALUES(?,?,?)
+                """,
                 (plan.experiment_id, encoded, ExperimentState.PLANNED.value),
             )
         return plan.experiment_id
@@ -198,7 +208,9 @@ class ExperimentStore:
                 (experiment_id,),
             ).fetchone()
             sequence = 1 if previous is None else int(previous["sequence"]) + 1
-            parent_hash = None if previous is None else cast(str, previous["event_hash"])
+            parent_hash = (
+                None if previous is None else cast(str, previous["event_hash"])
+            )
             event_hash = self._event_hash(
                 experiment_id=experiment_id,
                 sequence=sequence,
@@ -296,7 +308,10 @@ class ExperimentStore:
             used = self._connection.execute(
                 """
                 SELECT COALESCE(SUM(
-                    CASE WHEN charged_hours IS NULL THEN reserved_hours ELSE charged_hours END
+                    CASE
+                        WHEN charged_hours IS NULL THEN reserved_hours
+                        ELSE charged_hours
+                    END
                 ),0.0)
                 FROM budget_reservations WHERE experiment_id=?
                 """,
@@ -337,7 +352,9 @@ class ExperimentStore:
             charged = row["charged_hours"]
             if charged is not None:
                 expected = reserved if not lifetime_established else actual_hours
-                if expected is None or not math.isclose(float(charged), float(expected)):
+                if expected is None or not math.isclose(
+                    float(charged), float(expected)
+                ):
                     raise ExperimentStoreError("attempt budget was already reconciled")
                 return self.budget_snapshot(experiment_id)
 
@@ -394,7 +411,7 @@ class ExperimentStore:
             "authorized_gpu_hours": plan.gpu_hours,
             "committed_gpu_hours": committed,
             "remaining_gpu_hours": max(0.0, plan.gpu_hours - committed),
-            "attempts": cast(list[object], attempts),
+            "attempts": cast(list[JsonValue], attempts),
         }
 
     def acquire_device_lease(
@@ -414,13 +431,17 @@ class ExperimentStore:
             try:
                 self._connection.execute(
                     """
-                    INSERT INTO device_leases(gpu_uuid,experiment_id,attempt_id,acquired_at)
+                    INSERT INTO device_leases(
+                        gpu_uuid,experiment_id,attempt_id,acquired_at
+                    )
                     VALUES(?,?,?,?)
                     """,
                     (plan.gpu_uuid, experiment_id, attempt_id, acquired_at),
                 )
             except sqlite3.IntegrityError as exc:
-                raise ExperimentStoreError("physical GPU already has an active lease") from exc
+                raise ExperimentStoreError(
+                    "physical GPU already has an active lease"
+                ) from exc
 
     def release_device_lease(self, experiment_id: str, attempt_id: str) -> None:
         plan = self.plan(experiment_id)
@@ -431,8 +452,13 @@ class ExperimentStore:
             ).fetchone()
             if row is None:
                 return
-            if row["experiment_id"] != experiment_id or row["attempt_id"] != attempt_id:
-                raise ExperimentStoreError("refusing to release another attempt's lease")
+            if (
+                row["experiment_id"] != experiment_id
+                or row["attempt_id"] != attempt_id
+            ):
+                raise ExperimentStoreError(
+                    "refusing to release another attempt's lease"
+                )
             self._connection.execute(
                 "DELETE FROM device_leases WHERE gpu_uuid=?", (plan.gpu_uuid,)
             )
@@ -456,8 +482,13 @@ class ExperimentStore:
             ).fetchone()
             encoded = canonical_json(identity)
             if existing is not None:
-                if existing["identity_json"] != encoded or existing["cancel_path"] != cancel_path:
-                    raise ExperimentStoreError("worker identity changed for one attempt")
+                if (
+                    existing["identity_json"] != encoded
+                    or existing["cancel_path"] != cancel_path
+                ):
+                    raise ExperimentStoreError(
+                        "worker identity changed for one attempt"
+                    )
                 return
             self._connection.execute(
                 """
@@ -528,7 +559,7 @@ class ExperimentStore:
 
 
 def open_replayed(path: str | Path, experiment_id: str) -> ExperimentStore:
-    """Open persisted state and fail immediately if its event chain no longer replays."""
+    """Open state and fail immediately if its event chain no longer replays."""
 
     store = ExperimentStore(path)
     try:

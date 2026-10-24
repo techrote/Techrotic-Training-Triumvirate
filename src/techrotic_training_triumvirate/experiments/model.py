@@ -106,7 +106,9 @@ def _gpu_uuid(value: object) -> str:
     try:
         parsed = UUID(text.removeprefix("GPU-"))
     except ValueError as exc:
-        raise ExperimentContractError("gpu_uuid must be a full physical GPU UUID") from exc
+        raise ExperimentContractError(
+            "gpu_uuid must be a full physical GPU UUID"
+        ) from exc
     return f"GPU-{parsed}"
 
 
@@ -130,7 +132,7 @@ class ExperimentPlan:
     evidence_class: EvidenceClass = EvidenceClass.ADMISSION
 
     @classmethod
-    def from_object(cls, value: object) -> "ExperimentPlan":
+    def from_object(cls, value: object) -> ExperimentPlan:
         if not isinstance(value, dict):
             raise ExperimentContractError("plan must be a JSON object")
         expected = {
@@ -198,11 +200,13 @@ class ExperimentPlan:
         )
 
     @classmethod
-    def from_json(cls, path: str | Path) -> "ExperimentPlan":
+    def from_json(cls, path: str | Path) -> ExperimentPlan:
         try:
             value: object = json.loads(Path(path).read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
-            raise ExperimentContractError(f"cannot read experiment plan: {exc}") from exc
+            raise ExperimentContractError(
+                f"cannot read experiment plan: {exc}"
+            ) from exc
         return cls.from_object(value)
 
     def to_object(self) -> JsonObject:
@@ -240,7 +244,12 @@ class ExperimentPlan:
         )[:24]
 
     def attempt_id(
-        self, stage: str, *, ordinal: int, launch_nonce: str, inputs: JsonObject | None = None
+        self,
+        stage: str,
+        *,
+        ordinal: int,
+        launch_nonce: str,
+        inputs: JsonObject | None = None,
     ) -> str:
         if type(ordinal) is not int or ordinal < 1:
             raise ExperimentContractError("attempt ordinal must be a positive integer")
@@ -272,7 +281,7 @@ class VerifiedEvent:
         }
 
     @classmethod
-    def from_object(cls, value: object) -> "VerifiedEvent":
+    def from_object(cls, value: object) -> VerifiedEvent:
         if not isinstance(value, dict) or set(value) != {
             "event_id",
             "kind",
@@ -309,7 +318,7 @@ class HumanReview:
     test_fixture: bool = False
 
     @classmethod
-    def from_object(cls, value: object) -> "HumanReview":
+    def from_object(cls, value: object) -> HumanReview:
         if not isinstance(value, dict):
             raise ExperimentContractError("review must be a JSON object")
         expected = {

@@ -46,7 +46,9 @@ def test_worker_host_records_successful_fixed_argv_completion(tmp_path: Path) ->
     assert "worker-ok" in (tmp_path / "attempt-1/worker.log").read_text()
 
 
-def test_worker_host_enforces_deadline_without_controller_polling(tmp_path: Path) -> None:
+def test_worker_host_enforces_deadline_without_controller_polling(
+    tmp_path: Path,
+) -> None:
     path = tmp_path / "spec.json"
     write_spec(
         path,

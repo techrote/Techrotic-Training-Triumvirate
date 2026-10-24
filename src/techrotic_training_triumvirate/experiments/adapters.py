@@ -6,7 +6,6 @@ import json
 import platform
 import subprocess
 import time
-from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
@@ -123,7 +122,9 @@ def run_cpu_diagnostic(spec: CpuDiagnosticSpec) -> JsonObject:
     cwd = spec.cwd.resolve()
     output = spec.output_dir.resolve()
     if not tool.is_file() or not tool.is_absolute():
-        raise PipelineAdapterError("CPU diagnostic tool must be an existing absolute file")
+        raise PipelineAdapterError(
+            "CPU diagnostic tool must be an existing absolute file"
+        )
     if not cwd.is_dir():
         raise PipelineAdapterError("CPU diagnostic cwd must be an existing directory")
     if (
@@ -157,7 +158,9 @@ def run_cpu_diagnostic(spec: CpuDiagnosticSpec) -> JsonObject:
     if spec.artifact is not None:
         artifact_path = spec.artifact.resolve()
         if not artifact_path.is_file():
-            raise PipelineAdapterError("CPU diagnostic did not produce the declared artifact")
+            raise PipelineAdapterError(
+                "CPU diagnostic did not produce the declared artifact"
+            )
         artifact = {
             "path": str(artifact_path),
             "bytes": artifact_path.stat().st_size,

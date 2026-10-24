@@ -14,7 +14,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
 
-from techrotic_training_triumvirate.schemas import JsonObject, JsonValue, canonical_json, content_hash
+from techrotic_training_triumvirate.schemas import (
+    JsonObject,
+    JsonValue,
+    canonical_json,
+    content_hash,
+)
 
 
 class WorkerHostError(ValueError):
@@ -44,7 +49,7 @@ class WorkerSpec:
     launch_nonce: str
 
     @classmethod
-    def from_object(cls, value: object) -> "WorkerSpec":
+    def from_object(cls, value: object) -> WorkerSpec:
         if not isinstance(value, dict):
             raise WorkerHostError("worker spec must be an object")
         expected = {
@@ -83,7 +88,9 @@ class WorkerSpec:
             for name in ("attempt_id", "cwd", "artifact_root", "launch_nonce")
         }
         if any(not isinstance(item, str) or not item for item in fields.values()):
-            raise WorkerHostError("worker identity/path fields must be non-empty strings")
+            raise WorkerHostError(
+                "worker identity/path fields must be non-empty strings"
+            )
         return cls(
             attempt_id=cast(str, value["attempt_id"]),
             argv=tuple(cast(list[str], raw_argv)),
@@ -117,7 +124,9 @@ class WorkerSpec:
         if not root.is_dir():
             raise WorkerHostError("worker artifact root must already exist")
         if not cwd.is_dir() or not cwd.is_relative_to(root):
-            raise WorkerHostError("worker cwd must stay inside the admitted artifact root")
+            raise WorkerHostError(
+                "worker cwd must stay inside the admitted artifact root"
+            )
         if not executable.is_absolute() or not executable.is_file():
             raise WorkerHostError("worker executable must be an existing absolute file")
         return root, cwd
@@ -149,7 +158,9 @@ def process_creation_token(pid: int) -> str:
     if type(pid) is not int or pid <= 0:
         raise WorkerHostError("PID must be a positive integer")
     if os.name == "nt":
-        kernel32: Any = getattr(ctypes, "WinDLL")("kernel32", use_last_error=True)
+        kernel32: Any = ctypes.WinDLL(  # type: ignore[attr-defined]
+            "kernel32", use_last_error=True
+        )
         process_query_limited_information = 0x1000
         handle = kernel32.OpenProcess(process_query_limited_information, False, pid)
         if not handle:
@@ -192,7 +203,7 @@ def process_creation_token(pid: int) -> str:
 
 class _WindowsJob:
     def __init__(self, pid: int) -> None:
-        self._kernel32: Any = getattr(ctypes, "WinDLL")(
+        self._kernel32: Any = ctypes.WinDLL(  # type: ignore[attr-defined]
             "kernel32", use_last_error=True
         )
         self._job: Any = self._kernel32.CreateJobObjectW(None, None)

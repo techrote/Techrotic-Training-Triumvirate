@@ -4,12 +4,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from techrotic_training_triumvirate.schemas import JsonObject, canonical_json, content_hash
+from techrotic_training_triumvirate.schemas import (
+    JsonObject,
+    canonical_json,
+    content_hash,
+)
 from techrotic_training_triumvirate.training.export import sha256_file
 
 from .model import (
-    EvidenceClass,
     EventKind,
+    EvidenceClass,
     ExperimentContractError,
     ExperimentPlan,
     HumanReview,
@@ -18,7 +22,9 @@ from .model import (
 from .store import ExperimentStore
 
 
-def _event(index: int, kind: EventKind, payload: JsonObject | None = None) -> VerifiedEvent:
+def _event(
+    index: int, kind: EventKind, payload: JsonObject | None = None
+) -> VerifiedEvent:
     return VerifiedEvent(
         event_id=f"rehearsal-{index:02d}-{kind.value.lower()}",
         kind=kind,

@@ -68,8 +68,14 @@ def test_events_are_idempotent_and_full_chain_replays_after_restart(
     first = _event(EventKind.PLAN_VALIDATED)
     with ExperimentStore(database) as store:
         store.create_plan(plan)
-        assert store.append_event(plan.experiment_id, first) is ExperimentState.PREFLIGHT
-        assert store.append_event(plan.experiment_id, first) is ExperimentState.PREFLIGHT
+        assert (
+            store.append_event(plan.experiment_id, first)
+            is ExperimentState.PREFLIGHT
+        )
+        assert (
+            store.append_event(plan.experiment_id, first)
+            is ExperimentState.PREFLIGHT
+        )
         with pytest.raises(ExperimentStoreError, match="different verified"):
             store.append_event(
                 plan.experiment_id,
@@ -130,7 +136,9 @@ def test_physical_device_lease_is_exclusive_across_experiments(tmp_path: Path) -
     with ExperimentStore(database) as store:
         for plan in (first, second):
             store.create_plan(plan)
-            attempt = plan.attempt_id("training", ordinal=1, launch_nonce=plan.allocation_id)
+            attempt = plan.attempt_id(
+                "training", ordinal=1, launch_nonce=plan.allocation_id
+            )
             store.reserve_budget(plan.experiment_id, attempt, 0.1)
         first_attempt = first.attempt_id(
             "training", ordinal=1, launch_nonce=first.allocation_id

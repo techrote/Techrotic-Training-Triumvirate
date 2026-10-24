@@ -19,7 +19,7 @@ from .model import (
     VerifiedEvent,
 )
 from .rehearsal import run_rehearsal
-from .store import ExperimentStore, ExperimentStoreError
+from .store import ExperimentStore
 
 
 def add_experiments_parser(subparsers: Any) -> None:
@@ -27,21 +27,31 @@ def add_experiments_parser(subparsers: Any) -> None:
         "experiments",
         help="validate, inspect and rehearse deterministic experiment plans",
     )
-    commands = experiments.add_subparsers(dest="experiment_command", required=True)
+    commands = experiments.add_subparsers(
+        dest="experiment_command", required=True
+    )
 
-    validate = commands.add_parser("validate", help="persist and validate an immutable plan")
+    validate = commands.add_parser(
+        "validate", help="persist and validate an immutable plan"
+    )
     validate.add_argument("plan", type=Path)
     validate.add_argument("--db", type=Path, required=True)
 
-    status = commands.add_parser("status", help="show durable state and budget accounting")
+    status = commands.add_parser(
+        "status", help="show durable state and budget accounting"
+    )
     status.add_argument("experiment_id")
     status.add_argument("--db", type=Path, required=True)
 
-    replay = commands.add_parser("resume", help="replay durable state without relaunching work")
+    replay = commands.add_parser(
+        "resume", help="replay durable state without relaunching work"
+    )
     replay.add_argument("experiment_id")
     replay.add_argument("--db", type=Path, required=True)
 
-    cancel = commands.add_parser("cancel", help="record an explicit cancellation transition")
+    cancel = commands.add_parser(
+        "cancel", help="record an explicit cancellation transition"
+    )
     cancel.add_argument("experiment_id")
     cancel.add_argument("--db", type=Path, required=True)
     cancel.add_argument("--reason", required=True)
@@ -54,7 +64,9 @@ def add_experiments_parser(subparsers: Any) -> None:
     review_import.add_argument("ratings", type=Path)
     review_import.add_argument("--db", type=Path, required=True)
 
-    verify = commands.add_parser("verify", help="replay and verify the persisted event chain")
+    verify = commands.add_parser(
+        "verify", help="replay and verify the persisted event chain"
+    )
     verify.add_argument("experiment_id")
     verify.add_argument("--db", type=Path, required=True)
 
@@ -102,7 +114,11 @@ def run_experiments(args: argparse.Namespace, parser: argparse.ArgumentParser) -
                 )
             print(
                 canonical_json(
-                    {"experiment_id": experiment_id, "state": state.value, "validated": True}
+                    {
+                        "experiment_id": experiment_id,
+                        "state": state.value,
+                        "validated": True,
+                    }
                 )
             )
             return 0
@@ -177,12 +193,11 @@ def run_experiments(args: argparse.Namespace, parser: argparse.ArgumentParser) -
             print(
                 canonical_json(
                     {
-                        "verified": True,
+                        "controller_verified": True,
                         "experiment_id": args.experiment_id,
                         "state": state.value,
                         "events": len(hashes),
                         "evidence_class": plan.evidence_class.value,
-                        "admission_eligible": plan.evidence_class.value == "admission",
                     }
                 )
             )
@@ -208,7 +223,7 @@ def run_experiments(args: argparse.Namespace, parser: argparse.ArgumentParser) -
             )
             print(canonical_json(result))
             return 0
-    except (OSError, ValueError, ExperimentStoreError) as exc:
+    except (OSError, ValueError) as exc:
         parser.exit(1, f"experiment command failed: {exc}\n")
 
     parser.error("unknown experiment command")
