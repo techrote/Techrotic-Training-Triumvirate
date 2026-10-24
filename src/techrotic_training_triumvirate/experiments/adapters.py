@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import os
 import platform
+from collections.abc import Callable
+from contextlib import suppress
 import subprocess
 import time
 from dataclasses import dataclass
@@ -134,10 +136,8 @@ def assert_admission_eligible(record: JsonObject) -> None:
 
 
 def _lower_priority() -> None:
-    try:
+    with suppress(OSError):
         os.nice(10)
-    except OSError:
-        pass
 
 
 def run_cpu_diagnostic(spec: CpuDiagnosticSpec) -> JsonObject:
@@ -182,7 +182,7 @@ def run_cpu_diagnostic(spec: CpuDiagnosticSpec) -> JsonObject:
         }
     )
     creationflags = 0
-    preexec_fn = None
+    preexec_fn: Callable[[], None] | None = None
     if spec.low_priority:
         if os.name == "nt":
             creationflags = int(
