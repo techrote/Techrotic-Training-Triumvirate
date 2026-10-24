@@ -460,16 +460,23 @@ def _report(
             "duplicate_rate",
         )
     }
-    mechanical_positive = [
-        mechanical["parse_valid_rate"],
-        mechanical["entity_reference_valid_rate"],
-        mechanical["valid_tool_op_rate"],
-        mechanical["capability_precondition_compliance_rate"],
-        mechanical["rejection_recovery_rate"],
-        1.0 - mechanical["conflict_rate"],
-        1.0 - mechanical["duplicate_rate"],
-    ]
-    mechanical["score"] = _mean(mechanical_positive)
+    mechanical_core = _mean(
+        [
+            mechanical["parse_valid_rate"],
+            mechanical["entity_reference_valid_rate"],
+            mechanical["valid_tool_op_rate"],
+            mechanical["capability_precondition_compliance_rate"],
+            mechanical["rejection_recovery_rate"],
+        ]
+    )
+    # Conflicting and duplicate orders are multiplicative admission penalties:
+    # a policy cannot average away repeated control-plane churn with later no-op
+    # status requests.
+    mechanical["score"] = (
+        mechanical_core
+        * (1.0 - mechanical["conflict_rate"])
+        * (1.0 - mechanical["duplicate_rate"])
+    )
 
     closed_loop = {
         name: _aggregate_metric(cases, name)
