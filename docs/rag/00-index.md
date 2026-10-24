@@ -29,6 +29,7 @@ Always read `AGENTS.md` first. Then read the issue's **Required reading** list. 
 | [17-closed-loop.md](17-closed-loop.md) | Frozen 24-turn evaluation, separated metrics, trace replay and blinded human packet |
 | [18-pilot-execution.md](18-pilot-execution.md) | Completed local native pilot, corpus, budgets, device identity and source provenance |
 | [19-final-admission.md](19-final-admission.md) | Prospective admission gates, model/data cards and fail-closed evidence readback |
+| [20-commander-repair.md](20-commander-repair.md) | TITAN-only continuation toward a trained commander passing the unchanged gates |
 
 ## Initial programme outcome
 

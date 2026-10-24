@@ -19,6 +19,12 @@ runtime outcome is **NOT ADMITTED**: the real pilot finished, but no candidate
 passed the recorded operational and long-session gates. The framework and its
 research evidence are available; no game-ready trained commander is claimed.
 
+The owner's subsequent request to obtain a passing trained commander is tracked
+separately in [issue #41](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/41).
+Its [TITAN-only repair plan](docs/rag/20-commander-repair.md) preserves the initial
+negative evidence and the original admission gates. It is ongoing; no passing
+candidate is claimed until its measurements and genuine human review exist.
+
 ## Start here
 
 - [Programme tracker](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/1)
