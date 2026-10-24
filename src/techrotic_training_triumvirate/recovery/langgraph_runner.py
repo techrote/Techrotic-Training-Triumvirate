@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 from techrotic_training_triumvirate.commands import CommandInterpreter
 from techrotic_training_triumvirate.corpus import (
@@ -430,7 +431,11 @@ def run_corrective_round(
     """Run one bounded student rollout and assemble validated T3 corrections."""
 
     resolved_oracle = oracle or DeterministicRecoveryOracle()
-    resolved_renderer = renderer or DeterministicRenderer()
+    resolved_renderer = (
+        renderer
+        if renderer is not None
+        else cast(SessionRenderer, DeterministicRenderer())
+    )
     persona = _persona()
     blueprint = ScenarioGenerator().generate(
         seed=config.seed,
