@@ -113,9 +113,9 @@ python -m ttt_langgraph_spike
 
 ## Architecture decision
 
-**Decision: conditional adoption pending green spike CI.**
+**Decision: ADOPT LangGraph for TTT orchestration/checkpoint/branch/replay substrate.**
 
-If the contained proof passes unchanged in GitHub Actions, use LangGraph as the preferred orchestration/checkpoint/branch substrate for later TTT session and corrective-rollout work, while retaining TTT-owned semantic state, event records, hidden-information policy, hashes, and provenance.
+The contained proof passed unchanged in GitHub Actions on PR #19. Use LangGraph as the preferred orchestration/checkpoint/branch substrate for later TTT session and corrective-rollout work, while retaining TTT-owned semantic state, event records, hidden-information policy, hashes, and provenance.
 
 Do **not** make LangGraph a dependency of the deterministic World Authority itself. The World Authority should remain callable as ordinary deterministic code and testable without LangGraph so the project can replace the orchestration layer later if necessary.
 
