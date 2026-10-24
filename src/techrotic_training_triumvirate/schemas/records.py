@@ -7,7 +7,7 @@ All durable records still carry their own schema name/version envelope.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import ClassVar, TypeVar, cast
+from typing import ClassVar, cast
 
 from .base import (
     JsonObject,
@@ -26,10 +26,13 @@ from .base import (
 )
 
 
-RecordT = TypeVar("RecordT", bound=SchemaRecord)
 
-
-def _record(value: object, expected: type[RecordT], *, field: str) -> RecordT:
+def _record[RecordT: SchemaRecord](
+    value: object,
+    expected: type[RecordT],
+    *,
+    field: str,
+) -> RecordT:
     try:
         loaded = load_record(value, expected_type=expected)
     except ValueError as exc:
@@ -37,7 +40,7 @@ def _record(value: object, expected: type[RecordT], *, field: str) -> RecordT:
     return cast(RecordT, loaded)
 
 
-def _record_tuple(
+def _record_tuple[RecordT: SchemaRecord](
     value: object,
     expected: type[RecordT],
     *,
@@ -975,7 +978,7 @@ class EpisodeRecord(SchemaRecord):
             },
         )
         turns = _record_tuple(payload["turns"], TurnRecord, field="turns")
-        for previous, current in zip(turns, turns[1:]):
+        for previous, current in zip(turns, turns[1:], strict=False):
             if current.turn_id != previous.turn_id + 1:
                 raise SchemaValidationError(
                     "episode turn_ids must be contiguous and increasing"
