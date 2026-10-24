@@ -1,0 +1,21 @@
+ M .github/workflows/base-ci.yml
+ M README.md
+ M docs/development.md
+ M docs/rag/00-index.md
+ M docs/rag/05-persona-and-teacher.md
+ M docs/rag/09-implementation-programme.md
+ M docs/rag/19-final-admission.md
+ M src/techrotic_training_triumvirate/cli.py
+ M src/techrotic_training_triumvirate/session/langgraph_backend.py
+?? docs/evidence/ttt-014/
+?? docs/evidence/ttt-016/
+?? scripts/build_final_evidence.py
+?? src/techrotic_training_triumvirate/admission.py
+?? src/techrotic_training_triumvirate/training/campaign_integrity.py
+?? src/techrotic_training_triumvirate/training/device_admission.py
+?? tests/test_admission.py
+?? tests/test_campaign_integrity.py
+?? tests/test_device_admission.py
+?? tests/test_final_evidence_builder.py
+?? tests/test_programme_cli.py
+?? tests/test_session_optional.py

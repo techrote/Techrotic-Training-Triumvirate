@@ -1,0 +1,6 @@
+{
+  "ProcessId": 28136,
+  "ParentProcessId": 12744,
+  "CreationDate": "2026-10-24T12:15:52.366736+01:00",
+  "CommandLine": "C:\\cybernpc2\\Techrotic-Training-Triumvirate\\.venv-training\\Scripts\\python.exe -m techrotic_training_triumvirate.training.campaign --worker --corpus C:\\cybernpc2\\Techrotic-Training-Triumvirate\\artifacts\\pilot-corpus-v2 --output C:\\cybernpc2\\Techrotic-Training-Triumvirate\\artifacts\\ttt-013-execution\\operational --variant operational --git-commit 11e70686b09a27cf7c784beaf8d7a46717b345a0 --seed 24301 --gpu-hours 0.8"
+}

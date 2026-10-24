@@ -1,0 +1,9 @@
+{
+  "captured_at_utc": "2026-10-24T11:18:00.025652+00:00",
+  "nvidia_smi_returncode": 0,
+  "stdout": "1, NVIDIA TITAN RTX, GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8, 7931 MiB, 581.80\n",
+  "stderr": "Unable to determine the device handle for GPU0: 0000:05:00.0: GPU is lost.  Reboot the system to recover this GPU\n\n\n",
+  "disposition": "V100 lost; no reboot or reset attempted; remaining workers continue on healthy TITAN RTX",
+  "failed_attempt_charged_gpu_hours": 0.019123333333312377,
+  "preflight_conservative_gpu_hours": 0.01
+}
