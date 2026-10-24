@@ -20,9 +20,10 @@ Always read `AGENTS.md` first. Then read the issue's **Required reading** list. 
 | [08-provenance-reproducibility.md](08-provenance-reproducibility.md) | Seeds, manifests, hashes, licensing and run evidence |
 | [09-implementation-programme.md](09-implementation-programme.md) | Issue programme, dependencies, execution waves |
 | [10-planning-review.md](10-planning-review.md) | Initial plan critique and design improvements |
-| [11-model-cast-admission.md](11-model-cast-admission.md) | Deliberately deferred teacher/student model selection |
+| [11-model-cast-admission.md](11-model-cast-admission.md) | Selected teacher/student cast, immutable identities, licensing and runtime evidence |
 | [12-candidate-model-zoo.md](12-candidate-model-zoo.md) | Non-authoritative ~20 GB small-model shelf and characterize-first evaluation plan |
 | [13-world-authority.md](13-world-authority.md) | Deterministic abstract world, replay, visibility and optional Concordia host |
+| [14-training-export.md](14-training-export.md) | Reproducible fine-tuning, checkpoint/resume, export, parity and budget gates |
 
 ## External inspiration, not normative dependencies
 
@@ -32,4 +33,4 @@ Always read `AGENTS.md` first. Then read the issue's **Required reading** list. 
 
 WorldTUI's useful ideas here are synthetic stateful sessions, exact environment-derived labels, learning from model-visited/error states, compact/delta representations, and explicit held-out tests. This project is **not** required to emulate a terminal framebuffer or adopt WorldTUI weights.
 
-Sprocket is useful evidence that a small undertrained model can exhibit persistent, surprising persona behaviour and learn a narrow structured tool pathway. It is **not** selected as the runtime model and must not be treated as an authority for facts or command outcomes.
+Sprocket is now admitted as a creative/reference teacher only. It remains untrusted model output and must never be treated as an authority for facts, command success, or world outcomes.
