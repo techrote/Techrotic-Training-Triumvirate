@@ -12,7 +12,6 @@ from techrotic_training_triumvirate.schemas import (
     SchemaValidationError,
 )
 
-
 INTERCEPT_CODEC_VERSION: Final[str] = "ttt-intercept-v1"
 INTERCEPTABLE_FIELDS: Final[tuple[str, ...]] = (
     "op",
@@ -37,7 +36,10 @@ class DoctrineLexicon:
             raise ValueError("doctrine_id must not be empty")
         if self.version < 1:
             raise ValueError("doctrine version must be positive")
-        if any(not key.strip() or not value.strip() for key, value in self.aliases.items()):
+        if any(
+            not key.strip() or not value.strip()
+            for key, value in self.aliases.items()
+        ):
             raise ValueError("doctrine aliases must use non-empty strings")
 
     def alias(self, field: str, value: str) -> str:
@@ -51,7 +53,7 @@ class SemanticIntercept:
     fields: JsonObject
 
     @classmethod
-    def from_dispatch_event(cls, event: AuthoritativeEvent) -> "SemanticIntercept":
+    def from_dispatch_event(cls, event: AuthoritativeEvent) -> SemanticIntercept:
         if event.kind != "command-dispatched":
             raise SchemaValidationError(
                 "ordinary semantic intercepts require command-dispatched events"
@@ -93,7 +95,7 @@ def deception_event(
     false_semantics: JsonObject,
     tick: int | None = None,
 ) -> AuthoritativeEvent:
-    """Create an explicit authoritative event representing a deliberate false broadcast."""
+    """Create an authoritative event representing a deliberate false broadcast."""
     if real_dispatch.kind != "command-dispatched":
         raise ValueError("deception must reference a command-dispatched event")
     broadcast = DeceptionBroadcast(
