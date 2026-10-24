@@ -196,3 +196,10 @@ TTT-007 may consume:
 Rejected candidates may remain useful as labelled negative/recovery evidence,
 subject to provenance and licensing rules. They must not be silently converted
 into ordinary supervised targets.
+
+TTT-007 represents accepted teacher material with a turn-bound
+`TeacherEnrichment`. Free-form style text remains separate from
+`operational_facts`; every operational claim must be supported by canonical
+observation/result/event evidence before admission. The enrichment source ID must
+resolve to canonical SourceProvenance and model/external teacher output remains
+quarantined until its license disposition is explicitly admitted.
