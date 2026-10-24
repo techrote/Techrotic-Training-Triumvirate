@@ -37,8 +37,7 @@ class DoctrineLexicon:
         if self.version < 1:
             raise ValueError("doctrine version must be positive")
         if any(
-            not key.strip() or not value.strip()
-            for key, value in self.aliases.items()
+            not key.strip() or not value.strip() for key, value in self.aliases.items()
         ):
             raise ValueError("doctrine aliases must use non-empty strings")
 
