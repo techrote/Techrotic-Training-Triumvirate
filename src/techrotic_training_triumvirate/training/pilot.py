@@ -12,7 +12,11 @@ from techrotic_training_triumvirate.model_admission import (
     load_model_cast_v1,
     validate_model_cast_v1,
 )
-from techrotic_training_triumvirate.schemas import JsonObject, JsonValue, canonical_json
+from techrotic_training_triumvirate.schemas import (
+    JsonObject,
+    JsonValue,
+    canonical_json,
+)
 
 from .admission import load_training_config, resolve_model_binding
 from .data import (
@@ -72,9 +76,9 @@ def authorize_pilot_budget(
         raise PilotPreparationError("pilot cost values must not be negative")
 
     limits = pilot_budget_limits()
-    gpu_max = float(limits["gpu_hours_max"])
-    cost_max = float(limits["external_compute_cost_gbp_max"])
-    api_max = float(limits["paid_model_api_cost_gbp_max"])
+    gpu_max = cast(float, limits["gpu_hours_max"])
+    cost_max = cast(float, limits["external_compute_cost_gbp_max"])
+    api_max = cast(float, limits["paid_model_api_cost_gbp_max"])
     if gpu_hours > gpu_max:
         raise PilotPreparationError(
             f"requested {gpu_hours:g} GPU-hours exceeds TTT-013 limit {gpu_max:g}"
