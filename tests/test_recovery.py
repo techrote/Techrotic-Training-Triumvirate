@@ -200,6 +200,6 @@ def test_external_recovery_without_authoritative_failure_is_quarantined() -> Non
 
     assert not build.examples
     assert build.quarantine
-    assert {
-        issue.code for item in build.quarantine for issue in item.issues
-    } == {"RECOVERY_MALFORMED"}
+    assert {issue.code for item in build.quarantine for issue in item.issues} == {
+        "RECOVERY_MALFORMED"
+    }
