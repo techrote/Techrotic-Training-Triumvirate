@@ -47,9 +47,7 @@ class WorldAuthority:
         self.blueprint = blueprint
         self.tick = blueprint.initial_tick
         self.generation = blueprint.initial_generation
-        self._archetypes = {
-            item.archetype_id: item for item in blueprint.archetypes
-        }
+        self._archetypes = {item.archetype_id: item for item in blueprint.archetypes}
         self._routes = {item.route_id: item for item in blueprint.routes}
         self.units = {
             seed.entity_id: UnitState(
@@ -537,10 +535,7 @@ class WorldAuthority:
 
     def world_private_reference(self) -> WorldPrivateReference:
         return WorldPrivateReference(
-            state_id=(
-                f"{self.blueprint.scenario.identity.scenario_id}:"
-                f"g{self.generation}"
-            ),
+            state_id=(f"{self.blueprint.scenario.identity.scenario_id}:g{self.generation}"),
             scenario=self.blueprint.scenario.identity,
             state_hash=self.state_hash(),
             generation=self.generation,
