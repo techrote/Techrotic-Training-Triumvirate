@@ -112,6 +112,7 @@ def train_tiny(
     completed_steps = stop
     complete = completed_steps == len(order)
     model_hash = hashlib.sha256(canonical_json(memory).encode()).hexdigest()
+    memory_object: JsonObject = {key: value for key, value in memory.items()}
     state_object: JsonObject = {
         "schema_version": 1,
         "backend": "tiny-deterministic-v1",
@@ -119,7 +120,7 @@ def train_tiny(
         "ordered_example_ids": list(order_ids),
         "completed_steps": completed_steps,
         "complete": complete,
-        "memory": memory,
+        "memory": memory_object,
         "model_hash": model_hash,
     }
     checkpoint.parent.mkdir(parents=True, exist_ok=True)
