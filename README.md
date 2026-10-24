@@ -59,23 +59,37 @@ Smoke-test the CLI and deterministic seed plumbing:
 ttt --version
 ttt seed-demo --seed 24301 --count 5
 ttt schema-bundle --pretty
+ttt command-schema --pretty
+ttt world-demo --seed 24301 --turns 24
 ```
 
 See [docs/development.md](docs/development.md) for the supported-Python, dependency and artifact-hygiene policy.
 
 ## Current status
 
-TTT-001 established the reproducible package/tooling/CI foundation. TTT-002 adds the canonical versioned schema v1 records, strict serialization/hash rules, T0 fixtures and machine-readable schema export. After TTT-002 merges, **TTT-003 / #4 and TTT-006 / #7 are the next parallel wave**.
+**Programme Waves 0–3 are complete.**
 
-The initial model cast remains deliberately **UNSELECTED** and is admitted only at TTT-011 / issue #12 after the model-independent command, corpus, recovery, and evaluation foundations exist.
+Merged foundations now include:
+
+- TTT-001 / #2 — reproducible Python package, deterministic tooling and CI;
+- TTT-002 / #3 — canonical versioned schemas, T0 fixtures and content hashing;
+- TTT-003 / #4 — `ttt-command-v1`, strict typed command parsing and deterministic admission;
+- TTT-004 / #5 — framework-neutral deterministic World Authority, replay, delayed execution failures, visibility projections and optional Concordia parity host;
+- TTT-006 / #7 — model-agnostic persona mutation and Creative Teacher adapters;
+- TTT-008 / #9 — grounded player intercepts, deterministic doctrine/visibility policies and explicit deception broadcasts.
+
+**Wave 4 is now unblocked.** TTT-005 / #6, TTT-007 / #8 and TTT-009 / #10 may proceed in parallel according to the dependency rules in `docs/rag/09-implementation-programme.md`.
+
+The initial model cast remains deliberately **UNSELECTED**. Model admission stays gated at TTT-011 / issue #12 after corpus, evaluation and corrective-rollout infrastructure is complete.
 
 A first-pass **~20 GB small-model GGUF characterization shelf** is recorded in `docs/rag/12-candidate-model-zoo.md`. It is a shortlist for later benchmarking, not an admission or download authorization.
 
-Architecture spikes have established:
-- **LangGraph** as the orchestration/checkpoint/branch/replay substrate;
-- **Concordia** as an optional richer simulation/Game-Master host, while TTT retains a framework-neutral direct World Authority.
+Architecture decisions now implemented in production code:
 
-The native abstract World Authority is available through `ttt world-demo --seed 24301 --turns 24`; its Concordia host remains optional and parity-tested.
+- **LangGraph** is the selected orchestration/checkpoint/branch/replay substrate for later session and corrective-rollout work;
+- **Concordia** remains an optional richer simulation/Game-Master host, with the native TTT World Authority retained as the canonical dependency-light path.
+
+The native abstract World Authority is available through `ttt world-demo --seed 24301 --turns 24`. Player tactical telegraphs are produced by the grounded `InterceptEncoder` from authoritative dispatch/deception events.
 
 ## Core rule
 

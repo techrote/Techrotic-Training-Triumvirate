@@ -87,6 +87,15 @@ game/abstract state
 
 Player intercept rendering consumes the **dispatched authoritative command/event stream**, not free-standing hallucinated hints.
 
+TTT-008 implements this boundary in `InterceptEncoder`:
+
+- ordinary tactical intercepts can only be produced from authoritative `command-dispatched` events;
+- doctrine aliases and information-loss/noise/delay policies are versioned and deterministic;
+- fields outside the bounded intercept semantic surface are not exposed;
+- false tactical broadcasts require a separate authoritative `deception-broadcast` event that remains linked to the real dispatch event.
+
+This keeps player telegraphing useful and learnable without giving cosmetic model text authority over what the enemy actually ordered.
+
 ## 4. Component contracts
 
 Implement modules behind interfaces rather than a monolith:
