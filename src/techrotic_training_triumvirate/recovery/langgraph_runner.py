@@ -22,9 +22,12 @@ from techrotic_training_triumvirate.evaluation import (
 )
 from techrotic_training_triumvirate.schemas import (
     AssistantAction,
+    AuthoritativeEvent,
+    CommanderObservation,
     CommanderPrivateContext,
     EpisodeRecord,
     EvaluationAnnotations,
+    InterpreterResult,
     PersonaSpec,
     RunManifest,
     SchemaValidationError,
@@ -59,8 +62,8 @@ class RolloutTurn:
 
     turn_id: int
     action: AssistantAction
-    interpreter_results: tuple
-    world_events: tuple
+    interpreter_results: tuple[InterpreterResult, ...]
+    world_events: tuple[AuthoritativeEvent, ...]
     next_observation_hash: str
     failures: tuple[FailurePoint, ...]
 
@@ -152,7 +155,7 @@ def _observation_generation(recording: SessionRecording) -> int:
     return recording.initial_world.generation + len(recording.turns)
 
 
-def _current_observation(recording: SessionRecording):
+def _current_observation(recording: SessionRecording) -> CommanderObservation:
     if recording.turns:
         return recording.turns[-1].next_observation
     return recording.initial_observation
@@ -186,10 +189,10 @@ def _failure_points(
     *,
     run_id: str,
     turn_id: int,
-    observation,
+    observation: CommanderObservation,
     action: AssistantAction,
-    results: tuple,
-    events: tuple,
+    results: tuple[InterpreterResult, ...],
+    events: tuple[AuthoritativeEvent, ...],
 ) -> tuple[FailurePoint, ...]:
     if len(action.commands) != 1:
         raise ValueError(
