@@ -25,7 +25,7 @@ Issues should be executed from current `main`; agents must reconcile work merged
 
 ## 2. Current implementation status
 
-As of 24 October 2026, **Waves 0–5 are complete in this change**. TTT-009 / #10 is merged, and TTT-010 / #11 supplies the student-visited corrective rollout/corpus layer. Wave 6 is the deliberate model-cast admission gate.
+As of 24 October 2026, **Waves 0–5 are merged and Wave 6 is complete in this change**. TTT-011 / #12 records the owner-delegated initial model cast, immutable native/GGUF identities, licensing dispositions, bounded downstream budgets/runtime targets, and reproducible live probe workflow.
 
 | Wave | Issues | State | Result |
 |---|---|---|---|
@@ -34,7 +34,8 @@ As of 24 October 2026, **Waves 0–5 are complete in this change**. TTT-009 / #1
 | 2 | TTT-003 / #4 + TTT-006 / #7 | Complete | Typed command/interpreter layer plus Creative Teacher/persona layer |
 | 3 | TTT-004 / #5 + TTT-008 / #9 | Complete | Deterministic World Authority + grounded player-intercept/deception codec |
 | 4 | TTT-005 / #6 + TTT-007 / #8 + TTT-009 / #10 | Complete | Session, corpus and frozen model-agnostic evaluation foundation |
-| 5 | TTT-010 / #11 | Complete in this change | LangGraph-backed student-visited correction branches and validated T3 recovery corpus |
+| 5 | TTT-010 / #11 | Complete | LangGraph-backed student-visited correction branches and validated T3 recovery corpus |
+| 6 | TTT-011 / #12 | Complete in this change | Initial model-cast admission, immutable artifact identities, licensing and live characterization evidence |
 
 Wave 3 merged evidence:
 
@@ -53,7 +54,7 @@ Wave 5 result:
 
 - TTT-010 / #11 adds deterministic scripted/replay students, failure categorization, simulator-oracle repair, historical LangGraph correction forks, branch-preserving T3 recovery examples, multiple alternatives, iterative parent-run lineage and fail-closed frozen-evaluation refusal.
 
-Do not start model-specific training merely because the model zoo exists. TTT-011 remains downstream of TTT-007, TTT-009 and TTT-010.
+TTT-011 admits identities and characterization only; it does **not** authorize a substantial training campaign. TTT-012 must prove the bounded smoke train/export path before TTT-013 may consume the admitted pilot budget.
 
 ## 3. Issue map
 
@@ -68,12 +69,12 @@ Do not start model-specific training merely because the model zoo exists. TTT-01
 | TTT-007 | #8 | Complete | Corpus assembler, validators, provenance, dedup and split discipline |
 | TTT-008 | #9 | Complete | Player intercept/telegraph semantic codec and explicit deception model |
 | TTT-009 | #10 | Complete | Evaluation harness, frozen generated/handwritten suites and baselines |
-| TTT-010 | #11 | Complete in this change | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
-| TTT-011 | #12 | Ready for owner model-cast decision | Initial model-cast admission: owner-selected teacher/student candidates, licensing/runtime probes, frozen decision record |
-| TTT-012 | #13 | Blocked by #12 | Reproducible fine-tuning/export harness for the admitted cast |
+| TTT-010 | #11 | Complete | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
+| TTT-011 | #12 | Complete in this change | Initial model-cast admission: owner-delegated teacher/student selection, licensing/runtime probes, frozen decision record |
+| TTT-012 | #13 | Ready after this change | Reproducible fine-tuning/export harness for the admitted cast |
 | TTT-013 | #14 | Blocked by #13 | Pilot corpus generation and smoke/ablation fine-tunes |
 | TTT-014 | #15 | Blocked by #14 | Closed-loop 20–30 turn commander benchmark and comparative report |
-| TTT-015 | #16 | Blocked by #12 | Runtime export/bridge contract plus reference intercept integration |
+| TTT-015 | #16 | Ready after this change | Runtime export/bridge contract plus reference intercept integration |
 | TTT-016 | #17 | Blocked by #15/#16 | Release/admission package: model/data cards, manifests, benchmarks and reproducibility |
 
 ## 4. Execution waves
@@ -88,11 +89,11 @@ Do not start model-specific training merely because the model zoo exists. TTT-01
 
 **Wave 4:** TTT-005 / #6, TTT-007 / #8 and TTT-009 / #10 are complete.
 
-**Wave 5:** TTT-010 / #11 is complete in this change after TTT-007/009.
+**Wave 5:** TTT-010 / #11 is merged after TTT-007/009.
 
-**Wave 6:** TTT-011 / #12 is dependency-unblocked after TTT-006/007/009/010 and awaits the deliberate owner model-cast decision.
+**Wave 6:** TTT-011 / #12 is complete in this change after the owner explicitly delegated the cast decision to the implementation agent.
 
-**Wave 7, parallel:** TTT-012 / #13 and TTT-015 / #16 after TTT-011 (TTT-015 also requires TTT-008/009).
+**Wave 7, parallel:** TTT-012 / #13 and TTT-015 / #16 are ready after this change (TTT-015 also requires the already-complete TTT-008/009).
 
 **Wave 8:** TTT-013 / #14 after TTT-012.
 
@@ -123,20 +124,25 @@ Do not start model-specific training merely because the model zoo exists. TTT-01
 
 ## 6. Model-selection gate
 
-No teacher/student lineup is selected in this programme document.
+TTT-011 / #12 is the authoritative initial selection/admission gate. The owner
+explicitly delegated the cast decision to the implementation agent on
+24 October 2026, clearing the prior `UNSELECTED` blocker.
 
-A non-authoritative first-pass ~20 GB small-model characterization shelf is recorded in `12-candidate-model-zoo.md`. It exists to make TTT-011 evidence-driven and **must not be interpreted as admission or download authorization**.
+The admitted initial roles are:
 
-TTT-011 / #12 is dependency-unblocked after TTT-010, but execution still waits until the owner records the initial cast decision in `11-model-cast-admission.md` or its issue. Candidate analysis may precede the final decision, but implementation must not silently choose a checkpoint.
+- **Creative teacher A / creative reference:** Sprocket 500M.
+- **Creative teacher B / structured comparison:** Qwen3.5-4B.
+- **Primary compact student:** LFM2.5-1.2B-Instruct.
+- **Larger challenger student:** Qwen3.5-4B.
+- **Operational oracle:** deterministic World Authority; no model-assisted oracle.
+- **WorldTUI checkpoint experiment:** none in the initial cast.
 
-Possible roles to fill:
-- creative teacher(s);
-- operational/oracle teacher if model-assisted;
-- primary compact student;
-- larger comparison student;
-- optional WorldTUI-derived/terminal-model experiment.
-
-A role may be "none/deterministic" where appropriate.
+The exact native and GGUF identities, SHA-256 values, licensing dispositions,
+runtime targets and bounded downstream budgets live in
+`11-model-cast-admission.md` and the machine-readable
+`src/techrotic_training_triumvirate/model_cast_v1.json`. The earlier
+`12-candidate-model-zoo.md` remains characterization/planning history and is
+not an independent admission source.
 
 ## 7. Expensive-work gate
 

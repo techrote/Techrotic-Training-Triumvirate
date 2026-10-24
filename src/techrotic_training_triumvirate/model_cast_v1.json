@@ -1,0 +1,216 @@
+{
+  "decision_authority": "Owner explicitly delegated model-cast selection to the implementation agent for TTT-011.",
+  "decision_date": "2026-10-24",
+  "decision_status": "SELECTED",
+  "models": {
+    "lfm2.5-1.2b-instruct": {
+      "active_parameter_count": 1170000000,
+      "context_tokens": 32768,
+      "inference": {
+        "artifact": "LFM2.5-1.2B-Instruct-Q4_K_M.gguf",
+        "artifact_commit": "4e7112f1437070cf9f49aeb93ad965b946029f75",
+        "artifact_sha256": "b1b3de114215d9507409a662a501a631095a479a419584e8a2ded6304b19b4f5",
+        "download_url": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/resolve/4e7112f1437070cf9f49aeb93ad965b946029f75/LFM2.5-1.2B-Instruct-Q4_K_M.gguf",
+        "repository": "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+        "supported_paths": [
+          "llama.cpp",
+          "Transformers",
+          "vLLM"
+        ]
+      },
+      "license": {
+        "attribution_restrictions": "Carry the LFM license and required notices; do not assume Apache/MIT terms.",
+        "generated_output_training_use": "Research/experimental fine-tuning and TTT corpus generation admitted under the project's current non-commercial/research posture; re-review before commercial deployment.",
+        "id": "LFM-Open-License-v1.0",
+        "redistribution": "Allowed with license/notice conditions; commercial use is limited by the license's USD 10M annual-revenue threshold."
+      },
+      "measured_characterization": {
+        "evidence": [
+          "1.17B parameters and 32,768-token context.",
+          "Official Q4_K_M artifact is 731 MB and is explicitly positioned for local llama.cpp inference.",
+          "Publisher reports CPU-oriented hybrid architecture and instruction-following emphasis."
+        ],
+        "selection_effect": "Selected as the cheapest credible native-weight student substrate with a first-party GGUF and native checkpoint.",
+        "source": "publisher model/artifact measurements"
+      },
+      "native": {
+        "artifact": "model.safetensors",
+        "artifact_commit": "205939ab34ce3eaa85f527376fe3f425fcefa782",
+        "artifact_sha256": "1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a",
+        "repository": "LiquidAI/LFM2.5-1.2B-Instruct"
+      },
+      "parameter_count": 1170000000,
+      "roles": [
+        "primary_compact_student"
+      ],
+      "status": "selected",
+      "tokenizer_chat_format": "65,536-token tokenizer; ChatML-like Liquid chat template."
+    },
+    "qwen3.5-4b": {
+      "active_parameter_count": 4000000000,
+      "context_tokens": 262144,
+      "inference": {
+        "artifact": "Qwen3.5-4B-Q4_K_M.gguf",
+        "artifact_sha256": "25082a7dd3776cc3c741c6347d3bd04523f05796607b3fbc32fa3a25dfa1418c",
+        "download_url": "https://huggingface.co/lmstudio-community/Qwen3.5-4B-GGUF/resolve/f9f88ac3e234be915e23811a6d28ea287bdb927e/Qwen3.5-4B-Q4_K_M.gguf",
+        "repository": "lmstudio-community/Qwen3.5-4B-GGUF",
+        "revision": "f9f88ac3e234be915e23811a6d28ea287bdb927e",
+        "probe_chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "supported_paths": [
+          "llama.cpp",
+          "Transformers",
+          "vLLM",
+          "SGLang"
+        ]
+      },
+      "license": {
+        "attribution_restrictions": "Retain Apache-2.0 notices for redistributed derivatives.",
+        "generated_output_training_use": "Admitted as comparison-teacher output and challenger-student material after normal TTT provenance/validation gates.",
+        "id": "Apache-2.0",
+        "redistribution": "Allowed subject to Apache-2.0 notices/terms."
+      },
+      "measured_characterization": {
+        "evidence": [
+          "4B language-model parameters and 262,144-token native context.",
+          "Publisher reports IFEval 89.8 for instruction following.",
+          "Selected Q4_K_M artifact is 2,707,513,696 bytes and hash-pinned to an upstream Qwen revision."
+        ],
+        "selection_effect": "Selected as the stronger conventional capacity/control comparison, not because of popularity.",
+        "source": "publisher benchmark and artifact measurements"
+      },
+      "native": {
+        "artifacts": [
+          "model.safetensors-00001-of-00002.safetensors",
+          "model.safetensors-00002-of-00002.safetensors",
+          "model.safetensors.index.json"
+        ],
+        "repository": "Qwen/Qwen3.5-4B",
+        "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
+      },
+      "parameter_count": 4000000000,
+      "roles": [
+        "creative_teacher_b_comparison",
+        "challenger_student"
+      ],
+      "status": "selected",
+      "tokenizer_chat_format": "Qwen3.5 chat template with optional thinking and tool-call format; text-only TTT probes disable vision."
+    },
+    "sprocket-500m": {
+      "active_parameter_count": 501100000,
+      "context_tokens": 2048,
+      "inference": {
+        "artifact": "sprocket-500m-q4_k_m.gguf",
+        "artifact_commit": "cc9fc69",
+        "artifact_sha256": "fa9456e200200ba13889a6bf93dc55fc2173106b73c3f165833882ef91f091c0",
+        "download_url": "https://huggingface.co/kandivault/sprocket-500m/resolve/cc9fc69/sprocket-500m-q4_k_m.gguf",
+        "repository": "kandivault/sprocket-500m",
+        "supported_paths": [
+          "llama.cpp",
+          "Transformers"
+        ]
+      },
+      "license": {
+        "attribution_restrictions": "Retain required Apache-2.0 notices for redistributed model derivatives.",
+        "generated_output_training_use": "Admitted only as untrusted teacher candidate material after TTT provenance/license/operational validation; no claim that model output is authoritative world truth.",
+        "id": "Apache-2.0",
+        "redistribution": "Allowed subject to Apache-2.0 notices/terms."
+      },
+      "measured_characterization": {
+        "evidence": [
+          "Unconditional persona persisted through override attempts.",
+          "Instruct build emitted well-formed tool-call JSON and selected tools from distractors.",
+          "Memory/control-path discrimination was unreliable.",
+          "Longer coherence frequently degraded into repetition."
+        ],
+        "selection_effect": "Selected for creative/reference diversity, explicitly not for operational authority or primary student duty.",
+        "source": "publisher 22-case persona/capability battery"
+      },
+      "native": {
+        "artifact": "model.safetensors",
+        "artifact_commit": "5f4b3db",
+        "artifact_sha256": "1a9fd1066f3f0873c4f5ae99b75beab3b0721100f45b036f9e255611b220d864",
+        "repository": "kandivault/sprocket-500m"
+      },
+      "parameter_count": 501100000,
+      "roles": [
+        "creative_teacher_a",
+        "creative_reference"
+      ],
+      "status": "selected",
+      "tokenizer_chat_format": "Custom 32k BPE; <|system|>/<|user|>/<|assistant|>/<|end|> plus tool/reasoning control tokens."
+    }
+  },
+  "probe_defaults": {
+    "batch_tokens": 512,
+    "context_tokens": 2048,
+    "deterministic_seed": 24301,
+    "diversity_seeds": [
+      24301,
+      24302,
+      24303
+    ],
+    "diversity_temperature": 0.8,
+    "max_new_tokens": 96,
+    "runtime": "llama.cpp",
+    "runtime_revision": "2afcdb9777b1bac79fa4bfe284b9bf23085b0469",
+    "runtime_tag": "b8185",
+    "structured_temperature": 0.0,
+    "threads": 2,
+    "ubatch_tokens": 128
+  },
+  "quarantined_or_rejected": {
+    "gemma-npc-variants": {
+      "reason": "Remain characterization candidates; not required to answer the first 1.2B-vs-4B generalist capacity question.",
+      "status": "challenger_pool"
+    },
+    "lfm2.5-thinking-and-moe": {
+      "reason": "Useful later matched/reasoning/MoE ablations; deferred to keep the first training matrix bounded.",
+      "status": "challenger_pool"
+    },
+    "think.npc-1b": {
+      "reason": "Interesting NPC specialization but merged/abliterated lineage and Gemma-license/data provenance add avoidable first-cast complexity; reconsider only with a separate provenance review.",
+      "status": "quarantined"
+    }
+  },
+  "roles": {
+    "challenger_students": [
+      "qwen3.5-4b"
+    ],
+    "creative_teacher_a": "sprocket-500m",
+    "creative_teacher_b_comparison": "qwen3.5-4b",
+    "operational_model_assisted_oracle": null,
+    "operational_oracle": "deterministic-world-authority",
+    "primary_compact_student": "lfm2.5-1.2b-instruct",
+    "worldtui_checkpoint_experiment": null
+  },
+  "runtime_targets": {
+    "challenger_student": {
+      "minimum_context_tokens": 2048,
+      "peak_resident_bytes_max": 7000000000,
+      "q4_artifact_bytes_max": 3200000000,
+      "reference_host_rule": "Performance evidence must name CPU/GPU, RAM, runtime revision, threads, context and batch settings.",
+      "sustained_tokens_per_second_min": 5.0,
+      "ttft_seconds_max": 4.0
+    },
+    "note": "These are initial local-runtime gates for later admission. TTT-011 records probe measurements; it does not relax a miss.",
+    "primary_compact_student": {
+      "minimum_context_tokens": 2048,
+      "peak_resident_bytes_max": 3000000000,
+      "q4_artifact_bytes_max": 1000000000,
+      "reference_host_rule": "Performance evidence must name CPU/GPU, RAM, runtime revision, threads, context and batch settings.",
+      "sustained_tokens_per_second_min": 12.0,
+      "ttft_seconds_max": 2.0
+    }
+  },
+  "schema_version": 1,
+  "training_budget": {
+    "external_compute_cost_gbp_max": 75,
+    "paid_model_api_cost_gbp_max": 0,
+    "rule": "Budget exhaustion is a hard stop; later issues may reduce this envelope but may not silently raise it.",
+    "ttt_011_training_authorized": false,
+    "ttt_012_smoke_gpu_hours_max": 3,
+    "ttt_013_initial_pilot_gpu_hours_max": 24
+  }
+}

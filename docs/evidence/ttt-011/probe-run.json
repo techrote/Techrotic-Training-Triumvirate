@@ -1,0 +1,15 @@
+{
+  "github_run_attempt": "1",
+  "github_run_id": "40074145443",
+  "llama_cpp_revision": "2afcdb9777b1bac79fa4bfe284b9bf23085b0469",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "probe_files": [
+    "lfm2.5-1.2b-instruct-probe.json",
+    "qwen3.5-4b-probe.json",
+    "sprocket-500m-probe.json"
+  ],
+  "runner_arch": "X64",
+  "runner_os": "Linux",
+  "schema": "ttt.model_probe_run.v1",
+  "source_sha": "0a16e3c5138d4ea724a37747da8b8fec18278b8a"
+}
