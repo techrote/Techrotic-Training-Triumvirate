@@ -45,16 +45,11 @@ def worker(args: argparse.Namespace) -> None:
     timer.daemon = True
     timer.start()
     args.output.mkdir(parents=True, exist_ok=True)
-    config = replace(
-        load_training_config("primary", mix=TrainingMix.JOINT_CORRECTIVE, seed=24302),
-        profile_version=2,
-        epochs=args.epochs,
-        lora_rank=16,
-        lora_alpha=32,
-        micro_batch_size=4,
-        gradient_accumulation_steps=2,
-        parity_max_new_tokens=192,
+    config = load_training_config(
+        "primary", mix=TrainingMix.JOINT_CORRECTIVE, seed=24302, profile_version=2
     )
+    if args.epochs != config.epochs:
+        raise ValueError("epochs differ from the admitted versioned profile")
     write_json(args.output / "resolved-config.json", config.to_object())
     binding = resolve_model_binding("primary")
     examples, dataset = load_corpus_examples(args.corpus)
@@ -92,7 +87,8 @@ def worker(args: argparse.Namespace) -> None:
         raw_output_path=args.output / "raw-generations.jsonl",
     )
     metadata = {
-        "variant": "repair-v2",
+        "variant": config.mix.value,
+        "experiment": "repair-v2",
         "base_checkpoint": binding.to_object(),
         "dataset_hash": dataset.dataset_hash,
         "training_config": config.to_object(),
@@ -150,6 +146,7 @@ def main() -> int:
     parser.add_argument("--gpu-uuid", required=True, choices=[TITAN])
     parser.add_argument("--hours", type=float, default=2)
     parser.add_argument("--epochs", type=int, default=3)
+    parser.add_argument("--corpus-seed", type=int, default=934000)
     parser.add_argument("--prepare", action="store_true")
     parser.add_argument("--worker", action="store_true")
     parser.add_argument("--frozen", action="store_true")
@@ -157,7 +154,11 @@ def main() -> int:
     if not 0 < args.hours <= 4:
         raise ValueError("one attempt must be bounded to at most four GPU-hours")
     if args.prepare:
-        print(generate_demonstrations(args.corpus, git_commit=args.git_commit))
+        print(
+            generate_demonstrations(
+                args.corpus, git_commit=args.git_commit, seed=args.corpus_seed
+            )
+        )
         return 0
     if args.worker:
         worker(args)

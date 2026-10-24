@@ -262,7 +262,8 @@ def demonstration(context: EvaluationContext, *, style_seed: int) -> AssistantAc
     units = cast(dict[str, Any], facts["units"])
     objectives = cast(dict[str, Any], facts["objectives"])
     codes = {r.code for r in context.previous_results}
-    unit = "unit-1" if target == context.observation.objective_ids[0] else "unit-2"
+    # Objective IDs are sorted in observations, not in mission/assignment order.
+    unit = "unit-1" if target == "relay-east" else "unit-2"
     if "CAPABILITY_MISMATCH" in codes:
         unit = "unit-2"
     status = units[unit]["status"]
@@ -314,6 +315,26 @@ def demonstration(context: EvaluationContext, *, style_seed: int) -> AssistantAc
             ),
         ),
     )
+
+
+def validate_demonstration_recovery(episode: EpisodeRecord) -> None:
+    """Refuse oracle data that fails its own injected delayed-recovery task."""
+    commands = {
+        c.command_id: c.body
+        for turn in episode.turns
+        for c in turn.assistant_action.commands
+    }
+    events = [e for turn in episode.turns for e in turn.world_events]
+    for failure in (e for e in events if e.kind == "execution-failed"):
+        failed = commands[failure.related_command_ids[0]]
+        if not any(
+            e.kind == "objective-completed"
+            and e.tick > failure.tick
+            and e.data.get("unit_id") == failed.get("unit_id")
+            and e.data.get("target_id") == failed.get("target_id")
+            for e in events
+        ):
+            raise ValueError("demonstration never recovered the failed unit/objective")
 
 
 def generate_demonstrations(
@@ -498,6 +519,7 @@ def generate_demonstrations(
         episode = EpisodeRecord(
             run, scenario, persona, initial, tuple(records), world.state_hash(), run
         )
+        validate_demonstration_recovery(episode)
         provenance = SourceProvenance(
             f"{run}:source",
             "hand-authored",

@@ -52,3 +52,21 @@ or failure is copied to training. Any repeated frozen selection is disclosed.
 Unconditional admission still requires actual trained Q4 measurements and genuine
 human ratings. A prepared packet, synthetic ratings or passing native loss/parity
 does not fill those gates. Follow the original schemas and thresholds in document19.
+
+## Early execution corrections
+
+The first guard check refused before model load because torch2.7 returns a native
+UUID object; converting its canonical string retains exact physical UUID checks.
+The failed launch is charged and preserved. An interim CPU-only export from the
+second attempt exposed a demonstration bug: observed objective IDs are sorted,
+not ordered by mission assignment. That attempt was deliberately stopped and
+retained. Corrected demonstrations associate the source world's primary relay
+with unit1, use unit2 for secondary objectives, and must prove recovery of every
+actual delayed failure with a later authoritative objective-completed event for
+the same unit/target. Environment probe commands never become supervised labels.
+
+The exact predeclared profile is registered as `profiles_v2.json`. Admission
+readback resolves the recorded version to that registry and compares the full
+configuration, run hash and source-bound identity. Arbitrary profile versions,
+changed epochs or unsupported mixes remain refused. Outcome thresholds are
+unchanged. Corrected corpus seeds start at934000; development remains960000+.

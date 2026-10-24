@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -12,6 +13,7 @@ from techrotic_training_triumvirate.training.commander import (
     encode_action,
     generate_demonstrations,
     map_commander,
+    validate_demonstration_recovery,
 )
 from techrotic_training_triumvirate.training.data import load_corpus_examples
 
@@ -73,6 +75,32 @@ def test_aligned_corpus_is_deterministic_disjoint_and_excludes_environment_probe
         assert "evaluator_only" not in source.input
     assert any("execution-failed" in str(e.input["events"]) for e in sources)
     assert any("CAPABILITY_MISMATCH" in str(e.input["feedback"]) for e in sources)
+    from techrotic_training_triumvirate.schemas import EpisodeRecord, load_record
+
+    episode = load_record(
+        json.loads((first / "source-episodes.jsonl").read_text().splitlines()[0])[
+            "episode"
+        ],
+        expected_type=EpisodeRecord,
+    )
+    validate_demonstration_recovery(episode)
+    damaged = replace(
+        episode,
+        turns=tuple(
+            replace(
+                turn,
+                world_events=tuple(
+                    replace(event, data={**event.data, "unit_id": "different-unit"})
+                    if event.kind == "objective-completed"
+                    else event
+                    for event in turn.world_events
+                ),
+            )
+            for turn in episode.turns
+        ),
+    )
+    with pytest.raises(ValueError, match="never recovered"):
+        validate_demonstration_recovery(damaged)
 
 
 def test_frozen_world_is_refused_before_training_data_generation(
