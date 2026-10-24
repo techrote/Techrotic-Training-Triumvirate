@@ -104,6 +104,16 @@ Implement modules behind interfaces rather than a monolith:
 - `Evaluator`
 - `RunManifest`
 
+### Orchestration substrate
+
+SPIKE-LG-001 / issue #18 proved LangGraph checkpoint → historical branch/update → correction → replay around a deterministic TTT-style World Authority. The spike decision is to **adopt LangGraph for generic orchestration/checkpoint/branch/replay**, especially TTT-005 session work and TTT-010 corrective rollouts.
+
+This does not make LangGraph state canonical TTT state. TTT-owned schemas remain authoritative for command meaning, world semantics, hidden-information views, event records, semantic hashes, corpus identity, and experiment provenance. The deterministic World Authority must remain callable/testable without LangGraph so orchestration can be replaced independently.
+
+Use LangGraph checkpoints to answer *where/how should execution resume or fork?* Use TTT records to answer *what semantically happened, under which contracts and evidence?*
+
+Spike evidence and tested implementation: `docs/spikes/langgraph-checkpoint-branch-replay.md`.
+
 Serialized contracts must be versioned.
 
 ## 5. Hidden-information surfaces
