@@ -50,8 +50,9 @@ python -m pip install -e ".[dev,model-probe]"
 The canonical live path is `.github/workflows/model-probes.yml`. It downloads
 the exact hash-pinned GGUFs recorded in
 `src/techrotic_training_triumvirate/model_cast_v1.json`, verifies SHA-256
-before inference, builds the pinned llama.cpp revision, and records the complete
-probe reports under `docs/evidence/ttt-011/`. Do not add model downloads to
+before inference, verifies the hash-pinned official llama.cpp release binary for
+the pinned revision, and records the complete probe reports under
+`docs/evidence/ttt-011/`. Do not add model downloads to
 ordinary Base CI.
 
 ## Canonical checks
