@@ -37,9 +37,10 @@ These are the same base checks enforced by `.github/workflows/base-ci.yml`.
 ttt --version
 ttt seed-demo --seed 24301 --count 5
 ttt schema-bundle --pretty
+ttt command-schema --pretty
 ```
 
-The seed demo exists to make deterministic plumbing observable without requiring a simulator or model. The schema-bundle command emits the canonical JSON Schema 2020-12 bundle for the currently registered durable record versions.
+The seed demo exists to make deterministic plumbing observable without requiring a simulator or model. The schema-bundle command emits the canonical durable-record JSON Schema bundle. The command-schema command emits the independently versioned TTT command-body contract.
 
 ## Reproducibility rule
 
