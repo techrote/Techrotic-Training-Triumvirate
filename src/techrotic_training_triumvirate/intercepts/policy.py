@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import hashlib
 import random
+from dataclasses import dataclass
 
-from techrotic_training_triumvirate.schemas import JsonObject, JsonValue, canonical_json
+from techrotic_training_triumvirate.schemas import (
+    JsonObject,
+    JsonValue,
+    canonical_json,
+)
 
 from .model import DoctrineLexicon, INTERCEPTABLE_FIELDS, string_value
 
@@ -110,9 +114,12 @@ def apply_semantic_policy(
     for field in policy.reveal_fields:
         if field not in fields:
             continue
-        if field != "op" and policy.drop_probability:
-            if drop_rng.random() < policy.drop_probability:
-                continue
+        if (
+            field != "op"
+            and policy.drop_probability
+            and drop_rng.random() < policy.drop_probability
+        ):
+            continue
         value: JsonValue = fields[field]
         if field in policy.redact_fields:
             value = "[REDACTED]"
