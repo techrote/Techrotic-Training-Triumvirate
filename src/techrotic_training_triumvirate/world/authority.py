@@ -535,7 +535,7 @@ class WorldAuthority:
 
     def world_private_reference(self) -> WorldPrivateReference:
         return WorldPrivateReference(
-            state_id=(f"{self.blueprint.scenario.identity.scenario_id}:g{self.generation}"),
+            state_id=f"{self.blueprint.scenario.identity.scenario_id}:g{self.generation}",
             scenario=self.blueprint.scenario.identity,
             state_hash=self.state_hash(),
             generation=self.generation,
