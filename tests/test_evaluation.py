@@ -6,6 +6,8 @@ import pytest
 
 from techrotic_training_triumvirate.evaluation import (
     EXPECTED_BENCHMARK_HASH,
+    BenchmarkReport,
+    CaseResult,
     FrozenEvaluationGuardError,
     ScriptedCommanderBaseline,
     WeakCommanderBaseline,
@@ -15,17 +17,15 @@ from techrotic_training_triumvirate.evaluation import (
 )
 
 
-def _section(report: object, name: str) -> dict[str, object]:
-    operational = getattr(report, "operational")
-    assert isinstance(operational, dict)
+def _section(report: BenchmarkReport, name: str) -> dict[str, object]:
+    operational = report.operational
     section = operational[name]
     assert isinstance(section, dict)
     return section
 
 
-def _case(report: object, kind: str) -> object:
-    cases = getattr(report, "cases")
-    return next(item for item in cases if item.kind == kind)
+def _case(report: BenchmarkReport, kind: str) -> CaseResult:
+    return next(item for item in report.cases if item.kind == kind)
 
 
 def test_frozen_manifest_is_integrity_checked_and_complete() -> None:
