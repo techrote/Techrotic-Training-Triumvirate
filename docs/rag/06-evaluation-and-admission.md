@@ -91,3 +91,70 @@ Every comparative report must distinguish:
 - hardware/runtime;
 - quantization;
 - stochastic seeds.
+
+## Implemented frozen benchmark contract (TTT-009)
+
+The first model-agnostic evaluation surface lives under
+`techrotic_training_triumvirate.evaluation`.
+
+### Adapter boundary
+
+`StudentAdapter` exposes a stable policy identity, a per-case reset hook and
+`act(EvaluationContext) -> AssistantAction`. The context contains only the
+admitted commander observation, authoritative feedback/events visible to the
+commander, and the benchmark persona. It does **not** reveal the adversarial
+case kind or evaluator-only labels.
+
+Deterministic baselines implement the same adapter boundary as later model
+runtimes. Because TTT-005 is available, each context also carries the canonical
+structured and compact observation surfaces produced by its replaceable
+`SessionRenderer`; TTT-009 does not define a second rendering/session format.
+
+### Frozen benchmark v1
+
+The packaged manifest `benchmark_v1.json` has:
+
+- benchmark ID `ttt-core-frozen`;
+- benchmark version `1`;
+- canonical manifest content hash
+  `22a93e8861e25d1b6b15fea298431b4023b28610884d1699d447cf8a85bb92aa`;
+- three generated reserved scenario family/seed cases;
+- handwritten/adversarial cases for malformed commands, capability mismatch,
+  delayed execution failure, stale observations, conflicting orders, changed
+  objectives, secret leakage, fabricated results, intercept over-disclosure,
+  and repetition/degeneration.
+
+`load_benchmark_v1()` verifies the committed content hash, exact field set,
+unique case identities and exact reservation coverage. Any changed v1 content
+without an explicit new benchmark version/hash fails closed.
+
+### Training/corrective-corpus guard
+
+`frozen_evaluation_guard()` returns the exact family/seed reservation set.
+TTT-007 corpus assembly consumes it automatically: matching cases are forced to
+`frozen_eval`, and the corpus manifest records the benchmark ID, version and
+content hash that supplied the reservation. TTT-010 corrective rollout code must
+call `assert_training_allowed(family=..., seed=...)` before admitting generated
+or student-visited cases. Frozen evaluation failures are evaluation evidence only;
+they are not eligible training examples under the same family/seed identity.
+
+### Metrics and reporting
+
+The CPU-small runner scores mechanical command competence, closed-loop task and
+recovery competence, and hidden-information discipline against the deterministic
+World Authority. It also verifies that ordinary player intercepts remain
+grounded to real dispatch events and do not disclose forbidden values.
+
+Reports bind benchmark ID/version/hash, caller-supplied code revision and
+`PolicyIdentity`. Canonical JSON produces a deterministic report hash for a
+deterministic adapter.
+
+Operational metrics are separate from character metrics. Automated character
+proxies cover persona-constraint adherence, repetition, lexical/phrase
+diversity and doctrine/codeword consistency. Humour, surprise, distinctiveness,
+and whether irrationality feels intentional remain explicitly human-evaluation
+questions.
+
+The default benchmark path has no model, network, GPU or optional Concordia
+dependency.
+

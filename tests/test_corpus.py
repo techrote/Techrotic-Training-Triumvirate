@@ -183,6 +183,58 @@ def test_frozen_evaluation_world_cannot_enter_train_or_dev() -> None:
     assert all(example.split is not CorpusSplit.DEV for example in build.examples)
 
 
+def test_ttt009_reserved_family_seed_is_automatically_frozen() -> None:
+    episode = t0_episode()
+    reserved_identity = replace(
+        episode.scenario.identity,
+        scenario_id="ttt009-reserved-fixture",
+        family="abstract-c2",
+        seed=240901,
+    )
+    reserved_episode = replace(
+        episode,
+        scenario=replace(episode.scenario, identity=reserved_identity),
+    )
+    reserved_source = replace(_source(), episode=reserved_episode)
+
+    build = assemble_corpus(
+        (reserved_source,),
+        config=CorpusConfig(seed=4, dev_percent=0),
+    )
+
+    assert build.examples
+    assert {example.split for example in build.examples} == {CorpusSplit.FROZEN_EVAL}
+    guard = build.manifest["config"]
+    assert isinstance(guard, dict)
+    guard_identity = guard["frozen_evaluation_guard"]
+    assert isinstance(guard_identity, dict)
+    assert guard_identity["benchmark_id"] == "ttt-core-frozen"
+    assert guard_identity["benchmark_version"] == "1"
+
+
+def test_ttt009_guard_does_not_freeze_unreserved_seed_from_same_family() -> None:
+    episode = t0_episode()
+    unreserved_identity = replace(
+        episode.scenario.identity,
+        scenario_id="ttt009-unreserved-fixture",
+        family="abstract-c2",
+        seed=240999,
+    )
+    unreserved_episode = replace(
+        episode,
+        scenario=replace(episode.scenario, identity=unreserved_identity),
+    )
+    unreserved_source = replace(_source(), episode=unreserved_episode)
+
+    build = assemble_corpus(
+        (unreserved_source,),
+        config=CorpusConfig(seed=4, dev_percent=0),
+    )
+
+    assert build.examples
+    assert {example.split for example in build.examples} == {CorpusSplit.TRAIN}
+
+
 def test_malformed_recovery_link_is_quarantined() -> None:
     episode = t0_episode()
     turn = episode.turns[1]
