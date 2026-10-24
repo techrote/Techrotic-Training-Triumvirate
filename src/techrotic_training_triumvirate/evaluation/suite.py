@@ -56,9 +56,7 @@ def _boolean(value: object, *, where: str) -> bool:
     return value
 
 
-def _exact_keys(
-    value: dict[str, object], expected: set[str], *, where: str
-) -> None:
+def _exact_keys(value: dict[str, object], expected: set[str], *, where: str) -> None:
     actual = set(value)
     if actual != expected:
         raise BenchmarkIntegrityError(
@@ -141,9 +139,7 @@ def _persona(value: object) -> PersonaSpec:
     )
 
 
-def _validate_reservations(
-    value: object, cases: tuple[BenchmarkCase, ...]
-) -> None:
+def _validate_reservations(value: object, cases: tuple[BenchmarkCase, ...]) -> None:
     reservations = _array(value, where="reservations")
     parsed: list[tuple[str, str, int]] = []
     for index, item in enumerate(reservations):
@@ -206,9 +202,7 @@ def load_benchmark_v1() -> BenchmarkManifest:
     )
     adversarial = tuple(
         _case(item, suite="adversarial", index=index)
-        for index, item in enumerate(
-            _array(raw["adversarial"], where="adversarial")
-        )
+        for index, item in enumerate(_array(raw["adversarial"], where="adversarial"))
     )
     cases = generated + adversarial
     case_ids = [case.case_id for case in cases]
