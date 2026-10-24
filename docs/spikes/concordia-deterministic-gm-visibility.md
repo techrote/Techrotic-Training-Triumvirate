@@ -137,14 +137,26 @@ python -m pytest spikes/concordia/tests
 python -m ttt_concordia_spike
 ~~~
 
-## Preliminary architecture decision
+## Architecture decision
 
-**Decision: pending green CI.**
+**Decision: CONDITIONALLY ADOPT Concordia as an optional richer simulation/Game-Master substrate, not as TTT's mandatory deterministic core.**
 
-The spike is intended to decide whether Concordia should be:
+The exact spike source passed GitHub Actions on PR #21: Concordia's real Sequential engine executed the typed-command path, the fail-fast language model remained untouched, visibility projections stayed separated, invalid commands could not mutate world state, and repeated runs produced identical semantic hashes.
 
-- adopted as the mandatory TTT deterministic world engine;
-- conditionally adopted as an optional/richer simulation substrate under TTT contracts and LangGraph orchestration; or
-- rejected if its string/action or Game Master abstractions require too much semantic bypassing.
+The spike therefore proves that Concordia can sit under TTT contracts and under the already-adopted LangGraph orchestration layer when its entity/scene/Game-Master machinery is useful.
 
-Regardless of outcome, TTT's typed commands, visibility policy, semantic hashes, event identities, and provenance remain authoritative.
+It should not become a mandatory base dependency yet because:
+
+- Concordia transports entity actions and observations as strings, requiring a serialization/parsing boundary around TTT's typed semantic commands;
+- its general social-simulation package brings substantially more dependencies and framework surface than TTT's minimal deterministic abstract world requires;
+- TTT needs the World Authority callable directly, without either Concordia or LangGraph, for fast unit tests, corpus generation, replay verification, and future engine replacement.
+
+Implementation rule for TTT-004 and later work:
+
+1. define TTT World Authority, typed commands, events, visibility and hashes independently of Concordia;
+2. keep a lightweight direct/native driver as the minimum execution path;
+3. use a Concordia host/adapter where richer entity scheduling, scenes, Game-Master components or simulation tooling provide concrete value;
+4. never permit Concordia's optional LLM fallbacks to become authoritative world resolution;
+5. treat Concordia logs/checkpoints as supplementary execution evidence, not canonical TTT provenance.
+
+Revisit this conditional decision after TTT-004 has a 20+ turn benchmark and the project can compare native versus Concordia-hosted complexity, throughput and feature value.
