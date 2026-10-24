@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
+import os
 import platform
 import subprocess
 import time
+from collections.abc import Callable
+from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
@@ -14,6 +17,7 @@ from techrotic_training_triumvirate.admission import verify_package
 from techrotic_training_triumvirate.runtime import load_tiny_export
 from techrotic_training_triumvirate.schemas import JsonObject, JsonValue, canonical_json
 from techrotic_training_triumvirate.training.campaign_integrity import (
+    verify_checkpoint_identity,
     verify_training_reuse,
 )
 from techrotic_training_triumvirate.training.data import load_corpus_examples
@@ -41,6 +45,8 @@ class CpuDiagnosticSpec:
     output_dir: Path
     timeout_seconds: float
     artifact: Path | None = None
+    threads: int = 2
+    low_priority: bool = True
 
 
 def verify_corpus(corpus_dir: str | Path) -> JsonObject:
@@ -52,6 +58,26 @@ def verify_corpus(corpus_dir: str | Path) -> JsonObject:
         "dataset_identity": identity.to_object(),
         "verified": True,
     }
+
+
+def verify_checkpoint(
+    directory: str | Path,
+    *,
+    binding: ModelBinding,
+    config: TrainingConfig,
+    dataset: DatasetIdentity,
+    source_revision: str,
+) -> JsonObject:
+    """Reject stale checkpoint resume before any training backend loads it."""
+
+    identity = verify_checkpoint_identity(
+        directory,
+        binding=binding,
+        config=config,
+        dataset=dataset,
+        source_revision=source_revision,
+    )
+    return {"verified": True, "training_identity": identity}
 
 
 def verify_training(
@@ -109,6 +135,11 @@ def assert_admission_eligible(record: JsonObject) -> None:
         )
 
 
+def _lower_priority() -> None:
+    with suppress(OSError):
+        os.nice(10)
+
+
 def run_cpu_diagnostic(spec: CpuDiagnosticSpec) -> JsonObject:
     """Execute an available conversion/inference tool as non-admission evidence.
 
@@ -133,9 +164,30 @@ def run_cpu_diagnostic(spec: CpuDiagnosticSpec) -> JsonObject:
         or not 0 < float(spec.timeout_seconds) <= 3600
     ):
         raise PipelineAdapterError("CPU diagnostic timeout must be in (0, 3600]")
+    if type(spec.threads) is not int or not 1 <= spec.threads <= 64:
+        raise PipelineAdapterError("CPU diagnostic threads must be in [1, 64]")
+    if type(spec.low_priority) is not bool:
+        raise PipelineAdapterError("CPU diagnostic low_priority must be boolean")
     if output.exists() and any(output.iterdir()):
         raise PipelineAdapterError("CPU diagnostic output directory must be fresh")
     output.mkdir(parents=True, exist_ok=True)
+
+    environment = dict(os.environ)
+    environment.update(
+        {
+            "CUDA_VISIBLE_DEVICES": "",
+            "GGML_CUDA": "0",
+            "OMP_NUM_THREADS": str(spec.threads),
+            "MKL_NUM_THREADS": str(spec.threads),
+        }
+    )
+    creationflags = 0
+    preexec_fn: Callable[[], None] | None = None
+    if spec.low_priority:
+        if os.name == "nt":
+            creationflags = int(getattr(subprocess, "BELOW_NORMAL_PRIORITY_CLASS", 0))
+        else:
+            preexec_fn = _lower_priority
 
     stdout_path = output / "stdout.log"
     stderr_path = output / "stderr.log"
@@ -147,6 +199,9 @@ def run_cpu_diagnostic(spec: CpuDiagnosticSpec) -> JsonObject:
             capture_output=True,
             check=False,
             timeout=float(spec.timeout_seconds),
+            env=environment,
+            creationflags=creationflags,
+            preexec_fn=preexec_fn,
         )
     except subprocess.TimeoutExpired as exc:
         raise PipelineAdapterError("CPU diagnostic exceeded its hard timeout") from exc
@@ -182,6 +237,9 @@ def run_cpu_diagnostic(spec: CpuDiagnosticSpec) -> JsonObject:
         "stdout_sha256": sha256_file(stdout_path),
         "stderr_sha256": sha256_file(stderr_path),
         "artifact": artifact,
+        "cpu_threads": spec.threads,
+        "priority": "low" if spec.low_priority else "normal",
+        "named_host_acceptance": False,
         "host": {
             "hostname": platform.node(),
             "platform": platform.platform(),

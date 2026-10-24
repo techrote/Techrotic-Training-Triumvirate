@@ -11,6 +11,7 @@ from techrotic_training_triumvirate.schemas import (
 )
 from techrotic_training_triumvirate.training.export import sha256_file
 
+from .completion import verify_completion_marker, write_completion_marker
 from .model import (
     EventKind,
     EvidenceClass,
@@ -127,11 +128,34 @@ def run_rehearsal(
         simulation_path.write_text(
             canonical_json(evidence) + "\n", encoding="utf-8", newline="\n"
         )
+        stage_id = plan.stage_id(
+            "rehearsal-final", {"candidate_id": review.candidate_id}
+        )
+        write_completion_marker(
+            root,
+            stage_id=stage_id,
+            artifact_names=("rehearsal-evidence.json",),
+            evidence_class=EvidenceClass.SIMULATION,
+        )
+        completion = verify_completion_marker(
+            root,
+            stage_id=stage_id,
+            evidence_class=EvidenceClass.SIMULATION,
+        )
         store.record_artifact(
             experiment_id,
             name="rehearsal-evidence",
             path=str(simulation_path),
             sha256=sha256_file(simulation_path),
+            evidence_class=EvidenceClass.SIMULATION,
+            admission_eligible=False,
+        )
+        completion_path = root / "COMPLETE.json"
+        store.record_artifact(
+            experiment_id,
+            name="rehearsal-completion",
+            path=str(completion_path),
+            sha256=sha256_file(completion_path),
             evidence_class=EvidenceClass.SIMULATION,
             admission_eligible=False,
         )
@@ -145,4 +169,5 @@ def run_rehearsal(
         "event_chain_sha256": content_hash(list(hashes)),
         "budget": budget,
         "artifacts": list(inventory),
+        "completion": completion,
     }

@@ -50,6 +50,9 @@ _TRANSITIONS: dict[tuple[ExperimentState, EventKind], Transition] = {
     (ExperimentState.ADMISSION_READBACK, EventKind.ADMISSION_VERIFIED): Transition(
         ExperimentState.COMPLETE, ("seal_evidence",)
     ),
+    (ExperimentState.CANCELLING, EventKind.CANCELLED): Transition(
+        ExperimentState.CANCELLED, ("preserve_evidence", "release_resources")
+    ),
 }
 
 _ACTIVE = frozenset(

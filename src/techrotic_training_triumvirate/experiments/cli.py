@@ -83,6 +83,12 @@ def add_experiments_parser(subparsers: Any) -> None:
     diagnostic.add_argument("--output", type=Path, required=True)
     diagnostic.add_argument("--timeout", type=float, default=600.0)
     diagnostic.add_argument("--artifact", type=Path)
+    diagnostic.add_argument("--threads", type=int, default=2)
+    diagnostic.add_argument(
+        "--normal-priority",
+        action="store_true",
+        help="do not lower CPU diagnostic scheduling priority",
+    )
     diagnostic.add_argument("tool", type=Path)
     diagnostic.add_argument("tool_args", nargs=argparse.REMAINDER)
 
@@ -217,6 +223,8 @@ def run_experiments(args: argparse.Namespace, parser: argparse.ArgumentParser) -
                     output_dir=args.output,
                     timeout_seconds=args.timeout,
                     artifact=args.artifact,
+                    threads=args.threads,
+                    low_priority=not args.normal_priority,
                 )
             )
             print(canonical_json(result))
