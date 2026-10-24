@@ -153,7 +153,9 @@ For each selected inference artifact it records:
   the runtime exposes it;
 - runner CPU/RAM/platform metadata.
 
-The workflow uses pinned llama.cpp revision `b8185`, 2,048-token probe context,
+The workflow uses llama.cpp tag `b8185` pinned to immutable commit
+`2afcdb9777b1bac79fa4bfe284b9bf23085b0469`, a 2,048-token probe context,
+2 CPU threads, 512-token batch, 128-token microbatch, GPU layers disabled,
 seed `24301` for deterministic probes and seeds `24301..24303` for the
 diversity sample. Live evidence is committed under `docs/evidence/ttt-011/`
 and hash-bound by `SHA256SUMS`; a missing evidence directory means TTT-011 has

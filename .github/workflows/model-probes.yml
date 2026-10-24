@@ -40,6 +40,19 @@ jobs:
       - name: Install TTT probe dependencies
         run: python -m pip install -e ".[model-probe]"
 
+      - name: Validate probe harness
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m py_compile scripts/run_model_probe.py
+          python - <<'PY'
+          from techrotic_training_triumvirate.model_admission import (
+              load_model_cast_v1,
+              validate_model_cast_v1,
+          )
+          validate_model_cast_v1(load_model_cast_v1())
+          PY
+
       - name: Build pinned llama.cpp
         shell: bash
         run: |
