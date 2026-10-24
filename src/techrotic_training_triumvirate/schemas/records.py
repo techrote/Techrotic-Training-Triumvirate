@@ -12,6 +12,8 @@ from typing import ClassVar, cast
 from .base import (
     JsonObject,
     JsonValue,
+    SchemaRecord,
+    SchemaValidationError,
     load_record,
     register_record,
     require_bool,
