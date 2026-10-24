@@ -175,7 +175,8 @@ class BenchmarkReport:
         closed_loop = self.operational.get("closed_loop", {})
         hidden = self.operational.get("hidden_information", {})
         proxies = self.character.get("automated_proxies", {})
-        human = self.character.get("human_evaluation_required", ())
+        human_value = self.character.get("human_evaluation_required", ())
+        human = human_value if isinstance(human_value, (list, tuple)) else ()
         lines = [
             f"# Benchmark report — {self.benchmark_id} v{self.benchmark_version}",
             "",
