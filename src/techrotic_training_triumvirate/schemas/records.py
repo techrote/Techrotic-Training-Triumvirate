@@ -23,8 +23,6 @@ from .base import (
     require_optional_str,
     require_str,
     require_str_tuple,
-    SchemaRecord,
-    SchemaValidationError,
 )
 
 
