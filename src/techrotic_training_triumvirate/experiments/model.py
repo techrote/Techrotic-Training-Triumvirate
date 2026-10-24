@@ -235,13 +235,16 @@ class ExperimentPlan:
         return f"ttt-exp-{content_hash(self.to_object())[:24]}"
 
     def stage_id(self, stage: str, inputs: JsonObject | None = None) -> str:
-        return "ttt-stage-" + content_hash(
-            {
-                "experiment_id": self.experiment_id,
-                "stage": _text(stage, field="stage"),
-                "inputs": cast(JsonObject, inputs or {}),
-            }
-        )[:24]
+        return (
+            "ttt-stage-"
+            + content_hash(
+                {
+                    "experiment_id": self.experiment_id,
+                    "stage": _text(stage, field="stage"),
+                    "inputs": cast(JsonObject, inputs or {}),
+                }
+            )[:24]
+        )
 
     def attempt_id(
         self,
@@ -254,13 +257,16 @@ class ExperimentPlan:
         if type(ordinal) is not int or ordinal < 1:
             raise ExperimentContractError("attempt ordinal must be a positive integer")
         nonce = _text(launch_nonce, field="launch_nonce")
-        return "ttt-attempt-" + content_hash(
-            {
-                "stage_id": self.stage_id(stage, inputs),
-                "ordinal": ordinal,
-                "launch_nonce": nonce,
-            }
-        )[:24]
+        return (
+            "ttt-attempt-"
+            + content_hash(
+                {
+                    "stage_id": self.stage_id(stage, inputs),
+                    "ordinal": ordinal,
+                    "launch_nonce": nonce,
+                }
+            )[:24]
+        )
 
 
 @dataclass(frozen=True, slots=True)

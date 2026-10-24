@@ -452,10 +452,7 @@ class ExperimentStore:
             ).fetchone()
             if row is None:
                 return
-            if (
-                row["experiment_id"] != experiment_id
-                or row["attempt_id"] != attempt_id
-            ):
+            if row["experiment_id"] != experiment_id or row["attempt_id"] != attempt_id:
                 raise ExperimentStoreError(
                     "refusing to release another attempt's lease"
                 )
@@ -509,9 +506,8 @@ class ExperimentStore:
         evidence_class: EvidenceClass,
         admission_eligible: bool,
     ) -> None:
-        if (
-            len(sha256) != 64
-            or any(character not in "0123456789abcdef" for character in sha256)
+        if len(sha256) != 64 or any(
+            character not in "0123456789abcdef" for character in sha256
         ):
             raise ExperimentStoreError("artifact SHA-256 is invalid")
         if admission_eligible and evidence_class is not EvidenceClass.ADMISSION:

@@ -66,8 +66,10 @@ class WorkerSpec:
         if set(value) != expected:
             raise WorkerHostError("worker spec has invalid fields")
         raw_argv = value["argv"]
-        if not isinstance(raw_argv, list) or not raw_argv or not all(
-            isinstance(item, str) and item for item in raw_argv
+        if (
+            not isinstance(raw_argv, list)
+            or not raw_argv
+            or not all(isinstance(item, str) and item for item in raw_argv)
         ):
             raise WorkerHostError("worker argv must contain non-empty strings")
         raw_environment = value["environment"]

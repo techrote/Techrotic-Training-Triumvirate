@@ -69,12 +69,10 @@ def test_events_are_idempotent_and_full_chain_replays_after_restart(
     with ExperimentStore(database) as store:
         store.create_plan(plan)
         assert (
-            store.append_event(plan.experiment_id, first)
-            is ExperimentState.PREFLIGHT
+            store.append_event(plan.experiment_id, first) is ExperimentState.PREFLIGHT
         )
         assert (
-            store.append_event(plan.experiment_id, first)
-            is ExperimentState.PREFLIGHT
+            store.append_event(plan.experiment_id, first) is ExperimentState.PREFLIGHT
         )
         with pytest.raises(ExperimentStoreError, match="different verified"):
             store.append_event(

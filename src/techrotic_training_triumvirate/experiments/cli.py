@@ -27,9 +27,7 @@ def add_experiments_parser(subparsers: Any) -> None:
         "experiments",
         help="validate, inspect and rehearse deterministic experiment plans",
     )
-    commands = experiments.add_subparsers(
-        dest="experiment_command", required=True
-    )
+    commands = experiments.add_subparsers(dest="experiment_command", required=True)
 
     validate = commands.add_parser(
         "validate", help="persist and validate an immutable plan"
