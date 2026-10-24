@@ -70,3 +70,29 @@ readback resolves the recorded version to that registry and compares the full
 configuration, run hash and source-bound identity. Arbitrary profile versions,
 changed epochs or unsupported mixes remain refused. Outcome thresholds are
 unchanged. Corrected corpus seeds start at934000; development remains960000+.
+
+## Trained Q4 qualification
+
+The CPU-only merge/export scripts require a completed native worker, verified
+canonical training identity/artifact inventory and the admitted base. They check
+the actual converter source and extracted executables/DLLs against the digest-bound
+official llama.cpp b8185 archives, merge the actual adapter, convert to F16 GGUF,
+quantize to Q4_K_M and inspect actual GGUF metadata. Their manifests bind every
+parent and derivative hash. Interim checkpoints cannot enter this qualification
+path; separately labelled CPU diagnostics are not admission evidence.
+
+The external HTTP transport imports the archived training/evaluation semantics
+and verifies those files against their semantic commit. Its own later source
+commit and file hash are recorded separately. It verifies the Q4/adapter/base
+lineage, runtime binary and served model alias before using real model responses.
+The model makes every command decision; no grammar, fallback or stale-generation
+repair hides output failures. Final evaluation runs again on the Q4 derivative.
+
+Runtime evidence measures actual artifact bytes, a 2,048-token context, server
+working-set RSS sampled every 20ms, real streamed first-content-token latency
+with prompt caching disabled, and separately measured sustained decode. The
+conservative maximum of three TTFT probes and median decode rate are reported.
+Startup and GPU buffer logs remain available separately; training memory does
+not fill this gate. The server is UUID-pinned, runs only after the training lease
+is released, and has its own hard deadline. GPU probes remain charged to the
+same allocation. Actual human review is still required for ADMITTED.
