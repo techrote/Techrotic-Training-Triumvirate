@@ -54,8 +54,7 @@ class ScriptedStudentAdapter:
         body["observation_generation"] = generation
         envelope = CommandEnvelope(
             command_id=(
-                f"{self.identity.policy_id}:{context.case_id}:"
-                f"{context.turn_index:03d}"
+                f"{self.identity.policy_id}:{context.case_id}:{context.turn_index:03d}"
             ),
             protocol_version="ttt-command-v1",
             body=body,
