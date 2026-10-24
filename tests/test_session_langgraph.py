@@ -33,7 +33,7 @@ def _original_commands() -> tuple:
     )
 
 
-def test_recorded_session_replays_with_identical_ttt_hashes_and_checkpoint_replay() -> None:
+def test_recording_replays_with_ttt_hashes_and_checkpoint_replay() -> None:
     base = SessionRecording.new(
         session_id="session-replay",
         run_id="run-replay",
