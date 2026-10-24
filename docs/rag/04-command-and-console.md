@@ -12,6 +12,10 @@
 8. World-adapter contract — framework-neutral integration surface.
 9. Execution boundary — model commands remain inert structured data.
 10. Recovery and console use — how rejection data feeds later training.
+11. Commander rendering — canonical structured and deterministic compact views.
+12. Semantic deltas — reconstructible changes between admitted observations.
+13. Session recording and replay — durable turn evidence and TTT hash verification.
+14. Historical correction — LangGraph branch mechanics without semantic mutation.
 
 ## 1. Protocol identity
 
@@ -161,3 +165,63 @@ stable error code, neutral structured detail and observation generation.
 These records are intended for later corrective training. TTT-005 console
 rendering must display authoritative interpreter results rather than generated
 acknowledgements.
+
+
+## 11. Commander rendering
+
+TTT-005 exposes a replaceable `SessionRenderer`. The default deterministic renderer has two commander-facing views:
+
+- canonical structured rendering from `CommanderObservation.to_payload()`;
+- compact deterministic text with stable field order and canonical JSON for facts.
+
+Only the admitted commander observation is rendered. Private World Authority state and evaluation-only annotations are not renderer inputs. ANSI escape sequences, framebuffer rows, terminal copy operations, and any other UI encoding are presentation details rather than canonical state.
+
+Command acknowledgements and errors are rendered directly from `InterpreterResult`:
+
+- accepted results render as deterministic `ACK` records;
+- rejected results render as deterministic `ERR` records with the exact interpreter code/detail.
+
+No language model is allowed to synthesize or reinterpret these acknowledgements.
+
+## 12. Semantic deltas
+
+`compute_delta(previous, current)` produces a deterministic JSON-pointer delta over the two full commander-observation payloads.
+
+A delta records:
+
+- the previous TTT observation content hash;
+- the target TTT observation content hash;
+- changed/added JSON-pointer values;
+- removed JSON-pointer paths.
+
+`apply_delta` refuses a mismatched base hash and verifies the reconstructed target hash. This makes compact delta views an encoding of the full admitted observation sequence, not an alternate source of truth.
+
+## 13. Session recording and replay
+
+The TTT-005 session container is versioned as `ttt.session_recording` / schema version 1 with protocol `ttt-session-v1`. It is a container over existing canonical TTT records rather than a replacement for the canonical schema registry.
+
+Each turn persists:
+
+- input `CommanderObservation`;
+- `AssistantAction` and its command envelope;
+- exact `InterpreterResult`;
+- authoritative events emitted during the turn;
+- next commander observation;
+- semantic delta;
+- per-record/turn/world hashes derived with TTT canonical hashing.
+
+The session header carries session/run identity, scenario/seed identity, initial world reference, initial observation, explicit branch lineage, and optional LangGraph checkpoint references. Checkpoint references are excluded from `SessionRecording.semantic_hash()`.
+
+Exact replay regenerates the deterministic scenario, replays recorded commands without a model, verifies every stored TTT turn hash/final world hash, and separately re-executes a saved LangGraph historical checkpoint.
+
+## 14. Historical correction
+
+The LangGraph backend owns only orchestration history:
+
+1. locate the checkpoint immediately before the command being corrected;
+2. create a new session branch with explicit parent branch/turn/hash lineage;
+3. apply the corrected command with LangGraph `update_state`;
+4. resume from that historical checkpoint;
+5. retain the original final checkpoint for independent readback.
+
+The original TTT branch is never mutated. A corrected branch may then accept further commands as a normal session continuation.
