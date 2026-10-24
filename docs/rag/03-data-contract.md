@@ -53,7 +53,7 @@ The v1 registry currently defines:
 | `ttt.player_observation` | Human-player-visible world projection |
 | `ttt.player_intercept` | Grounded player intercept envelope and explicit deception linkage |
 | `ttt.persona` | Structured persona traits, doctrine, constraints and tactical biases |
-| `ttt.command_envelope` | Opaque command body + protocol version pending TTT-003 |
+| `ttt.command_envelope` | Durable command identity + independently versioned typed command body |
 | `ttt.communication` | Commander communication output |
 | `ttt.assistant_action` | Commands + communications emitted by the student |
 | `ttt.interpreter_result` | Authoritative command acceptance/rejection result |
@@ -66,17 +66,22 @@ The v1 registry currently defines:
 
 Names are intentionally game- and model-family-neutral.
 
-### Command boundary before TTT-003
-
-TTT-002 does **not** define the final command grammar.
+### Command envelope and protocol v1
 
 `ttt.command_envelope` contains:
 
 - stable `command_id`;
 - independent `protocol_version`;
-- opaque JSON object `body`.
+- JSON object `body`.
 
-TTT-003 owns the actual operation IR and may build stricter typed records on top of this envelope without changing unrelated episode schemas.
+TTT-003 defines `ttt-command-v1` as the first typed body protocol. The durable
+episode envelope remains unchanged while command semantics are parsed into
+immutable operation-specific Python records. Command protocol versioning remains
+independent so later command evolution does not require unrelated episode-schema
+migration.
+
+See `04-command-and-console.md` for the operation family and interpreter
+admission/error contracts.
 
 ## 3. Turn and episode structure
 

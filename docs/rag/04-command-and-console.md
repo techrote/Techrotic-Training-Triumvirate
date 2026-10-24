@@ -1,110 +1,163 @@
 # Command and console protocol
 
-## Design principle
+## Contents
 
-The commander issues **high-level typed intent**, not arbitrary executable scripts and not low-level body forces.
+1. Protocol identity — independent command versioning.
+2. Command envelope — durable boundary between model output and IR.
+3. Operation family — bounded high-level command vocabulary.
+4. Parsing and validation — strict structured-input rules.
+5. Interpreter admission pipeline — deterministic checks and mutation boundary.
+6. Error taxonomy — stable machine-readable rejection codes.
+7. Acceptance versus execution — dispatch is not success.
+8. World-adapter contract — framework-neutral integration surface.
+9. Execution boundary — model commands remain inert structured data.
+10. Recovery and console use — how rejection data feeds later training.
 
-Example conceptual command:
+## 1. Protocol identity
+
+The first command protocol is `ttt-command-v1`. It is versioned independently
+from canonical episode schemas.
+
+## 2. Command envelope
+
+Canonical episodes store commands in `ttt.command_envelope`:
 
 ```json
 {
-  "op": "assign_objective",
-  "unit": "squad_3",
-  "objective": {
-    "kind": "flank",
-    "target": "reactor_east",
-    "approach": "north"
-  },
-  "constraints": {
-    "urgency": "high",
-    "avoid": ["zone_flooded"]
+  "schema": "ttt.command_envelope",
+  "schema_version": 1,
+  "payload": {
+    "command_id": "cmd-17",
+    "protocol_version": "ttt-command-v1",
+    "body": {
+      "op": "hold",
+      "observation_generation": 42,
+      "unit_id": "squad-a"
+    }
   }
 }
 ```
 
-The interpreter validates it and emits a structured result.
+The envelope owns durable identity/versioning. The command package parses the
+body into an immutable typed command before interpretation.
 
-## Initial operation family
+## 3. Operation family
 
-Keep the first vocabulary small and composable. Candidate operations:
-- inspect/query;
-- assign objective;
-- set/modify constraints;
-- coordinate/synchronize;
-- hold/cancel/recall;
-- transmit/communicate;
-- request status.
+| Operation | Main fields | Purpose |
+|---|---|---|
+| `inspect` | entity, requested fields | Query a known entity |
+| `assign_objective` | unit, objective kind, target, approach, constraints | Assign high-level intent |
+| `set_constraints` | unit, constraint object | Modify execution constraints |
+| `coordinate` | units, trigger, optional objective | Synchronize several units |
+| `hold` | unit | Stop progression while retaining control |
+| `cancel` | unit, optional order ID | Cancel an active/pending order |
+| `recall` | unit, optional destination | Return/reposition a unit |
+| `transmit` | recipients, channel, message | Send bounded in-world communication |
+| `request_status` | entity IDs | Request current status |
 
-Exact names and schemas are implemented under TTT-003 and versioned. Avoid prematurely encoding game-specific actors into the grammar.
+Every operation carries `observation_generation`. Unknown operations and
+operation-specific fields are rejected rather than ignored.
 
-## Error model
+## 4. Parsing and validation
 
-Errors are machine-readable with stable codes plus optional human/character-neutral explanation. Examples:
-- `SCHEMA_INVALID`
-- `ENTITY_UNKNOWN`
-- `ENTITY_UNAVAILABLE`
-- `CAPABILITY_MISMATCH`
-- `TARGET_INVALID`
-- `PRECONDITION_FAILED`
-- `RESOURCE_EXHAUSTED`
-- `STALE_OBSERVATION`
-- `ORDER_CONFLICT`
+Model output can be supplied as a JSON-compatible object or JSON text:
 
-Later execution events distinguish an accepted order from an achieved outcome.
+```python
+from techrotic_training_triumvirate.commands import parse_model_command
 
-## Console/session surface
+command = parse_model_command(
+    {
+        "op": "hold",
+        "observation_generation": 42,
+        "unit_id": "squad-a",
+    },
+    command_id="cmd-17",
+)
+```
 
-"Console" means the model-visible interaction surface, not necessarily an ANSI terminal emulator.
+Parsing validates exact field sets, required types, non-negative observation
+generation, non-empty entity lists, duplicate-free multi-entity lists and the
+protocol version.
 
-It should support:
-- compact observation rendering;
-- structured and/or text views generated from the same canonical state;
-- deterministic acknowledgements/errors;
-- incremental/delta representations for changed facts;
-- multiple turn/session history;
-- configurable verbosity;
-- exact reconstruction of a recorded episode.
+`ttt command-schema` emits the structural JSON Schema 2020-12 contract.
 
-A WorldTUI-style row/frame representation may be an experiment, but canonical data must not depend on presentation pixels/rows.
+## 5. Interpreter admission pipeline
 
-## Stateful synthetic sessions
+`CommandInterpreter` follows one deterministic order:
 
-Scenario generators should create coherent multi-turn activities rather than independent prompts. Randomize:
-- map/topology;
-- actors/capabilities;
-- objectives;
-- resources;
-- timing;
-- visibility;
-- names/callsigns;
-- doctrine vocabulary;
-- failures and interruptions.
+1. parse protocol/body;
+2. reject stale observation generation;
+3. resolve referenced entities;
+4. reject unavailable entities;
+5. validate target references;
+6. validate generic command capabilities;
+7. ask the World Adapter for precondition checks;
+8. ask for resource checks;
+9. ask for active-order conflicts;
+10. call `WorldAdapter.dispatch()` exactly once if all checks pass.
 
-Some episodes should start mid-state to reduce overfitting to clean initial conditions.
+`dispatch()` is the only mutation boundary exposed by TTT-003. Rejected
+commands never call it.
 
-## Interpreter boundary
+## 6. Error taxonomy
 
-The interpreter:
-1. parses/validates against the command schema;
-2. resolves entity references;
-3. checks capabilities/preconditions/resources;
-4. converts accepted high-level intent into authoritative world orders;
-5. records dispatch events;
-6. returns structured feedback.
+| Code | Meaning |
+|---|---|
+| `SCHEMA_INVALID` | malformed body, unknown operation, wrong/extra fields |
+| `PROTOCOL_UNSUPPORTED` | command protocol version is unsupported |
+| `ENTITY_UNKNOWN` | referenced entity does not exist |
+| `ENTITY_UNAVAILABLE` | entity exists but cannot currently receive the command |
+| `CAPABILITY_MISMATCH` | entity lacks the generic command capability |
+| `TARGET_INVALID` | referenced target/destination/objective does not exist |
+| `PRECONDITION_FAILED` | deterministic world precondition failed |
+| `RESOURCE_EXHAUSTED` | required resource/budget is unavailable |
+| `STALE_OBSERVATION` | command observation generation is stale |
+| `ORDER_CONFLICT` | command conflicts with authoritative order state |
 
-It must not execute arbitrary host commands from model strings.
+## 7. Acceptance versus execution
 
-## Recovery data
+An accepted command yields an `InterpreterResult` with `accepted=True` plus
+an authoritative `command-dispatched` event. This means only that the World
+Authority admitted the intent for execution.
 
-When a command is rejected, preserve:
-- the command attempted;
-- exact structured error;
-- observation revision if any;
-- corrected action;
-- downstream result.
+Later simulation may still report route failure, loss, timeout, changed target,
+stall, or objective completion. Admission and eventual outcome remain separate.
 
-These are high-value examples for tool-use competence.
+## 8. World-adapter contract
 
-## Runtime compatibility
+The interpreter depends on a small `WorldAdapter` protocol:
 
-Game-specific bridges map the canonical high-level order into squad/actor controllers. The core command protocol should remain stable enough that synthetic training does not have to reproduce every game physics detail.
+- current observation generation;
+- entity snapshots and generic capabilities;
+- target existence;
+- deterministic precondition/resource/conflict checks;
+- final dispatch commit returning an event ID/tick/data.
+
+TTT-004 supplies the framework-neutral World Authority and optional Concordia
+host.
+
+Generic capabilities used by v1 are:
+
+- `command.assign_objective`;
+- `command.set_constraints`;
+- `command.coordinate`;
+- `command.order_control`.
+
+## 9. Execution boundary
+
+TTT command operations describe game intent only. The protocol contains no
+generic operating-system, program-launch, callback, file-operation or network
+operation.
+
+Unknown operation names and unknown fields are rejected as `SCHEMA_INVALID`.
+Communication contents remain inert in-world text. Game-specific bridges map
+admitted typed intent to explicit controller APIs.
+
+## 10. Recovery and console use
+
+Rejected records preserve the original envelope, parsed command when available,
+stable error code, neutral structured detail and observation generation.
+
+These records are intended for later corrective training. TTT-005 console
+rendering must display authoritative interpreter results rather than generated
+acknowledgements.
