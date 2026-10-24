@@ -75,11 +75,12 @@ Merged foundations now include:
 - TTT-002 / #3 — canonical versioned schemas, T0 fixtures and content hashing;
 - TTT-003 / #4 — `ttt-command-v1`, strict typed command parsing and deterministic admission;
 - TTT-004 / #5 — framework-neutral deterministic World Authority, replay, delayed execution failures, visibility projections and optional Concordia parity host;
+- TTT-005 / #6 — optional LangGraph-backed semantic sessions with deterministic structured/text/delta views, hash-verified recording/replay, and historical correction branches;
 - TTT-006 / #7 — model-agnostic persona mutation and Creative Teacher adapters;
-- TTT-008 / #9 — grounded player intercepts, deterministic doctrine/visibility policies and explicit deception broadcasts;
-- TTT-005 / #6 — optional LangGraph-backed semantic sessions with deterministic structured/text/delta views, hash-verified recording/replay, and historical correction branches.
+- TTT-007 / #8 — validated deterministic corpus assembly, provenance/license quarantine, deduplication and leak-safe split discipline;
+- TTT-008 / #9 — grounded player intercepts, deterministic doctrine/visibility policies and explicit deception broadcasts.
 
-**Wave 4 is active.** TTT-005 / #6 is complete; TTT-007 / #8 and TTT-009 / #10 remain ready in parallel according to the dependency rules in `docs/rag/09-implementation-programme.md`.
+**Wave 4 is in progress.** TTT-005 / #6 and TTT-007 / #8 are complete; TTT-009 / #10 remains ready according to the dependency rules in `docs/rag/09-implementation-programme.md`.
 
 The initial model cast remains deliberately **UNSELECTED**. Model admission stays gated at TTT-011 / issue #12 after corpus, evaluation and corrective-rollout infrastructure is complete.
 
