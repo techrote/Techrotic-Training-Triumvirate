@@ -504,6 +504,10 @@ def run_corrective_round(
         )
         recording = updated
 
+    if not recording.checkpoint_refs:
+        raise SchemaValidationError("student rollout produced no final checkpoint")
+    original_checkpoint_id = recording.checkpoint_refs[-1]
+
     corrections: list[CorrectionFork] = []
     sources: list[CorpusSource] = []
     for failure in failures:
@@ -526,6 +530,7 @@ def run_corrective_round(
                 original_command_id=failure.command_id,
                 corrected_command=corrected_action.commands[0],
                 branch_id=branch_id,
+                original_checkpoint_id=original_checkpoint_id,
             )
             if not _correction_is_admissible(branch):
                 continue
