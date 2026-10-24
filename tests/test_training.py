@@ -48,11 +48,13 @@ def test_model_bindings_and_profiles_resolve_from_admission() -> None:
     challenger = resolve_model_binding("challenger")
     assert primary.model_key == primary_key
     assert challenger.model_key == challenger_key
-    assert primary.native_repository == (
-        cast["models"][primary_key]["native"]["repository"]
+    assert (
+        primary.native_repository
+        == (cast["models"][primary_key]["native"]["repository"])
     )
-    assert challenger.native_revision == (
-        cast["models"][challenger_key]["native"]["revision"]
+    assert (
+        challenger.native_revision
+        == (cast["models"][challenger_key]["native"]["revision"])
     )
 
     primary_config = load_training_config("primary")
@@ -263,9 +265,7 @@ def test_corpus_loader_verifies_manifest_and_shards(tmp_path: Path) -> None:
     (tmp_path / "manifest.json").write_text(raw_manifest, encoding="utf-8")
 
     loaded, identity = load_corpus_examples(tmp_path)
-    assert {item.example_id for item in loaded} == {
-        item.example_id for item in sources
-    }
+    assert {item.example_id for item in loaded} == {item.example_id for item in sources}
     assert identity.manifest_sha256 == _sha(raw_manifest)
     assert dict(identity.shard_hashes)["train-00000.jsonl"] == _sha(train_content)
 
@@ -307,8 +307,9 @@ def test_quantization_is_opt_in_and_bound_to_admitted_runtime() -> None:
     assert spec["format"] == "GGUF"
     assert spec["type"] == "Q4_K_M"
     assert spec["runtime_revision"] == cast["probe_defaults"]["runtime_revision"]
-    assert spec["reference_inference_artifact_sha256"] == (
-        cast["models"][primary_key]["inference"]["artifact_sha256"]
+    assert (
+        spec["reference_inference_artifact_sha256"]
+        == (cast["models"][primary_key]["inference"]["artifact_sha256"])
     )
 
 
