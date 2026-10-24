@@ -4,7 +4,6 @@ import pytest
 
 from techrotic_training_triumvirate.determinism import stable_u64_sequence
 
-
 RECORDED_SEED_0X5EED = (
     15774859062804099852,
     7519841847863157723,
