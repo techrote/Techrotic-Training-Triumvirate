@@ -419,6 +419,7 @@ class HFStudentAdapter:
         variant: str,
         revision: str,
         max_new_tokens: int = 384,
+        raw_output_path: Path | None = None,
     ) -> None:
         torch = importlib.import_module("torch")
         transformers = importlib.import_module("transformers")
@@ -445,6 +446,7 @@ class HFStudentAdapter:
         self.model.to("cuda")
         self.model.eval()
         self.max_new_tokens = max_new_tokens
+        self.raw_output_path = raw_output_path
         self.outputs: list[JsonObject] = []
         self.previous_action: AssistantAction | None = None
 
@@ -485,6 +487,11 @@ class HFStudentAdapter:
                 "generation_metrics": metrics,
             }
         )
+        if self.raw_output_path is not None:
+            with self.raw_output_path.open(
+                "a", encoding="utf-8", newline="\n"
+            ) as stream:
+                stream.write(canonical_json(self.outputs[-1]) + "\n")
         if len(self.outputs) % 10 == 0:
             print(
                 f"{self.identity.policy_id}: evaluated {len(self.outputs)} actions",
@@ -542,6 +549,7 @@ def run_variant_worker(
         adapter_dir=None if variant == "prompt-only" else output / "adapter",
         variant=variant,
         revision=str(result["run_id"]),
+        raw_output_path=output / "raw-generations.jsonl",
     )
     report = run_benchmark(adapter, code_revision=git_commit)
     write_json(output / "benchmark.json", cast(JsonObject, report.to_dict()))
