@@ -72,7 +72,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     plan = subparsers.add_parser(
         "plan-heavy",
-        help="validate an explicit heavyweight execution request against TTT-012 budget",
+        help=(
+            "validate an explicit heavyweight execution request against "
+            "TTT-012 budget"
+        ),
     )
     plan.add_argument("--model", default="primary")
     plan.add_argument(
