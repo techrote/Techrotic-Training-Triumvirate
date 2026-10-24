@@ -117,9 +117,7 @@ def _normalized_command_hash(envelope: CommandEnvelope) -> str:
     return content_hash(body)
 
 
-def _duplicate_command_count(
-    commands: list[tuple[int, CommandEnvelope]],
-) -> int:
+def _duplicate_command_count(commands: list[tuple[int, CommandEnvelope]]) -> int:
     duplicate_count = 0
     seen_by_turn: dict[int, set[str]] = {}
     for turn, envelope in commands:
@@ -187,11 +185,7 @@ def _persona_metrics(
         else 1.0
     )
 
-    tokens = [
-        token.lower()
-        for text in texts
-        for token in _WORD_RE.findall(text)
-    ]
+    tokens = [token.lower() for text in texts for token in _WORD_RE.findall(text)]
     lexical_diversity = _safe_rate(
         len(set(tokens)),
         len(tokens),
@@ -214,11 +208,7 @@ def _persona_metrics(
         any(alias in text.lower() for alias in aliases)
         for text in texts
     )
-    doctrine_consistency = _safe_rate(
-        doctrine_hits,
-        len(texts),
-        empty=0.0,
-    )
+    doctrine_consistency = _safe_rate(doctrine_hits, len(texts), empty=0.0)
     return {
         "constraint_adherence_rate": _safe_rate(
             constraint_passes,
@@ -313,9 +303,7 @@ def _case_result(
         result.code not in {"SCHEMA_INVALID", "PROTOCOL_UNSUPPORTED"}
         for result in flat_results
     )
-    entity_valid = sum(
-        result.code != "ENTITY_UNKNOWN" for result in flat_results
-    )
+    entity_valid = sum(result.code != "ENTITY_UNKNOWN" for result in flat_results)
     op_valid = parse_valid
     compliant = sum(
         result.code
@@ -327,9 +315,7 @@ def _case_result(
         }
         for result in flat_results
     )
-    rejection_turns = [
-        turn for turn, result in results if not result.accepted
-    ]
+    rejection_turns = [turn for turn, result in results if not result.accepted]
     recovered_rejections = sum(
         _later_accepted(results, after_turn=turn) for turn in rejection_turns
     )
@@ -344,11 +330,7 @@ def _case_result(
         len(objectives),
     )
     final_energy = sum(unit.energy for unit in world.units.values())
-    resource_efficiency = _safe_rate(
-        final_energy,
-        initial_energy,
-        empty=0.0,
-    )
+    resource_efficiency = _safe_rate(final_energy, initial_energy, empty=0.0)
     units = tuple(world.units.values())
     survival = _safe_rate(
         sum(unit.status is not UnitStatus.LOST for unit in units),
