@@ -23,6 +23,7 @@ from techrotic_training_triumvirate.schemas import (
     AuthoritativeEvent,
     CommanderObservation,
     JsonObject,
+    JsonValue,
     PlayerObservation,
     WorldPrivateReference,
     content_hash,
@@ -484,6 +485,9 @@ class WorldAuthority:
         return tuple(produced)
 
     def private_snapshot(self) -> JsonObject:
+        discovered_routes: list[JsonValue] = [
+            route_id for route_id in sorted(self.discovered_routes)
+        ]
         return {
             "scenario_id": self.blueprint.scenario.identity.scenario_id,
             "seed": self.blueprint.seed,
@@ -524,7 +528,7 @@ class WorldAuthority:
                 }
                 for order_id, order in sorted(self.orders.items())
             },
-            "discovered_routes": sorted(self.discovered_routes),
+            "discovered_routes": discovered_routes,
         }
 
     def state_hash(self) -> str:
