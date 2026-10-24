@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import random
 
-
 DEFAULT_TEST_SEED = 0x5EED
 
 
