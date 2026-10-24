@@ -53,6 +53,10 @@ There are zero frozen-evaluation examples. The long-session benchmark derives
 only from already reserved evaluation family/seed identities. Evaluation
 responses, failures and human packets are excluded from this corpus.
 
+The frozen evaluation reserves specific scenario seeds; some abstract generator
+complexity families also occur in training. This is a reserved-scenario test,
+not evidence of generalization to entirely disjoint generator families.
+
 Only commander-admitted observation/private context/persona and explicit recovery
 feedback reach inputs. Targets contain student command/communication emissions;
 World Authority owns acceptance, outcomes and hidden world state. The source

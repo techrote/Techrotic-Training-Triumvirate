@@ -758,12 +758,6 @@ def build_final_evidence(root: Path) -> dict[str, Any]:
             references.append(
                 evidence_reference(root, path.relative_to(root).as_posix(), kind=kind)
             )
-    for name in (
-        "scripts/build_final_evidence.py",
-        "src/techrotic_training_triumvirate/admission.py",
-        "docs/rag/19-final-admission.md",
-    ):
-        references.append(evidence_reference(root, name, kind="readback-tooling"))
     all_paths = [reference["path"] for reference in references]
     candidates = []
     for item in trained:
