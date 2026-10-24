@@ -8,7 +8,6 @@ from typing import ClassVar
 
 from techrotic_training_triumvirate.schemas import CommandEnvelope, JsonObject
 
-
 COMMAND_PROTOCOL_VERSION = "ttt-command-v1"
 
 
