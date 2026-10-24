@@ -151,9 +151,7 @@ def require_exact_keys(
             f"{where} missing required fields: {sorted(missing)}"
         )
     if unknown:
-        raise SchemaValidationError(
-            f"{where} has unknown fields: {sorted(unknown)}"
-        )
+        raise SchemaValidationError(f"{where} has unknown fields: {sorted(unknown)}")
 
 
 def require_str(value: object, *, field: str) -> str:
@@ -210,9 +208,7 @@ def load_record[RecordT: SchemaRecord](
         where="record envelope",
     )
     schema_name = require_str(envelope["schema"], field="schema")
-    schema_version = require_int(
-        envelope["schema_version"], field="schema_version"
-    )
+    schema_version = require_int(envelope["schema_version"], field="schema_version")
     record_type = _RECORD_TYPES.get(schema_name)
     if record_type is None:
         raise UnknownSchemaError(f"unknown schema: {schema_name}")
