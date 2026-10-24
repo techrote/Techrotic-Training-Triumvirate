@@ -33,6 +33,12 @@ The initial cast is now admitted: Sprocket 500M is the creative/reference teache
 - [Model-cast admission](docs/rag/11-model-cast-admission.md)
 - [Candidate small-model zoo](docs/rag/12-candidate-model-zoo.md)
 - [Abstract World Authority](docs/rag/13-world-authority.md)
+- [Training/export](docs/rag/14-training-export.md)
+- [Pilot ablation plan](docs/rag/15-pilot-ablation.md)
+- [Runtime bridge](docs/rag/16-runtime-bridge.md)
+- [Frozen 24-turn evaluation](docs/rag/17-closed-loop.md)
+- [Native pilot execution](docs/rag/18-pilot-execution.md)
+- [Final admission rules and readback](docs/rag/19-final-admission.md)
 
 ## Development
 
@@ -61,6 +67,7 @@ ttt seed-demo --seed 24301 --count 5
 ttt schema-bundle --pretty
 ttt command-schema --pretty
 ttt world-demo --seed 24301 --turns 24
+ttt runtime-demo --seed 24301 --turns 4 --output build/runtime-demo.json
 ttt-train profile --model primary --mix joint+corrective --seed 24301
 ```
 
@@ -68,7 +75,13 @@ See [docs/development.md](docs/development.md) for the supported-Python, depende
 
 ## Current status
 
-**Programme Waves 0–6 are merged; TTT-012 / Wave 7 training-export machinery is complete in this change.**
+The deterministic world, corpus, recovery, frozen evaluation and training/export
+foundations are implemented. TTT-015's bounded runtime bridge is merged through
+[PR #38](https://github.com/techrote/Techrotic-Training-Triumvirate/pull/38).
+The real native-checkpoint pilot and source-bound long-session comparisons are
+tracked by [TTT-013E / #37](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/37)
+and [TTT-014 / #15](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/15).
+Final runtime admission depends on measured results under the recorded gates.
 
 Merged foundations now include:
 
@@ -84,10 +97,12 @@ Merged foundations now include:
 - TTT-010 / #11 — LangGraph-backed student-visited corrective rollouts, deterministic oracle repair, branch-preserving T3 recovery corpora and replay-correction adapters;
 - TTT-011 / #12 — admitted initial model cast, immutable native/GGUF identities, licensing and characterization evidence;
 - TTT-012 / #13 — reproducible fine-tuning profiles, assistant-only loss mapping, deterministic checkpoint/resume, export manifests and inference parity.
+- TTT-013 / #14 — benchmark-clean T1/T2/T3 pilot admission and the four-way ablation plan;
+- TTT-015 / #16 — versioned bounded runtime messages, game-owned command execution, export verification and dispatch-grounded player intercepts.
 
-**Waves 4–6 are merged.** TTT-011 / #12 selected and froze the initial model cast; TTT-012 / #13 now supplies the reproducible training/export gate required before pilot experiments.
-
-The initial model cast is **SELECTED** by TTT-011. TTT-012 resolves training identities from that admission rather than hard-coding model revisions in the trainer.
+The initial model cast is **SELECTED** by TTT-011. Cast selection is separate
+from admission of a trained runtime candidate. TTT-012 resolves training
+identities from that admission rather than hard-coding revisions in the trainer.
 
 A first-pass **~20 GB small-model GGUF characterization shelf** is recorded in `docs/rag/12-candidate-model-zoo.md`. It is a shortlist for later benchmarking, not an admission or download authorization.
 
@@ -99,6 +114,30 @@ Architecture decisions now implemented in production code:
 The native abstract World Authority is available through `ttt world-demo --seed 24301 --turns 24`. Player tactical telegraphs are produced by the grounded `InterceptEncoder` from authoritative dispatch/deception events.
 
 The session layer remains optional at install time. Use `python -m pip install -e ".[dev,session]"` to exercise the LangGraph checkpoint/branch/replay backend; semantic rendering and recording remain separated from LangGraph so the World Authority is directly testable without it.
+
+## Evaluation and evidence
+
+The model-free controls exercise the same authority boundary without downloading
+weights. Use the exact source commit for reported experiments:
+
+```bash
+ttt evaluate --output build/frozen-baseline --code-revision SOURCE_COMMIT_SHA
+ttt closed-loop --output build/closed-loop-baseline --code-revision SOURCE_COMMIT_SHA
+ttt closed-loop-verify --report build/closed-loop-baseline/candidate-01.json
+ttt admission-verify --package docs/evidence/ttt-016/admission-package.json --root .
+```
+
+Closed-loop readback replays stored actions and verifies authoritative results
+without the original model. Admission readback verifies the portable cards,
+reports, manifests and hashes and refuses unsupported positive claims. Full
+candidate training uses the explicit bounded campaign script described in
+[the execution contract](docs/rag/18-pilot-execution.md); it remains outside CI.
+
+Deterministic smoke output is control-plane evidence. Human humour, surprise
+and distinctiveness fields remain unfilled until people supply ratings. Large
+adapters/checkpoints remain outside Git with their hashes and actual locations
+recorded in the evidence. The project does not currently grant a blanket licence
+to redistribute its research corpus; model licences are recorded separately.
 
 ## Core rule
 

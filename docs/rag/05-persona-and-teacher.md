@@ -172,12 +172,16 @@ provided to a teacher when the experiment explicitly requires them.
 
 ## 8. Model-selection boundary
 
-Sprocket 500M remains an example/high-interest possible Creative Teacher because
-of its observed persistent and surprising persona behaviour. It is **not** a
-dependency or selected model.
+TTT-011 selected Sprocket 500M as a creative/reference teacher, LFM2.5-1.2B-Instruct
+as the primary student and Qwen3.5-4B as a challenger/comparison teacher. Their
+immutable identities, role restrictions and licensing dispositions live in
+`11-model-cast-admission.md` and the machine-readable model-cast manifest.
+Selection never makes teacher output authoritative. Other zoo entries remain
+candidates until explicitly admitted through that gate.
 
-The same applies to Liquid, Qwen, Gemma/NPC and other models in the candidate
-zoo. TTT-011 remains the only model-cast admission gate.
+The first local pilot uses repository-authored deterministic style templates;
+it does not claim Sprocket or Qwen generation merely because those teachers are
+selected. Each corpus records its actual source contribution independently.
 
 The local/API adapter stubs deliberately use caller-supplied model references
 without selecting a checkpoint.

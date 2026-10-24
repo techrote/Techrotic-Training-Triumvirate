@@ -25,7 +25,11 @@ Issues should be executed from current `main`; agents must reconcile work merged
 
 ## 2. Current implementation status
 
-As of 24 October 2026, **Waves 0–6 are merged and TTT-012 / Wave 7 is complete in this change**. TTT-012 adds admitted-model training profiles, leak-safe native chat mapping, deterministic checkpoint/resume, export manifests, fixed inference parity and an explicit budget-gated PEFT LoRA path.
+As of 24 October 2026, **Waves 0–7 are merged**. TTT-012 supplies admitted-model
+training/export, and TTT-015's runtime bridge merged through PR #38. TTT-013's
+preparation-only issue closed through PR #36; substantive execution is tracked
+separately by TTT-013E / #37. Long-session comparison and final admission must
+consume that actual evidence rather than substituting smoke output.
 
 | Wave | Issues | State | Result |
 |---|---|---|---|
@@ -36,7 +40,10 @@ As of 24 October 2026, **Waves 0–6 are merged and TTT-012 / Wave 7 is complete
 | 4 | TTT-005 / #6 + TTT-007 / #8 + TTT-009 / #10 | Complete | Session, corpus and frozen model-agnostic evaluation foundation |
 | 5 | TTT-010 / #11 | Complete | LangGraph-backed student-visited correction branches and validated T3 recovery corpus |
 | 6 | TTT-011 / #12 | Complete | Initial model-cast admission, immutable artifact identities, licensing and live characterization evidence |
-| 7 | TTT-012 / #13 | Complete in this change | Reproducible training profiles, checkpoint/resume, export and inference parity |
+| 7 | TTT-012 / #13 + TTT-015 / #16 | Complete | Training/export plus bounded game-facing runtime and intercept bridge |
+| 8 | TTT-013 / #14 + TTT-013E / #37 | Preparation merged; real execution in progress | Benchmark-clean local corpus and four-way native LoRA campaign |
+| 9 | TTT-014 / #15 | Evaluation implemented; comparison in progress | Frozen 24-turn candidate/baseline traces and human packet |
+| 10 | TTT-016 / #17 | Evidence tooling implemented; final package pending | Cards, comparative admission decision and verified readback |
 
 Wave 3 merged evidence:
 
@@ -72,11 +79,12 @@ TTT-011 admits identities and characterization only; it does **not** authorize a
 | TTT-009 | #10 | Complete | Evaluation harness, frozen generated/handwritten suites and baselines |
 | TTT-010 | #11 | Complete | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
 | TTT-011 | #12 | Complete | Initial model-cast admission: owner-delegated teacher/student selection, licensing/runtime probes, frozen decision record |
-| TTT-012 | #13 | Complete in this change | Reproducible fine-tuning/export harness for the admitted cast |
-| TTT-013 | #14 | Ready after this change | Pilot corpus generation and smoke/ablation fine-tunes |
-| TTT-014 | #15 | Blocked by #14 | Closed-loop 20–30 turn commander benchmark and comparative report |
-| TTT-015 | #16 | Ready after this change | Runtime export/bridge contract plus reference intercept integration |
-| TTT-016 | #17 | Blocked by #15/#16 | Release/admission package: model/data cards, manifests, benchmarks and reproducibility |
+| TTT-012 | #13 | Complete | Reproducible fine-tuning/export harness for the admitted cast |
+| TTT-013 | #14 | Complete under preparation-only rule | Pilot admission and fixed four-way plan |
+| TTT-013E | #37 | Real execution in progress | Named local allocation, actual adapters and source-bound evaluation |
+| TTT-014 | #15 | Full comparison in progress | Closed-loop 20–30 turn commander benchmark and comparative report |
+| TTT-015 | #16 | Complete / PR #38 | Runtime export/bridge contract plus reference intercept integration |
+| TTT-016 | #17 | Final evidence pending #37/#15 | Model/data cards, explicit admission/rejection and reproducibility |
 
 ## 4. Execution waves
 
@@ -94,11 +102,13 @@ TTT-011 admits identities and characterization only; it does **not** authorize a
 
 **Wave 6:** TTT-011 / #12 is merged after the owner explicitly delegated the cast decision to the implementation agent.
 
-**Wave 7, parallel:** TTT-012 / #13 is complete in this change; TTT-015 / #16 remains independently ready (it also requires the already-complete TTT-008/009).
+**Wave 7, parallel:** TTT-012 / #13 and TTT-015 / #16 are complete.
 
-**Wave 8:** TTT-013 / #14 becomes ready after this change, subject to the normal merge/green-check gate.
+**Wave 8:** TTT-013 / #14 preparation is complete; TTT-013E / #37 executes the
+real fixed campaign under the recorded local allocation and budget.
 
-**Wave 9:** TTT-014 / #15 after TTT-013.
+**Wave 9:** TTT-014 / #15 consumes actual TTT-013E candidates and preserved
+prompt-only/scripted controls.
 
 **Wave 10:** TTT-016 / #17 after TTT-014/015.
 
@@ -164,6 +174,12 @@ Programme completion yields:
 - a validated, provenance-rich corpus pipeline;
 - recovery-data generation;
 - frozen evaluation suites;
-- an admitted compact commander candidate;
+- a compact commander candidate experiment and an explicit evidence-based
+  admission, conditional-admission or rejection decision;
 - player-facing grounded tactical intercepts;
 - reproducible runtime/export artifacts ready for downstream game integration.
+
+A negative research result is a valid TTT-016 completion under issue #17.
+It completes the evidence programme without claiming the rejected candidate
+is ready for game integration. Original model-cast selection, actual fine-tuned
+candidate evidence and final runtime admission are separate decisions.

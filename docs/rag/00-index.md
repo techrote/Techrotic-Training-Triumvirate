@@ -25,6 +25,10 @@ Always read `AGENTS.md` first. Then read the issue's **Required reading** list. 
 | [13-world-authority.md](13-world-authority.md) | Deterministic abstract world, replay, visibility and optional Concordia host |
 | [14-training-export.md](14-training-export.md) | Reproducible fine-tuning, checkpoint/resume, export, parity and budget gates |
 | [15-pilot-ablation.md](15-pilot-ablation.md) | TTT-013 pilot corpus admission, four-way ablation plan, smoke evidence, and execution blocker |
+| [16-runtime-bridge.md](16-runtime-bridge.md) | Bounded versioned game/model bridge, identity, authority and grounded intercepts |
+| [17-closed-loop.md](17-closed-loop.md) | Frozen 24-turn evaluation, separated metrics, trace replay and blinded human packet |
+| [18-pilot-execution.md](18-pilot-execution.md) | Admitted local native-model campaign, corpus, budgets and execution provenance |
+| [19-final-admission.md](19-final-admission.md) | Prospective admission gates, model/data cards and fail-closed evidence readback |
 
 ## External inspiration, not normative dependencies
 

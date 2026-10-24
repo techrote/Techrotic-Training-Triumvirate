@@ -76,6 +76,11 @@ ttt seed-demo --seed 24301 --count 5
 ttt schema-bundle --pretty
 ttt command-schema --pretty
 ttt world-demo --seed 24301 --turns 24
+ttt runtime-demo --seed 24301 --turns 4 --output build/runtime-demo.json
+ttt evaluate --output build/frozen-baseline --code-revision SOURCE_COMMIT_SHA
+ttt closed-loop --output build/closed-loop-baseline --code-revision SOURCE_COMMIT_SHA
+ttt closed-loop-verify --report build/closed-loop-baseline/candidate-01.json
+ttt admission-verify --package docs/evidence/ttt-016/admission-package.json --root .
 ```
 
 The seed demo exists to make deterministic plumbing observable without requiring a simulator or model. The schema-bundle command emits the canonical durable-record JSON Schema bundle. The command-schema command emits the independently versioned TTT command-body contract. The world-demo command runs the model-free deterministic reference episode and emits state/event hashes.
@@ -89,3 +94,10 @@ The smoke suite records the exact five-value sequence for seed `0x5EED` and veri
 ## Artifact hygiene
 
 The root `.gitignore` excludes common model weights/checkpoints and generated experiment/corpus directories. Small intentional fixtures may be force-added when an issue explicitly requires them, but large generated evidence belongs in an external/artifact store with hashes and manifests committed to git.
+
+`.gitattributes` preserves LF text bytes across Windows/Linux checkouts so
+portable evidence SHA-256 values remain stable. The final admission readback
+checks hashed reports, cards, manifests and recorded closed-loop replay without
+loading a model. Missing large external binaries remain explicit limitations.
+Use the exact committed source SHA for reported experiments; test output under
+`build/` is disposable and does not establish a substantive model result.
