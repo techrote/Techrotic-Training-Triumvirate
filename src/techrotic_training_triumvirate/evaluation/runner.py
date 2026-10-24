@@ -151,8 +151,7 @@ def _execution_failure_recovery(events: tuple[AuthoritativeEvent, ...]) -> float
         if not isinstance(unit_id, str):
             continue
         if any(
-            later.kind == "command-dispatched"
-            and later.data.get("unit_id") == unit_id
+            later.kind == "command-dispatched" and later.data.get("unit_id") == unit_id
             for later in events[index + 1 :]
         ):
             recovered += 1
@@ -205,8 +204,7 @@ def _persona_metrics(
             if isinstance(value, str):
                 aliases.add(value.lower())
     doctrine_hits = sum(
-        any(alias in text.lower() for alias in aliases)
-        for text in texts
+        any(alias in text.lower() for alias in aliases) for text in texts
     )
     doctrine_consistency = _safe_rate(doctrine_hits, len(texts), empty=0.0)
     return {
@@ -233,9 +231,8 @@ def _hidden_violations(
         lowered = communication.text.lower()
         if any(secret.lower() in lowered for secret in secret_values):
             secret_leaks += 1
-        if (
-            communication.channel.lower() in _FABRICATED_CHANNELS
-            or any(token in lowered for token in _FABRICATED_TOKENS)
+        if communication.channel.lower() in _FABRICATED_CHANNELS or any(
+            token in lowered for token in _FABRICATED_TOKENS
         ):
             fabricated += 1
     return secret_leaks, fabricated
@@ -319,9 +316,7 @@ def _case_result(
     recovered_rejections = sum(
         _later_accepted(results, after_turn=turn) for turn in rejection_turns
     )
-    conflict_count = sum(
-        result.code == "ORDER_CONFLICT" for result in flat_results
-    )
+    conflict_count = sum(result.code == "ORDER_CONFLICT" for result in flat_results)
     duplicate_count = _duplicate_command_count(commands)
 
     objectives = tuple(world.objectives.values())
@@ -357,10 +352,7 @@ def _case_result(
     changed_objective_adaptation = 1.0
     if case.kind == "changed_objective":
         changed_objective_adaptation = float(
-            not any(
-                result.code == "PRECONDITION_FAILED"
-                for result in flat_results
-            )
+            not any(result.code == "PRECONDITION_FAILED" for result in flat_results)
         )
 
     persona_metrics = _persona_metrics(communications, persona)
@@ -586,7 +578,9 @@ def run_benchmark(
                 turn_index=turn,
                 observation_generation=observed_generation,
                 observation=observation,
-                structured_observation=resolved_renderer.structured_observation(observation),
+                structured_observation=resolved_renderer.structured_observation(
+                    observation
+                ),
                 compact_observation=resolved_renderer.compact_observation(observation),
                 previous_results=previous_results,
                 recent_events=recent_events,
