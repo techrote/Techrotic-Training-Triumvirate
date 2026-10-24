@@ -356,7 +356,7 @@ class HumanReview:
             humour=rating("humour"),
             surprise=rating("surprise"),
             distinctiveness=rating("distinctiveness"),
-            test_fixture=cast(bool, value["test_fixture"]),
+            test_fixture=value["test_fixture"],
         )
 
     def to_object(self) -> JsonObject:
