@@ -166,9 +166,7 @@ def t0_normal_turn() -> TurnRecord:
             ),
         ),
         next_observation=_observation(1, route="north", status="in-progress"),
-        player_observation=_player_observation(
-            0, relay_status="contested"
-        ),
+        player_observation=_player_observation(0, relay_status="contested"),
         player_intercepts=(
             PlayerInterceptEnvelope(
                 intercept_id="intercept-0001",
@@ -231,9 +229,7 @@ def t0_hidden_information_turn() -> TurnRecord:
             ),
         ),
         next_observation=_observation(2, route="east", status="blocked"),
-        player_observation=_player_observation(
-            1, relay_status="contested"
-        ),
+        player_observation=_player_observation(1, relay_status="contested"),
         player_intercepts=(
             PlayerInterceptEnvelope(
                 intercept_id="intercept-0002",
@@ -286,9 +282,7 @@ def t0_recovery_turn() -> TurnRecord:
         ),
         world_events=(),
         next_observation=_observation(3, route="north", status="open"),
-        player_observation=_player_observation(
-            2, relay_status="contested"
-        ),
+        player_observation=_player_observation(2, relay_status="contested"),
         player_intercepts=(),
         annotations=EvaluationAnnotations(
             labels={"recovery_required": True},
