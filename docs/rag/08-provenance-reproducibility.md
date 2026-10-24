@@ -93,3 +93,19 @@ Large binaries need not live in git; manifests and immutable external references
 ## Evidence discipline
 
 Do not report an expensive run as successful based only on a console summary. Preserve machine-readable metrics/results and enough immutable evidence to independently read back the claimed result.
+
+## Session recording evidence
+
+TTT-005 session recordings bind semantic turns to:
+
+- session ID and run ID;
+- `ttt.session_recording` schema version;
+- `ttt-session-v1` protocol identity;
+- scenario generator identity/seed and initial world reference;
+- canonical command/action/result/event/observation content hashes;
+- explicit branch parent ID, turn and parent semantic hash;
+- final authoritative world hash.
+
+LangGraph thread/checkpoint IDs may be retained as supplementary orchestration references, but they are deliberately excluded from semantic identity. Two runs with different checkpoint IDs must still compare equal when their TTT semantic records are equal.
+
+Readback verification is fail-closed: altered stored hashes, broken delta reconstruction, scenario regeneration drift, turn discontinuity, or replay hash mismatch are errors rather than best-effort warnings.
