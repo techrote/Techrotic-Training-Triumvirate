@@ -304,7 +304,7 @@ def build_pilot_plan(
     }
     identity_payload = dict(plan)
     plan["plan_sha256"] = hashlib.sha256(
-        canonical_json(cast(JsonObject, identity_payload)).encode("utf-8")
+        canonical_json(identity_payload).encode("utf-8")
     ).hexdigest()
     return plan
 
