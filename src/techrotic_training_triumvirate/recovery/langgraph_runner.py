@@ -210,7 +210,8 @@ def _failure_points(
 ) -> tuple[FailurePoint, ...]:
     if len(action.commands) != 1:
         raise ValueError(
-            "TTT-010 session-v1 corrective rollout requires exactly one command per turn"
+            "TTT-010 session-v1 corrective rollout requires exactly one "
+            "command per turn"
         )
     command_id = action.commands[0].command_id
     attempt_id = f"{run_id}:attempt:{turn_id:03d}"
@@ -592,7 +593,9 @@ def run_corrective_round(
             (item.episode_id, tuple(issue.code for issue in item.issues))
             for item in corpus.quarantine
         )
-        raise SchemaValidationError(f"TTT-010 corpus validation refused sources: {details}")
+        raise SchemaValidationError(
+            f"TTT-010 corpus validation refused sources: {details}"
+        )
     _assert_no_private_leak(corpus, blueprint)
 
     source_refs = tuple(
