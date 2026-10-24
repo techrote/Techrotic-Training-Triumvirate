@@ -25,7 +25,6 @@ from .records import (
     WorldPrivateReference,
 )
 
-
 PRIVATE_SENTINEL = "reactor-core-already-dead"
 EVALUATOR_SENTINEL = "expected-recovery-via-north"
 
