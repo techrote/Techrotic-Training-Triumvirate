@@ -78,6 +78,7 @@ class ScriptedCommanderBaseline:
             unit_id,
         )
         command_id = f"{context.case_id}:cmd:{context.turn_index:03d}"
+        command: RequestStatusCommand | AssignObjectiveCommand
 
         if objective_status == "secured" or unit_status == "moving":
             command = RequestStatusCommand(
