@@ -218,6 +218,8 @@ def test_comparison_hashes_files_and_keeps_blinded_human_fields_empty(
     for line in (tmp_path / "SHA256SUMS").read_text(encoding="utf-8").splitlines():
         checksum, name = line.split("  ", 1)
         assert hashlib.sha256((tmp_path / name).read_bytes()).hexdigest() == checksum
+        assert b"\r\n" not in (tmp_path / name).read_bytes()
+    assert b"\r\n" not in (tmp_path / "SHA256SUMS").read_bytes()
 
 
 def test_smoke_cannot_become_model_quality_via_metadata(tmp_path: Path) -> None:

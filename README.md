@@ -14,6 +14,11 @@ The immediate programme is inspired by:
 
 The initial cast is now admitted: Sprocket 500M is the creative/reference teacher, LFM2.5-1.2B-Instruct is the primary compact student, and Qwen3.5-4B is the larger challenger/comparison teacher. Deterministic World Authority remains the sole operational oracle.
 
+The initial implementation and evidence programme is complete. Its trained-model
+runtime outcome is **NOT ADMITTED**: the real pilot finished, but no candidate
+passed the recorded operational and long-session gates. The framework and its
+research evidence are available; no game-ready trained commander is claimed.
+
 ## Start here
 
 - [Programme tracker](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/1)
@@ -33,6 +38,12 @@ The initial cast is now admitted: Sprocket 500M is the creative/reference teache
 - [Model-cast admission](docs/rag/11-model-cast-admission.md)
 - [Candidate small-model zoo](docs/rag/12-candidate-model-zoo.md)
 - [Abstract World Authority](docs/rag/13-world-authority.md)
+- [Training/export](docs/rag/14-training-export.md)
+- [Pilot ablation plan](docs/rag/15-pilot-ablation.md)
+- [Runtime bridge](docs/rag/16-runtime-bridge.md)
+- [Frozen 24-turn evaluation](docs/rag/17-closed-loop.md)
+- [Native pilot execution](docs/rag/18-pilot-execution.md)
+- [Final admission rules and readback](docs/rag/19-final-admission.md)
 
 ## Development
 
@@ -61,6 +72,7 @@ ttt seed-demo --seed 24301 --count 5
 ttt schema-bundle --pretty
 ttt command-schema --pretty
 ttt world-demo --seed 24301 --turns 24
+ttt runtime-demo --seed 24301 --turns 4 --output build/runtime-demo.json
 ttt-train profile --model primary --mix joint+corrective --seed 24301
 ```
 
@@ -68,9 +80,38 @@ See [docs/development.md](docs/development.md) for the supported-Python, depende
 
 ## Current status
 
-**Programme Waves 0–6 are merged; TTT-012 / Wave 7 training-export machinery is complete in this change.**
+All initial programme components are implemented: deterministic authority,
+corpus/recovery, training/export, frozen evaluation, the bounded runtime bridge,
+the real four-way pilot, long-session comparisons and final evidence readback.
+The runtime bridge is recorded in
+[PR #38](https://github.com/techrote/Techrotic-Training-Triumvirate/pull/38),
+the campaign and comparison in
+[PR #39](https://github.com/techrote/Techrotic-Training-Triumvirate/pull/39),
+and the final programme decision in
+[PR #40](https://github.com/techrote/Techrotic-Training-Triumvirate/pull/40).
 
-Merged foundations now include:
+Four real LoRA variants of the same admitted LFM native checkpoint, plus its
+prompt-only control, completed **745 model actions** across the full frozen and
+24-turn suites. Their corpus contains 252 examples (210 train / 42 development)
+with T1/T2/T3 coverage and no reserved benchmark examples. All completed
+candidates ran on the TITAN RTX. The conservative total charge was
+**0.962306 GPU-hours**, including preflight and the preserved failed V100 attempt;
+external compute and paid API costs were both **£0**.
+
+The final outcome is **NOT ADMITTED**. Every real candidate had zero objective
+completion and execution-failure recovery in the 24-turn suite. Better short-run
+formatting or persona keywords did not establish reliable control; the report
+also identifies repetition, stale-generation failures and vacuous no-command
+mechanical scores. Human humour/surprise/distinctiveness ratings remain unfilled,
+and trained-candidate Q4 runtime qualification has not been completed.
+
+See the [real execution evidence](docs/evidence/ttt-013-execution/README.md),
+[long-session comparison](docs/evidence/ttt-014/comparison/comparison.md),
+[final comparative report](docs/evidence/ttt-016/report.md) and
+[data card](docs/evidence/ttt-016/data-card.md). Large adapters/checkpoints remain
+local, with their exact hashes and locations in the portable artifact index.
+
+The implemented programme includes:
 
 - TTT-001 / #2 — reproducible Python package, deterministic tooling and CI;
 - TTT-002 / #3 — canonical versioned schemas, T0 fixtures and content hashing;
@@ -83,11 +124,17 @@ Merged foundations now include:
 - TTT-009 / #10 — frozen model-agnostic evaluation suites, deterministic baselines, leakage/recovery scoring and the immutable training blacklist;
 - TTT-010 / #11 — LangGraph-backed student-visited corrective rollouts, deterministic oracle repair, branch-preserving T3 recovery corpora and replay-correction adapters;
 - TTT-011 / #12 — admitted initial model cast, immutable native/GGUF identities, licensing and characterization evidence;
-- TTT-012 / #13 — reproducible fine-tuning profiles, assistant-only loss mapping, deterministic checkpoint/resume, export manifests and inference parity.
+- TTT-012 / #13 — reproducible fine-tuning profiles, assistant-only loss mapping, deterministic checkpoint/resume, export manifests and inference parity;
+- TTT-013 / #14 — benchmark-clean T1/T2/T3 pilot admission and the four-way ablation plan;
+- TTT-013E / #37 — four actual native LoRA exports, reload parity and preserved candidate execution evidence;
+- TTT-014 / #15 — complete frozen 24-turn candidate/reference comparisons, replayable traces and a human-rating packet;
+- TTT-015 / #16 — versioned bounded runtime messages, game-owned command execution, export verification and dispatch-grounded player intercepts;
+- TTT-016 / #17 — portable model/data cards, comparative **NOT ADMITTED** decision and fail-closed evidence readback.
 
-**Waves 4–6 are merged.** TTT-011 / #12 selected and froze the initial model cast; TTT-012 / #13 now supplies the reproducible training/export gate required before pilot experiments.
-
-The initial model cast is **SELECTED** by TTT-011. TTT-012 resolves training identities from that admission rather than hard-coding model revisions in the trainer.
+The initial model cast is **SELECTED** by TTT-011; the trained runtime candidates
+are **NOT ADMITTED** by TTT-016. Cast selection is separate from runtime
+qualification. TTT-012 resolves training
+identities from that admission rather than hard-coding revisions in the trainer.
 
 A first-pass **~20 GB small-model GGUF characterization shelf** is recorded in `docs/rag/12-candidate-model-zoo.md`. It is a shortlist for later benchmarking, not an admission or download authorization.
 
@@ -99,6 +146,30 @@ Architecture decisions now implemented in production code:
 The native abstract World Authority is available through `ttt world-demo --seed 24301 --turns 24`. Player tactical telegraphs are produced by the grounded `InterceptEncoder` from authoritative dispatch/deception events.
 
 The session layer remains optional at install time. Use `python -m pip install -e ".[dev,session]"` to exercise the LangGraph checkpoint/branch/replay backend; semantic rendering and recording remain separated from LangGraph so the World Authority is directly testable without it.
+
+## Evaluation and evidence
+
+The model-free controls exercise the same authority boundary without downloading
+weights. Use the exact source commit for reported experiments:
+
+```bash
+ttt evaluate --output build/frozen-baseline --code-revision SOURCE_COMMIT_SHA
+ttt closed-loop --output build/closed-loop-baseline --code-revision SOURCE_COMMIT_SHA
+ttt closed-loop-verify --report build/closed-loop-baseline/candidate-01.json
+ttt admission-verify --package docs/evidence/ttt-016/admission-package.json --root .
+```
+
+Closed-loop readback replays stored actions and verifies authoritative results
+without the original model. Admission readback verifies the portable cards,
+reports, manifests and hashes and refuses unsupported positive claims. Full
+candidate training uses the explicit bounded campaign script described in
+[the execution contract](docs/rag/18-pilot-execution.md); it remains outside CI.
+
+Deterministic smoke output is control-plane evidence. Human humour, surprise
+and distinctiveness fields remain unfilled until people supply ratings. Large
+adapters/checkpoints remain outside Git with their hashes and actual locations
+recorded in the evidence. The project does not currently grant a blanket licence
+to redistribute its research corpus; model licences are recorded separately.
 
 ## Core rule
 

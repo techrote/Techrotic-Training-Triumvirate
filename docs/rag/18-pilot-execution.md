@@ -83,10 +83,21 @@ The final runtime decision uses the prospective gates in
 
 ## Post-execution identity hardening
 
-The original pilot ran immutable source
+The original pilot binds its worker and replay semantics to source
 `11e70686b09a27cf7c784beaf8d7a46717b345a0`. Its initial V100 failure,
 subsequent TITAN execution and UUID-pinned continuation are historical evidence;
 new checks are not retroactively claimed for that source.
+
+The live checkout did not remain entirely clean: an unused optional LangGraph
+backend typing/lazy-import fix landed while early processes were active. The
+execution evidence preserves the complete observed status, patch and source
+hashes under `source-audit-live/`. Training, evaluation, authority, schema,
+renderer and recording semantics were unchanged at that audit. After the persona
+worker finished, all remaining workers and their supervisor imported the archived
+11e7068 source through a checked `PYTHONPATH`, permitting later public hardening
+without changing the ongoing experiment. The source archive and both continuation
+launchers are preserved with hashes. This distinction is an explicit provenance
+caveat for the early processes, not a claim that every live file stayed at 11e7068.
 
 Future public campaigns require `--gpu-uuid`; numeric GPU selection is refused.
 The child environment pins `CUDA_VISIBLE_DEVICES` to the complete physical UUID

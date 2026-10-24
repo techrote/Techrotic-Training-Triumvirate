@@ -8,6 +8,10 @@ on:
       - "pyproject.toml"
       - "README.md"
       - "docs/development.md"
+      - "docs/evidence/**"
+      - "docs/rag/**"
+      - "scripts/**"
+      - ".gitattributes"
       - ".gitignore"
       - ".github/workflows/base-ci.yml"
   push:
@@ -18,6 +22,10 @@ on:
       - "pyproject.toml"
       - "README.md"
       - "docs/development.md"
+      - "docs/evidence/**"
+      - "docs/rag/**"
+      - "scripts/**"
+      - ".gitattributes"
       - ".gitignore"
       - ".github/workflows/base-ci.yml"
   workflow_dispatch:

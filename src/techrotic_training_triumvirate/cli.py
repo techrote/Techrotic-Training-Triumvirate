@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections.abc import Sequence
+from pathlib import Path
 
 from . import __version__
 from .determinism import DEFAULT_TEST_SEED, stable_u64_sequence
@@ -57,6 +58,39 @@ def build_parser() -> argparse.ArgumentParser:
     world_demo.add_argument("--seed", type=int, default=DEFAULT_TEST_SEED)
     world_demo.add_argument("--turns", type=int, default=24)
     world_demo.add_argument("--mid-state", action="store_true")
+
+    admission_verify = subparsers.add_parser(
+        "admission-verify",
+        help="verify the final admission package and evidence hashes",
+    )
+    admission_verify.add_argument("--package", required=True)
+    admission_verify.add_argument("--root", required=True, help="trusted evidence root")
+
+    evaluate = subparsers.add_parser(
+        "evaluate", help="run the model-free frozen evaluation baseline"
+    )
+    evaluate.add_argument("--output", type=Path, required=True)
+    evaluate.add_argument("--code-revision", required=True)
+
+    closed_loop = subparsers.add_parser(
+        "closed-loop", help="run the scripted frozen 24-turn baseline and rating packet"
+    )
+    closed_loop.add_argument("--output", type=Path, required=True)
+    closed_loop.add_argument("--code-revision", required=True)
+
+    replay = subparsers.add_parser(
+        "closed-loop-verify",
+        help="replay a stored closed-loop report without the model",
+    )
+    replay.add_argument("--report", type=Path, required=True)
+
+    runtime_demo = subparsers.add_parser(
+        "runtime-demo",
+        help="run a JSON runtime session with grounded player intercepts",
+    )
+    runtime_demo.add_argument("--seed", type=int, default=DEFAULT_TEST_SEED)
+    runtime_demo.add_argument("--turns", type=int, default=4)
+    runtime_demo.add_argument("--output", type=Path)
     return parser
 
 
@@ -64,6 +98,70 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Run the TTT developer CLI."""
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    if args.command == "runtime-demo":
+        from .runtime import run_runtime_demo
+        from .schemas import canonical_json
+
+        try:
+            runtime_report = run_runtime_demo(seed=args.seed, turns=args.turns)
+        except ValueError as exc:
+            parser.exit(1, f"runtime demo failed: {exc}\n")
+        encoded = canonical_json(runtime_report)
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(encoded + "\n", encoding="utf-8", newline="\n")
+        print(encoded)
+        return 0
+
+    if args.command == "admission-verify":
+        from .admission import AdmissionPackageError, verify_package
+
+        try:
+            admission_result = verify_package(args.package, evidence_root=args.root)
+        except AdmissionPackageError as exc:
+            parser.exit(1, f"admission verification failed: {exc}\n")
+        print(json.dumps(admission_result, sort_keys=True, separators=(",", ":")))
+        return 0
+
+    if args.command == "evaluate":
+        from .evaluation import ScriptedCommanderBaseline, run_benchmark
+
+        benchmark = run_benchmark(
+            ScriptedCommanderBaseline(), code_revision=args.code_revision
+        )
+        args.output.mkdir(parents=True, exist_ok=True)
+        (args.output / "frozen-evaluation.json").write_text(
+            benchmark.to_json() + "\n", encoding="utf-8", newline="\n"
+        )
+        (args.output / "frozen-evaluation.md").write_text(
+            benchmark.to_markdown(), encoding="utf-8", newline="\n"
+        )
+        print(json.dumps({"report_hash": benchmark.report_hash()}, sort_keys=True))
+        return 0
+
+    if args.command == "closed-loop":
+        from .evaluation.closedloop import (
+            ClosedLoopBaseline,
+            run_closed_loop,
+            write_closed_loop_comparison,
+        )
+
+        report = run_closed_loop(ClosedLoopBaseline(), code_revision=args.code_revision)
+        write_closed_loop_comparison([report], args.output)
+        print(json.dumps({"semantic_hash": report.semantic_hash()}, sort_keys=True))
+        return 0
+
+    if args.command == "closed-loop-verify":
+        from .evaluation.closedloop import verify_closed_loop_report
+
+        try:
+            payload = json.loads(args.report.read_text(encoding="utf-8"))
+            verified = verify_closed_loop_report(payload)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            parser.exit(1, f"closed-loop verification failed: {exc}\n")
+        print(json.dumps({"verified": True, "semantic_hash": verified.semantic_hash()}))
+        return 0
 
     if args.command == "seed-demo":
         values = stable_u64_sequence(args.seed, args.count)
