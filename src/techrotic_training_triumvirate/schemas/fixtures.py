@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from .base import JsonObject
 from .records import (
     AssistantAction,
     AuthoritativeEvent,
@@ -110,7 +111,7 @@ def _player_observation(turn_id: int, *, relay_status: str) -> PlayerObservation
 
 
 def _private_context(*, include_secret_value: bool) -> CommanderPrivateContext:
-    beliefs = {"east_route": "risky"}
+    beliefs: JsonObject = {"east_route": "risky"}
     if include_secret_value:
         beliefs["reactor_truth"] = PRIVATE_SENTINEL
     return CommanderPrivateContext(
