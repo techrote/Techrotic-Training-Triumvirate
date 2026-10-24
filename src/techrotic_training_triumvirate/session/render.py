@@ -198,7 +198,7 @@ class DeterministicRenderer:
     version: str = SESSION_RENDERER_VERSION
 
     def structured_observation(self, observation: CommanderObservation) -> JsonObject:
-        return observation.to_payload()
+        return observation.to_dict()
 
     def compact_observation(self, observation: CommanderObservation) -> str:
         entities = ",".join(observation.visible_entities) or "-"
