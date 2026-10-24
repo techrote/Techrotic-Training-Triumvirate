@@ -96,3 +96,22 @@ Startup and GPU buffer logs remain available separately; training memory does
 not fill this gate. The server is UUID-pinned, runs only after the training lease
 is released, and has its own hard deadline. GPU probes remain charged to the
 same allocation. Actual human review is still required for ADMITTED.
+
+## Deterministic orchestration follow-up
+
+[Issue #43](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/43)
+contains the completed plan for a programmatic experiment controller; its
+implementation is a later task. The plan uses an explicit state machine,
+transactional reservations and UUID leases, immutable source/artifact identities,
+owned process containment and deadlines, behavioral corpus preflight, finite
+development search, verified export/runtime stages, and durable human-review
+suspension. It requires zero LLM calls for a predefined admitted experiment and
+preserves failures without manufacturing a positive admission.
+
+The continuation's UUID-object failure, sorted-objective demonstration bug,
+stopped run, interim diagnostics and missing original Q4/human evidence inform
+the plan. A local helper sequencing this one experiment is not the durable
+controller proposed there. Keep #43 open for that future implementation.
+
+The corrected corpus has its own [data card](../evidence/ttt-017/data-card.md),
+which records its byte identities and limitations independently of admission.
