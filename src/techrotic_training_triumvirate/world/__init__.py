@@ -6,7 +6,12 @@ from .concordia_host import (
     concordia_identity,
     run_concordia_envelopes,
 )
-from .driver import DirectRunResult, execute_envelope, run_envelopes, run_scripted_episode
+from .driver import (
+    DirectRunResult,
+    execute_envelope,
+    run_envelopes,
+    run_scripted_episode,
+)
 from .model import (
     ObjectiveState,
     ObjectiveStatus,
