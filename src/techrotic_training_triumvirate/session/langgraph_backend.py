@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, Mapping, TypedDict, cast
+from typing import Any, TypedDict, cast
 
 from langgraph.checkpoint.memory import InMemorySaver  # type: ignore[import-not-found]
 from langgraph.graph import START, StateGraph  # type: ignore[import-not-found]
@@ -171,9 +172,13 @@ class LangGraphSession:
         if tuple(turn.turn_hash for turn in reproduced.turns) != tuple(
             turn.turn_hash for turn in recording.turns
         ):
-            raise SchemaValidationError("replayed TTT turn hashes do not match recording")
+            raise SchemaValidationError(
+                "replayed TTT turn hashes do not match recording"
+            )
         if reproduced.final_world_hash != recording.final_world_hash:
-            raise SchemaValidationError("replayed final world hash does not match recording")
+            raise SchemaValidationError(
+                "replayed final world hash does not match recording"
+            )
         if not commands:
             raise SchemaValidationError("checkpoint replay requires at least one turn")
         before_last = self._checkpoint_before_command(
@@ -185,7 +190,9 @@ class LangGraphSession:
         if replayed.turns[-1].turn_hash != recording.turns[-1].turn_hash:
             raise SchemaValidationError("historical checkpoint replay hash mismatch")
         if replayed.final_world_hash != recording.final_world_hash:
-            raise SchemaValidationError("historical checkpoint replay world hash mismatch")
+            raise SchemaValidationError(
+                "historical checkpoint replay world hash mismatch"
+            )
         replay_final = self.graph.get_state(thread_config(thread_id))
         return ReplayVerification(
             semantic_hash=recording.semantic_hash(),
@@ -219,7 +226,9 @@ class LangGraphSession:
         )
         values = before.values
         if not isinstance(values, Mapping):
-            raise SchemaValidationError("historical checkpoint values are not a mapping")
+            raise SchemaValidationError(
+                "historical checkpoint values are not a mapping"
+            )
         prefix_raw = values.get("recording")
         if not isinstance(prefix_raw, dict):
             raise SchemaValidationError("historical checkpoint missing recording")
@@ -244,7 +253,9 @@ class LangGraphSession:
             raise SchemaValidationError("original checkpoint readback is not a mapping")
         original_readback_raw = original_readback.get("recording")
         if not isinstance(original_readback_raw, dict):
-            raise SchemaValidationError("original checkpoint readback missing recording")
+            raise SchemaValidationError(
+                "original checkpoint readback missing recording"
+            )
         if SessionRecording.from_dict(original_readback_raw).semantic_hash() != (
             original_recording.semantic_hash()
         ):
