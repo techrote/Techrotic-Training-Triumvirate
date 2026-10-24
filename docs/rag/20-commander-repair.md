@@ -139,3 +139,29 @@ rejection-recovery0.051282, objective-completion1.0 and zero critical detections
 All77 development actions are preserved. The worker withheld frozen evaluation
 because the development gates failed. The next attempt uses independent
 development seeds962000+ before any final readout.
+
+## Final evidence assembly
+
+`scripts/build_commander_evidence.py` assembles one completed continuation under
+the existing TTT-016 admission schema. It performs no inference and creates no
+human scores. Inputs name the completed training, Q4 evaluation/export, corpus,
+blinded comparison, supplied canonical human-ratings record, matching data card,
+actual admitted native binary, fresh output directory and distinct semantic/
+reporter commits. All referenced files must resolve inside the explicit checkout
+root; the native cache file can be restored as an ordinary local hard link under
+the artifact root without duplicating its bytes.
+
+The builder verifies the canonical training identity and inventory, original
+operational/character gates, authoritative long-session replay, actual native and
+Q4 binary hashes, F16/merged parent inventory, measured runtime binding, TITAN
+readback and cumulative allocation. It then stages hard links and generated cards
+under a private artifact directory. The unchanged admission verifier must accept
+all evidence, runtime thresholds and actual ratings before the output directory
+is published. Failed staging is removed; no proposed ADMITTED result is published.
+The executed reporter files are bound to their own committed source.
+
+The package references local binary artifacts by relative path and SHA-256.
+Full readback on a clean clone requires restoring those exact binaries; metadata
+alone is insufficient. The original negative package remains portable and intact.
+The [corpus-v4 card](../evidence/ttt-017/corpus-v4-data-card.md) describes attempt-04's
+specific training inputs; it does not assert qualification.
