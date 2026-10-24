@@ -1,0 +1,36 @@
+name: LangGraph spike
+
+on:
+  pull_request:
+    paths:
+      - "spikes/langgraph/**"
+      - "docs/spikes/langgraph-checkpoint-branch-replay.md"
+      - ".github/workflows/langgraph-spike.yml"
+  push:
+    branches: [main]
+    paths:
+      - "spikes/langgraph/**"
+      - "docs/spikes/langgraph-checkpoint-branch-replay.md"
+      - ".github/workflows/langgraph-spike.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: spikes/langgraph/pyproject.toml
+      - name: Install spike
+        run: python -m pip install -e "./spikes/langgraph[test]"
+      - name: Run spike tests
+        run: python -m pytest spikes/langgraph/tests
+      - name: Execute evidence demo
+        run: python -m ttt_langgraph_spike

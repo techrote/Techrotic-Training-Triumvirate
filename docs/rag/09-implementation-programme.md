@@ -12,6 +12,8 @@
 
 Programme tracker: #1.
 
+Architecture spike: SPIKE-LG-001 / #18, implemented by PR #19. The spike proved deterministic checkpoint → branch → correction → replay and adopts LangGraph for orchestration/checkpointing while preserving TTT-owned world/event/provenance semantics.
+
 ## 1. Programme principles
 
 Each TTT issue is a merge-sized unit with a self-contained agent prompt. It must follow `AGENTS.md`, read its listed RAG documents, implement, test, open a PR, obtain green automated checks, self-review, and merge.
@@ -26,12 +28,12 @@ Issues should be executed from current `main`; agents must reconcile work merged
 | TTT-002 | #3 | Versioned canonical schemas for scenarios, observations, episodes, provenance |
 | TTT-003 | #4 | Typed command IR, deterministic interpreter, stable error taxonomy |
 | TTT-004 | #5 | Abstract battlefield simulator and procedural scenario generator |
-| TTT-005 | #6 | Stateful console/session renderer, recorder, replay and delta views |
+| TTT-005 | #6 | LangGraph-backed session/checkpoint/replay orchestration plus console/delta views |
 | TTT-006 | #7 | Model-agnostic creative-teacher/persona mutation subsystem |
 | TTT-007 | #8 | Corpus assembler, validators, provenance, dedup and split discipline |
 | TTT-008 | #9 | Player intercept/telegraph semantic codec and explicit deception model |
 | TTT-009 | #10 | Evaluation harness, frozen generated/handwritten suites and baselines |
-| TTT-010 | #11 | Student-visited/corrective rollout pipeline inspired by DAgger-style repair |
+| TTT-010 | #11 | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
 | TTT-011 | #12 | Initial model-cast admission: owner-selected teacher/student candidates, licensing/runtime probes, frozen decision record |
 | TTT-012 | #13 | Reproducible fine-tuning/export harness for the admitted cast |
 | TTT-013 | #14 | Pilot corpus generation and smoke/ablation fine-tunes |
