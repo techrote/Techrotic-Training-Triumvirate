@@ -51,3 +51,20 @@ identities. The prospective admission thresholds remain in document19. The
 deterministic orchestration plan is in
 [issue #43](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/43);
 its general controller implementation is a later task.
+
+## Owner-requested pause: 24 October 2026
+
+Attempt-04 is paused after all 1,473 optimizer steps (three epochs) and three
+exact native adapter reload-parity fixtures. Native development/frozen evaluation
+had not started. No commander is admitted. The owned workers and continuation
+helper are stopped, both leases are released, and the reconciled continuation
+charge is 2.5533377778 of 22 GPU-equivalent hours. GPU execution used only the
+admitted TITAN RTX UUID.
+
+The [pause handoff](pause-handoff.md) records the candidate and source identities,
+unchanged admission thresholds, local artifact inventory, process ownership,
+accounting, outstanding work and concrete resume commands. The checksum-bound
+[pause proof bundle](pause-2026-10-24/) preserves the actual training/parity
+records and full worker log. Large weights remain local. Resume only on the
+owner's instruction, by verifying and evaluating the completed adapter without
+repeating optimization. PR #42 remains draft and issue #41 remains open.
