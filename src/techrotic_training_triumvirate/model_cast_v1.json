@@ -140,6 +140,7 @@
     }
   },
   "probe_defaults": {
+    "batch_tokens": 512,
     "context_tokens": 2048,
     "deterministic_seed": 24301,
     "diversity_seeds": [
@@ -152,7 +153,9 @@
     "runtime": "llama.cpp",
     "runtime_revision": "2afcdb9777b1bac79fa4bfe284b9bf23085b0469",
     "runtime_tag": "b8185",
-    "structured_temperature": 0.0
+    "structured_temperature": 0.0,
+    "threads": 2,
+    "ubatch_tokens": 128
   },
   "quarantined_or_rejected": {
     "gemma-npc-variants": {
