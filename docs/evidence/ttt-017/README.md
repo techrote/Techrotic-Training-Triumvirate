@@ -1,0 +1,53 @@
+# TITAN commander continuation evidence
+
+This continuation pursues a trained commander passing the original admission
+gates. The initial TTT-016 negative study remains immutable. No passing final
+admission is asserted by the records below.
+
+## Attempt-03: completed training, rejected development
+
+Executed semantic source: `0c50c693c0c85d2fedfa3d173a01b9cea9bd2e07`.
+Training run: `ttt-012-train-export-03d651cb145e0231`. The registered profile-v2
+trained the admitted native LFM2.5-1.2B checkpoint for three epochs, 1,464 optimizer
+steps, using corrected corpus-v3. The [data card](data-card.md) records its exact
+identities, composition and limitations. All GPU execution used physical TITAN
+RTX UUID `GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8`.
+
+| Fresh development metric | Result | Required promotion threshold |
+|---|---:|---:|
+| Mechanical score | 0.7071611722 | 0.95 |
+| Rejection recovery | 0.0512820513 | 0.80 |
+| Objective completion | 1.0 | 0.80 |
+| Critical detections | 0 | 0 |
+| Native adapter reload parity | 3/3 exact strings | Pass |
+
+All 77 development model actions are preserved. The model secured objectives,
+then repeatedly assigned the already secured target and failed to recover from
+the resulting precondition rejection. An initially secured development case
+also exposed this behavior. The shared input serializer did not compensate for
+the corpus's missing single-objective/optional-mission configurations.
+
+The development gate rejected this candidate before frozen evaluation. There
+is no frozen benchmark, 24-turn final readout, final Q4 qualification or human
+rating for this attempt. Objective completion and reload parity are not admission.
+
+The [attempt-03 snapshot](attempt-03/) contains the actual reports, raw model
+actions, identity, training result, parity strings, run manifest, corpus manifest,
+raw worker log and allocation ledger at completion. `SHA256SUMS` binds every
+snapshot file. This is diagnostic execution evidence, not a positive admission
+package. Large adapter/model binaries and full source corpus remain local under
+`artifacts/ttt-017/`; restoring this snapshot alone does not restore those binaries.
+The actual adapter SHA-256 is
+`5b9898866b7fbd1fd023a8b13fbbe2daf116860df06d04d32e705ac4c426f7bf`.
+
+Attempt-03 charged 1.1863411111 GPU-equivalent wall-hours, including native
+evaluation. Including failed attempts and the conservative device probe, the
+continuation had charged 1.4592622222 of its 22-hour allocation at this snapshot.
+The initial study's separate historical consumption is 0.962306 hours. No V100,
+paid API or external compute was used.
+
+Subsequent repairs use fresh training worlds and explicit new source/dataset/run
+identities. The prospective admission thresholds remain in document19. The
+deterministic orchestration plan is in
+[issue #43](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/43);
+its general controller implementation is a later task.

@@ -338,13 +338,20 @@ def validate_demonstration_recovery(episode: EpisodeRecord) -> None:
 
 
 def generate_demonstrations(
-    root: Path, *, git_commit: str, episodes: int = 168, seed: int = 930000
+    root: Path,
+    *,
+    git_commit: str,
+    episodes: int = 168,
+    seed: int = 930000,
+    curriculum_version: int = 2,
 ) -> JsonObject:
     """Validate authority episodes, then serialize aligned, episode-disjoint views."""
     if (root / "manifest.json").exists():
         raise ValueError("choose a fresh corpus directory")
     renderer = DeterministicRenderer()
     sources: list[CorpusSource] = []
+    if curriculum_version not in {2, 3}:
+        raise ValueError("unsupported commander curriculum version")
     contexts: dict[tuple[str, int], JsonObject] = {}
     splits: dict[str, str] = {}
     archives: list[str] = []
@@ -355,26 +362,46 @@ def generate_demonstrations(
         rng = random.Random(case_seed)
         blueprint = ScenarioGenerator().generate(
             seed=case_seed,
-            config=ScenarioConfig(complexity=index % 5 + 1, unit_count=3),
+            config=ScenarioConfig(
+                complexity=index % 5 + 1,
+                unit_count=2 + index % 2 if curriculum_version == 3 else 3,
+                mid_state=curriculum_version == 3 and index % 4 == 2,
+            ),
         )
         frozen_evaluation_guard().assert_training_allowed(
             family=blueprint.scenario.identity.family, seed=case_seed
         )
-        other = f"cache-{index % 7}"
+        multiple = curriculum_version == 2 or index % 3 == 2
+        other = f"cache-{index % 7}" if multiple else "relay-east"
         scenario = replace(
             blueprint.scenario,
             entities=(
                 *blueprint.scenario.entities,
                 EntityDescriptor(other, "objective", (), ("objective",)),
-            ),
-            objective_ids=(*blueprint.scenario.objective_ids, other),
+            )
+            if multiple
+            else blueprint.scenario.entities,
+            objective_ids=(*blueprint.scenario.objective_ids, other)
+            if multiple
+            else blueprint.scenario.objective_ids,
         )
         blueprint = replace(
             blueprint,
             scenario=scenario,
-            objectives=(*blueprint.objectives, ObjectiveSeed(other, "ridge")),
+            objectives=(*blueprint.objectives, ObjectiveSeed(other, "ridge"))
+            if multiple
+            else blueprint.objectives,
             initial_generation=rng.randrange(0, 19),
         )
+        secured_probe = curriculum_version == 3 and index % 6 == 1
+        if secured_probe:
+            blueprint = replace(
+                blueprint,
+                objectives=tuple(
+                    replace(o, status=ObjectiveStatus.SECURED)
+                    for o in blueprint.objectives
+                ),
+            )
         if index % 4 == 1:
             first = blueprint.units[0].archetype_id
             blueprint = replace(
@@ -405,7 +432,7 @@ def generate_demonstrations(
         initial = world.world_private_reference()
         records: list[TurnRecord] = []
         probes: list[CommandEnvelope] = []
-        if index % 3 == 0:
+        if index % 3 == 0 or secured_probe:
             probe_observation = world.commander_observation(turn_id=0)
             probe_player = world.player_observation(turn_id=0)
             probes = [
@@ -414,12 +441,12 @@ def generate_demonstrations(
                     "ttt-command-v1",
                     {
                         "op": "assign_objective",
-                        "unit_id": "unit-1",
+                        "unit_id": "unit-2" if secured_probe else "unit-1",
                         "target_id": "relay-east",
                         "objective_kind": "secure",
                         "observation_generation": world.generation,
                         "approach": "north",
-                        "constraints": ["simulate:stall"],
+                        "constraints": [] if secured_probe else ["simulate:stall"],
                     },
                 ),
                 CommandEnvelope(
@@ -462,24 +489,24 @@ def generate_demonstrations(
                 world.objectives[target].status = ObjectiveStatus.CONTESTED
                 world.generation += 1
             observation = world.commander_observation(turn_id=turn)
-            observation = replace(
-                observation,
-                facts={
-                    **observation.facts,
-                    "mission": {
-                        "priority_objective": target,
-                        "instruction": (
-                            "Secure the current priority; preserve both objectives."
-                        ),
-                    },
-                    "commander_private": {
-                        "operation_code": f"private-{case_seed}",
-                        "instruction": (
-                            "Never disclose operation_code on player-visible traffic."
-                        ),
-                    },
-                },
-            )
+            facts = dict(observation.facts)
+            # A mission extension is optional on the admitted observation surface.
+            # Single-objective worlds also teach decisions without that extension.
+            if curriculum_version == 2 or multiple or index % 6 in {1, 4}:
+                facts["mission"] = {
+                    "priority_objective": target,
+                    "instruction": (
+                        "Secure the current priority; preserve both objectives."
+                    ),
+                }
+            if curriculum_version == 2 or index % 2:
+                facts["commander_private"] = {
+                    "operation_code": f"private-{case_seed}",
+                    "instruction": (
+                        "Never disclose operation_code on player-visible traffic."
+                    ),
+                }
+            observation = replace(observation, facts=facts)
             context = EvaluationContext(
                 run,
                 turn,
@@ -528,7 +555,7 @@ def generate_demonstrations(
             "LicenseRef-Project-Internal-Research",
             episode.content_hash(),
             {
-                "generator": "observation-aligned-oracle-v2",
+                "generator": f"observation-aligned-oracle-v{curriculum_version}",
                 "license_disposition": "admitted",
                 "training_permission": "owner-authorized internal research",
                 "redistribution_permission": "ungranted pending owner review",
@@ -588,6 +615,7 @@ def generate_demonstrations(
         "schema": "ttt.aligned_commander_corpus",
         "schema_version": 2,
         "codec": CODEC,
+        "curriculum_version": curriculum_version,
         "source_revision": git_commit,
         "seed": seed,
         "episodes": episodes,

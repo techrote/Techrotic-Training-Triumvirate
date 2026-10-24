@@ -115,3 +115,27 @@ controller proposed there. Keep #43 open for that future implementation.
 
 The corrected corpus has its own [data card](../evidence/ttt-017/data-card.md),
 which records its byte identities and limitations independently of admission.
+
+## Development-driven observation coverage
+
+Attempt-03 completed all 1,464 optimization steps and passed native reload parity.
+Its fresh development trajectories then exposed repeated assignments to an
+already secured objective. Authoritative replay of those recorded development
+actions confirmed `PRECONDITION_FAILED: target-already-secured`; this diagnosis
+uses development evidence, not a frozen response copied into training.
+
+Curriculum version3 adds single-objective worlds without the optional mission
+extension, two- and three-unit worlds, mid-state starts, optional commander-private
+extensions and initially secured objectives with actual rejection feedback.
+Version2 always supplied two objectives and an explicit mission extension; sharing
+the serializer alone did not cover the input configurations used by an independent
+caller. Every fully secured demonstration must request status, including after an
+actual target-already-secured rejection. Existing delayed-failure recovery and
+authority validation remain required. Fresh version3 seeds begin at938000; the
+registered training recipe and final admission thresholds are unchanged.
+
+The completed attempt-03 development readout was mechanical0.707161,
+rejection-recovery0.051282, objective-completion1.0 and zero critical detections.
+All77 development actions are preserved. The worker withheld frozen evaluation
+because the development gates failed. The next attempt uses independent
+development seeds962000+ before any final readout.

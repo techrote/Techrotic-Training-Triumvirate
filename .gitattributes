@@ -1,2 +1,4 @@
 # Evidence SHA-256 values must survive Windows/Linux checkout unchanged.
 * text=auto eol=lf
+# Preserve raw progress/log bytes bound by the continuation checksums.
+docs/evidence/ttt-017/**/worker.log -text

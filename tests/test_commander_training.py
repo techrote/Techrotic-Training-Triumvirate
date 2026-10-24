@@ -110,3 +110,30 @@ def test_frozen_world_is_refused_before_training_data_generation(
         generate_demonstrations(
             tmp_path / "refused", git_commit="a" * 40, episodes=1, seed=240901
         )
+
+
+def test_curriculum_covers_optional_mission_and_already_secured_rejection(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "varied"
+    generate_demonstrations(
+        root, git_commit="b" * 40, episodes=14, seed=938000, curriculum_version=3
+    )
+    sources, _ = load_corpus_examples(root)
+    assert {len(e.input["facts"]["units"]) for e in sources} == {2, 3}
+    assert {len(e.input["objectives"]) for e in sources} == {1, 2}
+    assert any("mission" not in e.input["facts"] for e in sources)
+    assert any("mission" in e.input["facts"] for e in sources)
+    recovered = []
+    for example in sources:
+        facts = example.input["facts"]
+        body = example.target["commands"][0]["payload"]["body"]
+        if all(o["status"] == "secured" for o in facts["objectives"].values()):
+            assert body["op"] == "request_status"
+        if any(
+            result["detail"].get("reason") == "target-already-secured"
+            for result in example.input["feedback"]
+        ):
+            assert body["op"] == "request_status"
+            recovered.append(example)
+    assert recovered

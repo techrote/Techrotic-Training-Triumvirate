@@ -89,6 +89,9 @@ def worker(args: argparse.Namespace) -> None:
     metadata = {
         "variant": config.mix.value,
         "experiment": "repair-v2",
+        "curriculum_version": json.loads(
+            (args.corpus / "manifest.json").read_text(encoding="utf-8")
+        ).get("curriculum_version", 2),
         "base_checkpoint": binding.to_object(),
         "dataset_hash": dataset.dataset_hash,
         "training_config": config.to_object(),
@@ -106,7 +109,7 @@ def worker(args: argparse.Namespace) -> None:
 
     original = load_benchmark_v1()
     cases = tuple(
-        replace(c, case_id=f"development-{i}", seed=960000 + i)
+        replace(c, case_id=f"development-{i}", seed=962000 + i)
         for i, c in enumerate(original.cases)
     )
     development = replace(
@@ -146,7 +149,8 @@ def main() -> int:
     parser.add_argument("--gpu-uuid", required=True, choices=[TITAN])
     parser.add_argument("--hours", type=float, default=2)
     parser.add_argument("--epochs", type=int, default=3)
-    parser.add_argument("--corpus-seed", type=int, default=934000)
+    parser.add_argument("--corpus-seed", type=int, default=938000)
+    parser.add_argument("--curriculum-version", type=int, choices=(2, 3), default=3)
     parser.add_argument("--prepare", action="store_true")
     parser.add_argument("--worker", action="store_true")
     parser.add_argument("--frozen", action="store_true")
@@ -156,7 +160,10 @@ def main() -> int:
     if args.prepare:
         print(
             generate_demonstrations(
-                args.corpus, git_commit=args.git_commit, seed=args.corpus_seed
+                args.corpus,
+                git_commit=args.git_commit,
+                seed=args.corpus_seed,
+                curriculum_version=args.curriculum_version,
             )
         )
         return 0
