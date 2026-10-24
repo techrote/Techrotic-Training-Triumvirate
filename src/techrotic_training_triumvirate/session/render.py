@@ -182,15 +182,19 @@ class SessionRenderer(Protocol):
 
     def structured_observation(self, observation: CommanderObservation) -> JsonObject:
         """Return commander-visible structured content."""
+        ...
 
     def compact_observation(self, observation: CommanderObservation) -> str:
         """Return deterministic compact text."""
+        ...
 
     def compact_result(self, result: InterpreterResult) -> str:
         """Render authoritative interpreter acknowledgement/error."""
+        ...
 
     def compact_delta(self, delta: SemanticDelta) -> str:
         """Render deterministic semantic delta text."""
+        ...
 
 
 @dataclass(frozen=True, slots=True)
