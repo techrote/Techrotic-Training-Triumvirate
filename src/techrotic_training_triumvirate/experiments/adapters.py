@@ -185,9 +185,7 @@ def run_cpu_diagnostic(spec: CpuDiagnosticSpec) -> JsonObject:
     preexec_fn: Callable[[], None] | None = None
     if spec.low_priority:
         if os.name == "nt":
-            creationflags = int(
-                getattr(subprocess, "BELOW_NORMAL_PRIORITY_CLASS", 0)
-            )
+            creationflags = int(getattr(subprocess, "BELOW_NORMAL_PRIORITY_CLASS", 0))
         else:
             preexec_fn = _lower_priority
 

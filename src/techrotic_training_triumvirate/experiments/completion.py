@@ -157,9 +157,8 @@ def verify_completion_marker(
     for raw_name, raw_digest in sorted(artifacts.items()):
         if not isinstance(raw_name, str) or not isinstance(raw_digest, str):
             raise CompletionMarkerError("completion artifact entry is invalid")
-        if (
-            len(raw_digest) != 64
-            or any(ch not in "0123456789abcdef" for ch in raw_digest)
+        if len(raw_digest) != 64 or any(
+            ch not in "0123456789abcdef" for ch in raw_digest
         ):
             raise CompletionMarkerError("completion artifact digest is invalid")
         if sha256_file(_artifact_path(root, raw_name)) != raw_digest:

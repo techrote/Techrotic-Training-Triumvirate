@@ -43,15 +43,9 @@ def run_cpu_q4_qualification(spec: CpuQ4QualificationSpec) -> JsonObject:
 
     f16 = spec.f16_artifact.resolve()
     q4 = spec.q4_artifact.resolve()
-    if (
-        spec.conversion.artifact is None
-        or spec.conversion.artifact.resolve() != f16
-    ):
+    if spec.conversion.artifact is None or spec.conversion.artifact.resolve() != f16:
         raise PipelineAdapterError("conversion must declare the F16 GGUF artifact")
-    if (
-        spec.quantization.artifact is None
-        or spec.quantization.artifact.resolve() != q4
-    ):
+    if spec.quantization.artifact is None or spec.quantization.artifact.resolve() != q4:
         raise PipelineAdapterError("quantization must declare the Q4 GGUF artifact")
 
     conversion = run_cpu_diagnostic(spec.conversion)

@@ -477,9 +477,9 @@ def launch_worker_host(spec_path: str | Path) -> WorkerOwnership:
     spec.validated_paths()
     creationflags = 0
     if os.name == "nt":
-        creationflags = int(
-            getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
-        ) | int(getattr(subprocess, "DETACHED_PROCESS", 0))
+        creationflags = int(getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)) | int(
+            getattr(subprocess, "DETACHED_PROCESS", 0)
+        )
     host = subprocess.Popen(
         [
             sys.executable,
