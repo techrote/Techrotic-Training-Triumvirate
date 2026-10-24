@@ -1,0 +1,543 @@
+diff --git a/.github/workflows/base-ci.yml b/.github/workflows/base-ci.yml
+index c278616..1f5d39c 100644
+--- a/.github/workflows/base-ci.yml
++++ b/.github/workflows/base-ci.yml
+@@ -8,6 +8,10 @@ on:
+       - "pyproject.toml"
+       - "README.md"
+       - "docs/development.md"
++      - "docs/evidence/**"
++      - "docs/rag/**"
++      - "scripts/**"
++      - ".gitattributes"
+       - ".gitignore"
+       - ".github/workflows/base-ci.yml"
+   push:
+@@ -18,6 +22,10 @@ on:
+       - "pyproject.toml"
+       - "README.md"
+       - "docs/development.md"
++      - "docs/evidence/**"
++      - "docs/rag/**"
++      - "scripts/**"
++      - ".gitattributes"
+       - ".gitignore"
+       - ".github/workflows/base-ci.yml"
+   workflow_dispatch:
+diff --git a/README.md b/README.md
+index 9e5de6b..aa7d3a2 100644
+--- a/README.md
++++ b/README.md
+@@ -33,6 +33,12 @@ The initial cast is now admitted: Sprocket 500M is the creative/reference teache
+ - [Model-cast admission](docs/rag/11-model-cast-admission.md)
+ - [Candidate small-model zoo](docs/rag/12-candidate-model-zoo.md)
+ - [Abstract World Authority](docs/rag/13-world-authority.md)
++- [Training/export](docs/rag/14-training-export.md)
++- [Pilot ablation plan](docs/rag/15-pilot-ablation.md)
++- [Runtime bridge](docs/rag/16-runtime-bridge.md)
++- [Frozen 24-turn evaluation](docs/rag/17-closed-loop.md)
++- [Native pilot execution](docs/rag/18-pilot-execution.md)
++- [Final admission rules and readback](docs/rag/19-final-admission.md)
+ 
+ ## Development
+ 
+@@ -61,6 +67,7 @@ ttt seed-demo --seed 24301 --count 5
+ ttt schema-bundle --pretty
+ ttt command-schema --pretty
+ ttt world-demo --seed 24301 --turns 24
++ttt runtime-demo --seed 24301 --turns 4 --output build/runtime-demo.json
+ ttt-train profile --model primary --mix joint+corrective --seed 24301
+ ```
+ 
+@@ -68,7 +75,13 @@ See [docs/development.md](docs/development.md) for the supported-Python, depende
+ 
+ ## Current status
+ 
+-**Programme Waves 0–6 are merged; TTT-012 / Wave 7 training-export machinery is complete in this change.**
++The deterministic world, corpus, recovery, frozen evaluation and training/export
++foundations are implemented. TTT-015's bounded runtime bridge is merged through
++[PR #38](https://github.com/techrote/Techrotic-Training-Triumvirate/pull/38).
++The real native-checkpoint pilot and source-bound long-session comparisons are
++tracked by [TTT-013E / #37](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/37)
++and [TTT-014 / #15](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/15).
++Final runtime admission depends on measured results under the recorded gates.
+ 
+ Merged foundations now include:
+ 
+@@ -84,10 +97,12 @@ Merged foundations now include:
+ - TTT-010 / #11 — LangGraph-backed student-visited corrective rollouts, deterministic oracle repair, branch-preserving T3 recovery corpora and replay-correction adapters;
+ - TTT-011 / #12 — admitted initial model cast, immutable native/GGUF identities, licensing and characterization evidence;
+ - TTT-012 / #13 — reproducible fine-tuning profiles, assistant-only loss mapping, deterministic checkpoint/resume, export manifests and inference parity.
++- TTT-013 / #14 — benchmark-clean T1/T2/T3 pilot admission and the four-way ablation plan;
++- TTT-015 / #16 — versioned bounded runtime messages, game-owned command execution, export verification and dispatch-grounded player intercepts.
+ 
+-**Waves 4–6 are merged.** TTT-011 / #12 selected and froze the initial model cast; TTT-012 / #13 now supplies the reproducible training/export gate required before pilot experiments.
+-
+-The initial model cast is **SELECTED** by TTT-011. TTT-012 resolves training identities from that admission rather than hard-coding model revisions in the trainer.
++The initial model cast is **SELECTED** by TTT-011. Cast selection is separate
++from admission of a trained runtime candidate. TTT-012 resolves training
++identities from that admission rather than hard-coding revisions in the trainer.
+ 
+ A first-pass **~20 GB small-model GGUF characterization shelf** is recorded in `docs/rag/12-candidate-model-zoo.md`. It is a shortlist for later benchmarking, not an admission or download authorization.
+ 
+@@ -100,6 +115,30 @@ The native abstract World Authority is available through `ttt world-demo --seed
+ 
+ The session layer remains optional at install time. Use `python -m pip install -e ".[dev,session]"` to exercise the LangGraph checkpoint/branch/replay backend; semantic rendering and recording remain separated from LangGraph so the World Authority is directly testable without it.
+ 
++## Evaluation and evidence
++
++The model-free controls exercise the same authority boundary without downloading
++weights. Use the exact source commit for reported experiments:
++
++```bash
++ttt evaluate --output build/frozen-baseline --code-revision SOURCE_COMMIT_SHA
++ttt closed-loop --output build/closed-loop-baseline --code-revision SOURCE_COMMIT_SHA
++ttt closed-loop-verify --report build/closed-loop-baseline/candidate-01.json
++ttt admission-verify --package docs/evidence/ttt-016/admission-package.json --root .
++```
++
++Closed-loop readback replays stored actions and verifies authoritative results
++without the original model. Admission readback verifies the portable cards,
++reports, manifests and hashes and refuses unsupported positive claims. Full
++candidate training uses the explicit bounded campaign script described in
++[the execution contract](docs/rag/18-pilot-execution.md); it remains outside CI.
++
++Deterministic smoke output is control-plane evidence. Human humour, surprise
++and distinctiveness fields remain unfilled until people supply ratings. Large
++adapters/checkpoints remain outside Git with their hashes and actual locations
++recorded in the evidence. The project does not currently grant a blanket licence
++to redistribute its research corpus; model licences are recorded separately.
++
+ ## Core rule
+ 
+ **Never train a student to confuse plausible fiction with authoritative game state.**
+diff --git a/docs/development.md b/docs/development.md
+index 6bab93d..4d100ff 100644
+--- a/docs/development.md
++++ b/docs/development.md
+@@ -76,6 +76,11 @@ ttt seed-demo --seed 24301 --count 5
+ ttt schema-bundle --pretty
+ ttt command-schema --pretty
+ ttt world-demo --seed 24301 --turns 24
++ttt runtime-demo --seed 24301 --turns 4 --output build/runtime-demo.json
++ttt evaluate --output build/frozen-baseline --code-revision SOURCE_COMMIT_SHA
++ttt closed-loop --output build/closed-loop-baseline --code-revision SOURCE_COMMIT_SHA
++ttt closed-loop-verify --report build/closed-loop-baseline/candidate-01.json
++ttt admission-verify --package docs/evidence/ttt-016/admission-package.json --root .
+ ```
+ 
+ The seed demo exists to make deterministic plumbing observable without requiring a simulator or model. The schema-bundle command emits the canonical durable-record JSON Schema bundle. The command-schema command emits the independently versioned TTT command-body contract. The world-demo command runs the model-free deterministic reference episode and emits state/event hashes.
+@@ -89,3 +94,10 @@ The smoke suite records the exact five-value sequence for seed `0x5EED` and veri
+ ## Artifact hygiene
+ 
+ The root `.gitignore` excludes common model weights/checkpoints and generated experiment/corpus directories. Small intentional fixtures may be force-added when an issue explicitly requires them, but large generated evidence belongs in an external/artifact store with hashes and manifests committed to git.
++
++`.gitattributes` preserves LF text bytes across Windows/Linux checkouts so
++portable evidence SHA-256 values remain stable. The final admission readback
++checks hashed reports, cards, manifests and recorded closed-loop replay without
++loading a model. Missing large external binaries remain explicit limitations.
++Use the exact committed source SHA for reported experiments; test output under
++`build/` is disposable and does not establish a substantive model result.
+diff --git a/docs/rag/00-index.md b/docs/rag/00-index.md
+index cda33dd..be62110 100644
+--- a/docs/rag/00-index.md
++++ b/docs/rag/00-index.md
+@@ -25,6 +25,10 @@ Always read `AGENTS.md` first. Then read the issue's **Required reading** list.
+ | [13-world-authority.md](13-world-authority.md) | Deterministic abstract world, replay, visibility and optional Concordia host |
+ | [14-training-export.md](14-training-export.md) | Reproducible fine-tuning, checkpoint/resume, export, parity and budget gates |
+ | [15-pilot-ablation.md](15-pilot-ablation.md) | TTT-013 pilot corpus admission, four-way ablation plan, smoke evidence, and execution blocker |
++| [16-runtime-bridge.md](16-runtime-bridge.md) | Bounded versioned game/model bridge, identity, authority and grounded intercepts |
++| [17-closed-loop.md](17-closed-loop.md) | Frozen 24-turn evaluation, separated metrics, trace replay and blinded human packet |
++| [18-pilot-execution.md](18-pilot-execution.md) | Admitted local native-model campaign, corpus, budgets and execution provenance |
++| [19-final-admission.md](19-final-admission.md) | Prospective admission gates, model/data cards and fail-closed evidence readback |
+ 
+ ## External inspiration, not normative dependencies
+ 
+diff --git a/docs/rag/05-persona-and-teacher.md b/docs/rag/05-persona-and-teacher.md
+index 2c6e3d0..9c4b511 100644
+--- a/docs/rag/05-persona-and-teacher.md
++++ b/docs/rag/05-persona-and-teacher.md
+@@ -172,12 +172,16 @@ provided to a teacher when the experiment explicitly requires them.
+ 
+ ## 8. Model-selection boundary
+ 
+-Sprocket 500M remains an example/high-interest possible Creative Teacher because
+-of its observed persistent and surprising persona behaviour. It is **not** a
+-dependency or selected model.
+-
+-The same applies to Liquid, Qwen, Gemma/NPC and other models in the candidate
+-zoo. TTT-011 remains the only model-cast admission gate.
++TTT-011 selected Sprocket 500M as a creative/reference teacher, LFM2.5-1.2B-Instruct
++as the primary student and Qwen3.5-4B as a challenger/comparison teacher. Their
++immutable identities, role restrictions and licensing dispositions live in
++`11-model-cast-admission.md` and the machine-readable model-cast manifest.
++Selection never makes teacher output authoritative. Other zoo entries remain
++candidates until explicitly admitted through that gate.
++
++The first local pilot uses repository-authored deterministic style templates;
++it does not claim Sprocket or Qwen generation merely because those teachers are
++selected. Each corpus records its actual source contribution independently.
+ 
+ The local/API adapter stubs deliberately use caller-supplied model references
+ without selecting a checkpoint.
+diff --git a/docs/rag/09-implementation-programme.md b/docs/rag/09-implementation-programme.md
+index 2f97e38..dd90dc0 100644
+--- a/docs/rag/09-implementation-programme.md
++++ b/docs/rag/09-implementation-programme.md
+@@ -25,7 +25,11 @@ Issues should be executed from current `main`; agents must reconcile work merged
+ 
+ ## 2. Current implementation status
+ 
+-As of 24 October 2026, **Waves 0–6 are merged and TTT-012 / Wave 7 is complete in this change**. TTT-012 adds admitted-model training profiles, leak-safe native chat mapping, deterministic checkpoint/resume, export manifests, fixed inference parity and an explicit budget-gated PEFT LoRA path.
++As of 24 October 2026, **Waves 0–7 are merged**. TTT-012 supplies admitted-model
++training/export, and TTT-015's runtime bridge merged through PR #38. TTT-013's
++preparation-only issue closed through PR #36; substantive execution is tracked
++separately by TTT-013E / #37. Long-session comparison and final admission must
++consume that actual evidence rather than substituting smoke output.
+ 
+ | Wave | Issues | State | Result |
+ |---|---|---|---|
+@@ -36,7 +40,10 @@ As of 24 October 2026, **Waves 0–6 are merged and TTT-012 / Wave 7 is complete
+ | 4 | TTT-005 / #6 + TTT-007 / #8 + TTT-009 / #10 | Complete | Session, corpus and frozen model-agnostic evaluation foundation |
+ | 5 | TTT-010 / #11 | Complete | LangGraph-backed student-visited correction branches and validated T3 recovery corpus |
+ | 6 | TTT-011 / #12 | Complete | Initial model-cast admission, immutable artifact identities, licensing and live characterization evidence |
+-| 7 | TTT-012 / #13 | Complete in this change | Reproducible training profiles, checkpoint/resume, export and inference parity |
++| 7 | TTT-012 / #13 + TTT-015 / #16 | Complete | Training/export plus bounded game-facing runtime and intercept bridge |
++| 8 | TTT-013 / #14 + TTT-013E / #37 | Preparation merged; real execution in progress | Benchmark-clean local corpus and four-way native LoRA campaign |
++| 9 | TTT-014 / #15 | Evaluation implemented; comparison in progress | Frozen 24-turn candidate/baseline traces and human packet |
++| 10 | TTT-016 / #17 | Evidence tooling implemented; final package pending | Cards, comparative admission decision and verified readback |
+ 
+ Wave 3 merged evidence:
+ 
+@@ -72,11 +79,12 @@ TTT-011 admits identities and characterization only; it does **not** authorize a
+ | TTT-009 | #10 | Complete | Evaluation harness, frozen generated/handwritten suites and baselines |
+ | TTT-010 | #11 | Complete | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
+ | TTT-011 | #12 | Complete | Initial model-cast admission: owner-delegated teacher/student selection, licensing/runtime probes, frozen decision record |
+-| TTT-012 | #13 | Complete in this change | Reproducible fine-tuning/export harness for the admitted cast |
+-| TTT-013 | #14 | Ready after this change | Pilot corpus generation and smoke/ablation fine-tunes |
+-| TTT-014 | #15 | Blocked by #14 | Closed-loop 20–30 turn commander benchmark and comparative report |
+-| TTT-015 | #16 | Ready after this change | Runtime export/bridge contract plus reference intercept integration |
+-| TTT-016 | #17 | Blocked by #15/#16 | Release/admission package: model/data cards, manifests, benchmarks and reproducibility |
++| TTT-012 | #13 | Complete | Reproducible fine-tuning/export harness for the admitted cast |
++| TTT-013 | #14 | Complete under preparation-only rule | Pilot admission and fixed four-way plan |
++| TTT-013E | #37 | Real execution in progress | Named local allocation, actual adapters and source-bound evaluation |
++| TTT-014 | #15 | Full comparison in progress | Closed-loop 20–30 turn commander benchmark and comparative report |
++| TTT-015 | #16 | Complete / PR #38 | Runtime export/bridge contract plus reference intercept integration |
++| TTT-016 | #17 | Final evidence pending #37/#15 | Model/data cards, explicit admission/rejection and reproducibility |
+ 
+ ## 4. Execution waves
+ 
+@@ -94,11 +102,13 @@ TTT-011 admits identities and characterization only; it does **not** authorize a
+ 
+ **Wave 6:** TTT-011 / #12 is merged after the owner explicitly delegated the cast decision to the implementation agent.
+ 
+-**Wave 7, parallel:** TTT-012 / #13 is complete in this change; TTT-015 / #16 remains independently ready (it also requires the already-complete TTT-008/009).
++**Wave 7, parallel:** TTT-012 / #13 and TTT-015 / #16 are complete.
+ 
+-**Wave 8:** TTT-013 / #14 becomes ready after this change, subject to the normal merge/green-check gate.
++**Wave 8:** TTT-013 / #14 preparation is complete; TTT-013E / #37 executes the
++real fixed campaign under the recorded local allocation and budget.
+ 
+-**Wave 9:** TTT-014 / #15 after TTT-013.
++**Wave 9:** TTT-014 / #15 consumes actual TTT-013E candidates and preserved
++prompt-only/scripted controls.
+ 
+ **Wave 10:** TTT-016 / #17 after TTT-014/015.
+ 
+@@ -164,6 +174,12 @@ Programme completion yields:
+ - a validated, provenance-rich corpus pipeline;
+ - recovery-data generation;
+ - frozen evaluation suites;
+-- an admitted compact commander candidate;
++- a compact commander candidate experiment and an explicit evidence-based
++  admission, conditional-admission or rejection decision;
+ - player-facing grounded tactical intercepts;
+ - reproducible runtime/export artifacts ready for downstream game integration.
++
++A negative research result is a valid TTT-016 completion under issue #17.
++It completes the evidence programme without claiming the rejected candidate
++is ready for game integration. Original model-cast selection, actual fine-tuned
++candidate evidence and final runtime admission are separate decisions.
+diff --git a/docs/rag/19-final-admission.md b/docs/rag/19-final-admission.md
+index b0c9288..b80b2fe 100644
+--- a/docs/rag/19-final-admission.md
++++ b/docs/rag/19-final-admission.md
+@@ -52,6 +52,46 @@ unmet mandatory gates. A successful readback confirms file integrity and
+ internal decision consistency; scientific conclusions still require inspecting
+ the bound reports and traces. It does not rerun heavyweight training.
+ 
++Positive decisions additionally cross-check gate booleans against their evidence:
++the frozen report must cover every frozen case, its mechanical aggregates must
++match case metrics, and the actual mechanical/rejection/hidden-information
++thresholds must pass. Closed-loop evidence is authoritatively replayed and must
++be substantive, pass objective/failure-recovery thresholds, and have zero
++critical detections. All referenced evaluations must have the same complete
++policy identity and source commit as the package; `candidate_id` must exactly
++equal their `policy.policy_id`. A failed parity report cannot support a true
++export-parity gate.
++
++An empty blinded packet is not completed human evaluation. Evidence labelled
++`human-ratings` must have schema `ttt.human_ratings`, integer `schema_version=1`,
++the matching `candidate_id`, and a nonempty `ratings` array. Every rating has a
++unique, nonempty `reviewer_id` and supplied integer 1–5 values for `humour`,
++`surprise`, and `distinctiveness`. Null scores, empty arrays, booleans masquerading
++as scores, duplicate reviewers, and ratings belonging to a different candidate
++are rejected. Pseudonymous reviewer identifiers are sufficient; the verifier
++cannot independently authenticate who supplied a score.
++
++Evidence labelled `runtime-measurements` uses schema
++`ttt.runtime_measurements`, integer `schema_version=1`, matching `candidate_id`,
++`model_role` (`primary` or `challenger`), `quantization=Q4_K_M`, a nonempty `host`
++description (hardware and runtime), and the measured artifact's
++`artifact_sha256`. It requires positive integer `context_tokens`,
++`artifact_size_bytes`, and `peak_resident_memory_bytes`, plus finite positive
++`ttft_seconds` and `decode_tokens_per_second`. A true runtime gate is rejected
++unless these measurements meet the original TTT-011 role-specific targets.
++The role must resolve to the candidate's admitted `base_model` repository
++(optionally followed by `@` and its exact admitted native revision), preventing
++a primary candidate from borrowing the challenger's looser resource limits.
++Native-LoRA timing or a descriptive text file cannot fill this gate. A verifier
++can check supplied measurements and their file hashes, not independently prove
++that the hardware experiment occurred.
++
++These schemas reject unknown fields. Retain raw human packets, detailed runtime
++logs, and provenance as additional hashed evidence with distinct descriptive
++kinds; those artifacts do not substitute for the required scored/measurement
++records. Negative packages may preserve failed measurements and unfilled packets
++without claiming the corresponding gate passed.
++
+ Large model binaries remain outside Git. Artifact hashes and their actual
+ locations belong in the candidate cards/run manifests; unavailable external
+ artifacts must be listed explicitly and cannot support positive admission.
+diff --git a/src/techrotic_training_triumvirate/cli.py b/src/techrotic_training_triumvirate/cli.py
+index 2c6d839..f1e95b9 100644
+--- a/src/techrotic_training_triumvirate/cli.py
++++ b/src/techrotic_training_triumvirate/cli.py
+@@ -5,6 +5,7 @@ from __future__ import annotations
+ import argparse
+ import json
+ from collections.abc import Sequence
++from pathlib import Path
+ 
+ from . import __version__
+ from .determinism import DEFAULT_TEST_SEED, stable_u64_sequence
+@@ -57,6 +58,39 @@ def build_parser() -> argparse.ArgumentParser:
+     world_demo.add_argument("--seed", type=int, default=DEFAULT_TEST_SEED)
+     world_demo.add_argument("--turns", type=int, default=24)
+     world_demo.add_argument("--mid-state", action="store_true")
++
++    admission_verify = subparsers.add_parser(
++        "admission-verify",
++        help="verify the final admission package and evidence hashes",
++    )
++    admission_verify.add_argument("--package", required=True)
++    admission_verify.add_argument("--root", required=True, help="trusted evidence root")
++
++    evaluate = subparsers.add_parser(
++        "evaluate", help="run the model-free frozen evaluation baseline"
++    )
++    evaluate.add_argument("--output", type=Path, required=True)
++    evaluate.add_argument("--code-revision", required=True)
++
++    closed_loop = subparsers.add_parser(
++        "closed-loop", help="run the scripted frozen 24-turn baseline and rating packet"
++    )
++    closed_loop.add_argument("--output", type=Path, required=True)
++    closed_loop.add_argument("--code-revision", required=True)
++
++    replay = subparsers.add_parser(
++        "closed-loop-verify",
++        help="replay a stored closed-loop report without the model",
++    )
++    replay.add_argument("--report", type=Path, required=True)
++
++    runtime_demo = subparsers.add_parser(
++        "runtime-demo",
++        help="run a JSON runtime session with grounded player intercepts",
++    )
++    runtime_demo.add_argument("--seed", type=int, default=DEFAULT_TEST_SEED)
++    runtime_demo.add_argument("--turns", type=int, default=4)
++    runtime_demo.add_argument("--output", type=Path)
+     return parser
+ 
+ 
+@@ -65,6 +99,70 @@ def main(argv: Sequence[str] | None = None) -> int:
+     parser = build_parser()
+     args = parser.parse_args(argv)
+ 
++    if args.command == "runtime-demo":
++        from .runtime import run_runtime_demo
++        from .schemas import canonical_json
++
++        try:
++            runtime_report = run_runtime_demo(seed=args.seed, turns=args.turns)
++        except ValueError as exc:
++            parser.exit(1, f"runtime demo failed: {exc}\n")
++        encoded = canonical_json(runtime_report)
++        if args.output:
++            args.output.parent.mkdir(parents=True, exist_ok=True)
++            args.output.write_text(encoded + "\n", encoding="utf-8", newline="\n")
++        print(encoded)
++        return 0
++
++    if args.command == "admission-verify":
++        from .admission import AdmissionPackageError, verify_package
++
++        try:
++            admission_result = verify_package(args.package, evidence_root=args.root)
++        except AdmissionPackageError as exc:
++            parser.exit(1, f"admission verification failed: {exc}\n")
++        print(json.dumps(admission_result, sort_keys=True, separators=(",", ":")))
++        return 0
++
++    if args.command == "evaluate":
++        from .evaluation import ScriptedCommanderBaseline, run_benchmark
++
++        benchmark = run_benchmark(
++            ScriptedCommanderBaseline(), code_revision=args.code_revision
++        )
++        args.output.mkdir(parents=True, exist_ok=True)
++        (args.output / "frozen-evaluation.json").write_text(
++            benchmark.to_json() + "\n", encoding="utf-8", newline="\n"
++        )
++        (args.output / "frozen-evaluation.md").write_text(
++            benchmark.to_markdown(), encoding="utf-8", newline="\n"
++        )
++        print(json.dumps({"report_hash": benchmark.report_hash()}, sort_keys=True))
++        return 0
++
++    if args.command == "closed-loop":
++        from .evaluation.closedloop import (
++            ClosedLoopBaseline,
++            run_closed_loop,
++            write_closed_loop_comparison,
++        )
++
++        report = run_closed_loop(ClosedLoopBaseline(), code_revision=args.code_revision)
++        write_closed_loop_comparison([report], args.output)
++        print(json.dumps({"semantic_hash": report.semantic_hash()}, sort_keys=True))
++        return 0
++
++    if args.command == "closed-loop-verify":
++        from .evaluation.closedloop import verify_closed_loop_report
++
++        try:
++            payload = json.loads(args.report.read_text(encoding="utf-8"))
++            verified = verify_closed_loop_report(payload)
++        except (OSError, ValueError, KeyError, TypeError) as exc:
++            parser.exit(1, f"closed-loop verification failed: {exc}\n")
++        print(json.dumps({"verified": True, "semantic_hash": verified.semantic_hash()}))
++        return 0
++
+     if args.command == "seed-demo":
+         values = stable_u64_sequence(args.seed, args.count)
+         print(
+diff --git a/src/techrotic_training_triumvirate/session/langgraph_backend.py b/src/techrotic_training_triumvirate/session/langgraph_backend.py
+index 40debf9..283d20e 100644
+--- a/src/techrotic_training_triumvirate/session/langgraph_backend.py
++++ b/src/techrotic_training_triumvirate/session/langgraph_backend.py
+@@ -2,12 +2,10 @@
+ 
+ from __future__ import annotations
+ 
+-from collections.abc import Mapping
++import importlib
++from collections.abc import Iterator, Mapping
+ from dataclasses import dataclass
+-from typing import Any, TypedDict, cast
+-
+-from langgraph.checkpoint.memory import InMemorySaver  # type: ignore[import-not-found]
+-from langgraph.graph import START, StateGraph  # type: ignore[import-not-found]
++from typing import Protocol, TypedDict, cast
+ 
+ from techrotic_training_triumvirate.schemas import (
+     CommandEnvelope,
+@@ -24,6 +22,43 @@ class SessionGraphState(TypedDict, total=False):
+     next_command: JsonObject | None
+ 
+ 
++class _GraphSnapshot(Protocol):
++    """Only the framework checkpoint fields used by the semantic session."""
++
++    @property
++    def config(self) -> Mapping[str, object]: ...
++
++    @property
++    def values(self) -> object: ...
++
++    @property
++    def next(self) -> tuple[str, ...]: ...
++
++
++class _SessionGraph(Protocol):
++    """Bound the optional framework's dynamic import to a small typed surface.
++
++    RunnableConfig is a third-party TypedDict whose static availability varies
++    with the optional extra. LangGraph accepts these ordinary config mappings at
++    runtime; the TTT-facing interface remains typed without importing that extra
++    during base-package type checking.
++    """
++
++    def invoke(
++        self, state: SessionGraphState | None, config: Mapping[str, object]
++    ) -> SessionGraphState: ...
++
++    def get_state(self, config: Mapping[str, object]) -> _GraphSnapshot: ...
++
++    def get_state_history(
++        self, config: Mapping[str, object]
++    ) -> Iterator[_GraphSnapshot]: ...
++
++    def update_state(
++        self, config: Mapping[str, object], values: SessionGraphState
++    ) -> Mapping[str, object]: ...
++
++
+ @dataclass(frozen=True, slots=True)
+ class ReplayVerification:
+     semantic_hash: str
+@@ -40,7 +75,7 @@ class BranchResult:
+     original_recording_hash: str
+ 
+ 
+-def _checkpoint_id(config: Mapping[str, Any]) -> str:
++def _checkpoint_id(config: Mapping[str, object]) -> str:
+     configurable = config.get("configurable")
+     if not isinstance(configurable, Mapping):
+         raise SchemaValidationError("LangGraph checkpoint config missing configurable")
+@@ -76,11 +111,22 @@ def _execute_turn_node(state: SessionGraphState) -> SessionGraphState:
+ class LangGraphSession:
+     """Own LangGraph checkpoint mechanics without making them semantic identity."""
+ 
+-    def __init__(self, checkpointer: InMemorySaver | None = None) -> None:
+-        builder = StateGraph(SessionGraphState)
++    def __init__(self, checkpointer: object | None = None) -> None:
++        graph_module = importlib.import_module("langgraph.graph")
++        memory_module = importlib.import_module("langgraph.checkpoint.memory")
++        builder = graph_module.StateGraph(SessionGraphState)
+         builder.add_node("execute_turn", _execute_turn_node)
+-        builder.add_edge(START, "execute_turn")
+-        self.graph = builder.compile(checkpointer=checkpointer or InMemorySaver())
++        builder.add_edge(graph_module.START, "execute_turn")
++        self.graph = cast(
++            _SessionGraph,
++            builder.compile(
++                checkpointer=(
++                    memory_module.InMemorySaver()
++                    if checkpointer is None
++                    else checkpointer
++                )
++            ),
++        )
+ 
+     def run_commands(
+         self,
+@@ -109,7 +155,7 @@ class LangGraphSession:
+         *,
+         thread_id: str,
+         command_id: str,
+-    ) -> Any:
++    ) -> _GraphSnapshot:
+         config = thread_config(thread_id)
+         for snapshot in self.graph.get_state_history(config):
+             values = snapshot.values

@@ -1,0 +1,6 @@
+{
+  "ProcessId": 35820,
+  "ParentProcessId": 20156,
+  "CreationDate": "2026-10-24T12:27:59.997464+01:00",
+  "CommandLine": "C:\\cybernpc2\\Techrotic-Training-Triumvirate\\.venv-training\\Scripts\\python.exe -c \"import os,torch; expected=os.environ['CUDA_VISIBLE_DEVICES']; assert torch.cuda.device_count()==1, 'exactly one TITAN GPU required'; actual=str(torch.cuda.get_device_properties(0).uuid); assert actual==expected.removeprefix('GPU-'), (actual,expected); assert torch.cuda.get_device_name(0)=='NVIDIA TITAN RTX'; print('VERIFIED TITAN UUID',actual,flush=True); from techrotic_training_triumvirate.training.campaign import main; raise SystemExit(main())\" --worker --corpus C:\\cybernpc2\\Techrotic-Training-Triumvirate\\artifacts\\pilot-corpus-v2 --output C:\\cybernpc2\\Techrotic-Training-Triumvirate\\artifacts\\ttt-013-execution\\persona --variant persona --git-commit 11e70686b09a27cf7c784beaf8d7a46717b345a0 --seed 24301 --gpu-hours 0.8"
+}
