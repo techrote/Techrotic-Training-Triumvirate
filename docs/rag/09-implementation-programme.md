@@ -25,7 +25,7 @@ Issues should be executed from current `main`; agents must reconcile work merged
 
 ## 2. Current implementation status
 
-As of 24 October 2026, **Waves 0–3 are complete**.
+As of 24 October 2026, **Waves 0–3 are complete and Wave 4 is in progress**.
 
 | Wave | Issues | State | Result |
 |---|---|---|---|
@@ -33,7 +33,7 @@ As of 24 October 2026, **Waves 0–3 are complete**.
 | 1 | TTT-002 / #3 | Complete | Canonical versioned schemas, T0 fixtures and content hashes |
 | 2 | TTT-003 / #4 + TTT-006 / #7 | Complete | Typed command/interpreter layer plus Creative Teacher/persona layer |
 | 3 | TTT-004 / #5 + TTT-008 / #9 | Complete | Deterministic World Authority + grounded player-intercept/deception codec |
-| 4 | TTT-005 / #6 + TTT-007 / #8 + TTT-009 / #10 | **Ready** | Next parallel implementation wave |
+| 4 | TTT-005 / #6 + TTT-007 / #8 + TTT-009 / #10 | **In progress** | TTT-007 complete; TTT-005 and TTT-009 remain ready |
 
 Wave 3 merged evidence:
 
@@ -41,6 +41,10 @@ Wave 3 merged evidence:
 - TTT-008 / #9: merge `a70eb28a39527aeb40b69a2e9543eb54a9212b69`; Base CI green after reconciling onto the merged TTT-004 head.
 - The native World Authority remains the canonical dependency-light execution path. Concordia is optional and parity-checked.
 - Ordinary player intercepts are grounded in real `command-dispatched` events; false tactical messages require explicit authoritative deception events.
+
+Wave 4 progress:
+
+- TTT-007 / #8: PR #29 implements deterministic T0–T3 corpus assembly, provenance/license quarantine, schema/protocol and leakage validators, exact/near deduplication, family-aware train/dev splits, frozen-evaluation isolation, recovery context and content-addressed JSONL/manifest output.
 
 Do not start model-specific training merely because the model zoo exists. TTT-011 remains downstream of TTT-007, TTT-009 and TTT-010.
 
@@ -54,10 +58,10 @@ Do not start model-specific training merely because the model zoo exists. TTT-01
 | TTT-004 | #5 | Complete | Framework-neutral abstract battlefield World Authority, procedural scenarios, and optional Concordia host parity |
 | TTT-005 | #6 | Ready | LangGraph-backed session/checkpoint/replay orchestration plus console/delta views |
 | TTT-006 | #7 | Complete | Model-agnostic creative-teacher/persona mutation subsystem |
-| TTT-007 | #8 | Ready | Corpus assembler, validators, provenance, dedup and split discipline |
+| TTT-007 | #8 | Complete | Corpus assembler, validators, provenance, dedup and split discipline |
 | TTT-008 | #9 | Complete | Player intercept/telegraph semantic codec and explicit deception model |
 | TTT-009 | #10 | Ready | Evaluation harness, frozen generated/handwritten suites and baselines |
-| TTT-010 | #11 | Blocked by #8/#10 | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
+| TTT-010 | #11 | Blocked by #10 | LangGraph branch/update-state corrective rollout pipeline inspired by DAgger-style repair |
 | TTT-011 | #12 | Blocked / model cast unselected | Initial model-cast admission: owner-selected teacher/student candidates, licensing/runtime probes, frozen decision record |
 | TTT-012 | #13 | Blocked by #12 | Reproducible fine-tuning/export harness for the admitted cast |
 | TTT-013 | #14 | Blocked by #13 | Pilot corpus generation and smoke/ablation fine-tunes |
