@@ -176,9 +176,7 @@ _PAYLOAD_SCHEMAS: dict[str, dict[str, Any]] = {
         {
             "turn_id": _INTEGER,
             "observation": _ref("ttt.commander_observation"),
-            "commander_private_context": _ref(
-                "ttt.commander_private_context"
-            ),
+            "commander_private_context": _ref("ttt.commander_private_context"),
             "assistant_action": _ref("ttt.assistant_action"),
             "interpreter_results": _array(_ref("ttt.interpreter_result")),
             "world_events": _array(_ref("ttt.authoritative_event")),
