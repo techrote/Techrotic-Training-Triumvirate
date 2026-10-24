@@ -9,6 +9,7 @@ from typing import Any, cast
 
 from techrotic_training_triumvirate.schemas import (
     JsonObject,
+    JsonValue,
     RunManifest,
     canonical_json,
 )
@@ -201,11 +202,12 @@ def export_tiny(
                 "equal": equal,
             }
         )
+    parity_values: list[JsonValue] = [case for case in parity_cases]
     parity: JsonObject = {
         "schema_version": 1,
         "passed": passed,
         "case_count": len(parity_cases),
-        "cases": parity_cases,
+        "cases": parity_values,
     }
     _write_json(parity_path, parity)
     if not passed:
