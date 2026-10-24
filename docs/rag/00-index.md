@@ -4,7 +4,7 @@ This directory is the authoritative compact context pack for implementation agen
 
 ## Reading rule
 
-Always read `AGENTS.md` first. Then read the issue's **Required reading** list. When in doubt, prefer the current documents in this directory over assumptions embedded in an old issue body.
+Always read `AGENTS.md` first. Then read the issue's **Required reading** list. Use [`../development.md`](../development.md) for the canonical install/test/lint/type commands. When in doubt, prefer the current documents in this directory over assumptions embedded in an old issue body.
 
 ## Documents
 

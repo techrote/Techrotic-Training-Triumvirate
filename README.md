@@ -18,6 +18,7 @@ Neither Sprocket nor any Qwen/WorldTUI/Liquid/Gemma checkpoint is selected as a 
 
 - [Programme tracker](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/1)
 - [Agent execution contract](AGENTS.md)
+- [Development workflow](docs/development.md)
 - [RAG index](docs/rag/00-index.md)
 - [Vision and non-goals](docs/rag/01-vision-and-non-goals.md)
 - [Architecture](docs/rag/02-architecture.md)
@@ -32,15 +33,45 @@ Neither Sprocket nor any Qwen/WorldTUI/Liquid/Gemma checkpoint is selected as a 
 - [Model-cast admission](docs/rag/11-model-cast-admission.md)
 - [Candidate small-model zoo](docs/rag/12-candidate-model-zoo.md)
 
+## Development
+
+The root package is deliberately lightweight: the runtime has no third-party dependencies and supports Python 3.12–3.13.
+
+Install the base project and developer tooling:
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+Run the canonical checks:
+
+```bash
+python -m pytest
+python -m ruff check src tests
+python -m ruff format --check src tests
+python -m mypy src
+```
+
+Smoke-test the CLI and deterministic seed plumbing:
+
+```bash
+ttt --version
+ttt seed-demo --seed 24301 --count 5
+```
+
+See [docs/development.md](docs/development.md) for the supported-Python, dependency and artifact-hygiene policy.
+
 ## Current status
 
-The reviewed programme and RAG context are published. **TTT-001 / issue #2 is ready to execute.** The implementation queue runs through TTT-016 / issue #17.
+TTT-001 establishes the reproducible package/tooling/CI foundation. After it merges, **TTT-002 / issue #3** is the next sequential programme dependency; TTT-003 and TTT-006 can begin in parallel after TTT-002.
 
 The initial model cast remains deliberately **UNSELECTED** and is admitted only at TTT-011 / issue #12 after the model-independent command, corpus, recovery, and evaluation foundations exist.
 
-A first-pass **~20 GB small-model GGUF characterization shelf** is now recorded in `docs/rag/12-candidate-model-zoo.md`. It is a shortlist for later benchmarking, not an admission or download authorization.
+A first-pass **~20 GB small-model GGUF characterization shelf** is recorded in `docs/rag/12-candidate-model-zoo.md`. It is a shortlist for later benchmarking, not an admission or download authorization.
 
-Each implementation issue contains an autonomous-agent prompt and inherits the repository-wide requirement to implement, test, open a focused PR, satisfy automated checks, self-review, and merge.
+Architecture spikes have established:
+- **LangGraph** as the orchestration/checkpoint/branch/replay substrate;
+- **Concordia** as an optional richer simulation/Game-Master host, while TTT retains a framework-neutral direct World Authority.
 
 ## Core rule
 
