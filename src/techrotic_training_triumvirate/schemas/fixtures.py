@@ -126,12 +126,15 @@ def _private_context(*, include_secret_value: bool) -> CommanderPrivateContext:
 def t0_normal_turn() -> TurnRecord:
     command = CommandEnvelope(
         command_id="cmd-0001",
-        protocol_version="pre-ttt003-placeholder",
+        protocol_version="ttt-command-v1",
         body={
-            "op": "assign-objective",
-            "unit": "squad-alpha",
-            "objective": "secure-relay-east",
-            "route": "north",
+            "op": "assign_objective",
+            "observation_generation": 0,
+            "unit_id": "squad-alpha",
+            "objective_kind": "secure",
+            "target_id": "relay-east",
+            "approach": "north",
+            "constraints": [],
         },
     )
     return TurnRecord(
@@ -190,11 +193,11 @@ def t0_normal_turn() -> TurnRecord:
 def t0_hidden_information_turn() -> TurnRecord:
     command = CommandEnvelope(
         command_id="cmd-0002",
-        protocol_version="pre-ttt003-placeholder",
+        protocol_version="ttt-command-v1",
         body={
             "op": "hold",
-            "unit": "squad-alpha",
-            "reason": "private-reactor-risk",
+            "observation_generation": 1,
+            "unit_id": "squad-alpha",
         },
     )
     return TurnRecord(
@@ -253,12 +256,15 @@ def t0_hidden_information_turn() -> TurnRecord:
 def t0_recovery_turn() -> TurnRecord:
     command = CommandEnvelope(
         command_id="cmd-0003",
-        protocol_version="pre-ttt003-placeholder",
+        protocol_version="ttt-command-v1",
         body={
-            "op": "assign-objective",
-            "unit": "squad-alpha",
-            "objective": "secure-relay-east",
-            "route": "east",
+            "op": "assign_objective",
+            "observation_generation": 2,
+            "unit_id": "squad-alpha",
+            "objective_kind": "secure",
+            "target_id": "relay-east",
+            "approach": "east",
+            "constraints": [],
         },
     )
     return TurnRecord(
