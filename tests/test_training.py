@@ -14,7 +14,6 @@ from techrotic_training_triumvirate.model_admission import load_model_cast_v1
 from techrotic_training_triumvirate.schemas import canonical_json
 from techrotic_training_triumvirate.training import (
     DatasetIdentity,
-    SourceExample,
     TinyTrainingError,
     TrainingAdmissionError,
     TrainingDataError,
