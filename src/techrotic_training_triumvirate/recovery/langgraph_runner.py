@@ -58,14 +58,28 @@ from .oracle import CorrectionOracle, DeterministicRecoveryOracle
 
 @dataclass(frozen=True, slots=True)
 class RolloutTurn:
-    """Student-visible action plus authoritative result/event evidence."""
+    """Complete student-visible action plus authoritative turn evidence."""
 
     turn_id: int
+    observation: CommanderObservation
     action: AssistantAction
     interpreter_results: tuple[InterpreterResult, ...]
     world_events: tuple[AuthoritativeEvent, ...]
-    next_observation_hash: str
+    next_observation: CommanderObservation
     failures: tuple[FailurePoint, ...]
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "turn_id": self.turn_id,
+            "observation": self.observation.to_dict(),
+            "action": self.action.to_dict(),
+            "interpreter_results": [
+                result.to_dict() for result in self.interpreter_results
+            ],
+            "world_events": [event.to_dict() for event in self.world_events],
+            "next_observation": self.next_observation.to_dict(),
+            "failures": [failure.to_summary() for failure in self.failures],
+        }
 
 
 @dataclass(frozen=True, slots=True)
@@ -479,10 +493,11 @@ def run_corrective_round(
         rollout.append(
             RolloutTurn(
                 turn_id=session_turn.turn_id,
+                observation=session_turn.observation,
                 action=action,
                 interpreter_results=session_turn.results,
                 world_events=session_turn.events,
-                next_observation_hash=session_turn.next_observation.content_hash(),
+                next_observation=session_turn.next_observation,
                 failures=turn_failures,
             )
         )
@@ -612,6 +627,7 @@ def run_corrective_round(
         ),
         artifact_hashes={
             "original_session": recording.semantic_hash(),
+            "student_rollout": content_hash([turn.to_dict() for turn in rollout]),
             "corpus_manifest": content_hash(corpus.manifest),
             "correction_recordings": content_hash(
                 [item.recording.semantic_hash() for item in corrections]
