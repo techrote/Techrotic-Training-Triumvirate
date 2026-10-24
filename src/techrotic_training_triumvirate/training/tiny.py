@@ -10,7 +10,13 @@ from typing import Any, cast
 
 from techrotic_training_triumvirate.schemas import JsonObject, canonical_json
 
-from .model import DatasetIdentity, MappedExample, ModelBinding, TinyTrainingResult, TrainingConfig
+from .model import (
+    DatasetIdentity,
+    MappedExample,
+    ModelBinding,
+    TinyTrainingResult,
+    TrainingConfig,
+)
 
 
 class TinyTrainingError(ValueError):
@@ -28,7 +34,7 @@ def _prompt_hash(example: MappedExample) -> str:
 
 
 def _training_identity(
-    mapped: tuple[MappedExample, ...],
+    train_examples: tuple[MappedExample, ...],
     *,
     binding: ModelBinding,
     config: TrainingConfig,
@@ -39,7 +45,7 @@ def _training_identity(
         "model_binding": binding.to_object(),
         "training_config": config.to_object(),
         "dataset_identity": dataset.to_object(),
-        "example_ids": [item.example_id for item in mapped],
+        "training_example_ids": [item.example_id for item in train_examples],
     }
     return hashlib.sha256(canonical_json(payload).encode()).hexdigest()
 
@@ -56,13 +62,19 @@ def train_tiny(
 ) -> TinyTrainingResult:
     """Train an exact-match tiny model with seeded order and strict resume identity."""
 
-    if not mapped:
-        raise TinyTrainingError("smoke training requires at least one mapped example")
+    train_examples = tuple(item for item in mapped if item.split == "train")
+    if not train_examples:
+        raise TinyTrainingError("smoke training requires training-split examples")
 
-    identity = _training_identity(mapped, binding=binding, config=config, dataset=dataset)
-    order = list(range(len(mapped)))
+    identity = _training_identity(
+        train_examples,
+        binding=binding,
+        config=config,
+        dataset=dataset,
+    )
+    order = list(range(len(train_examples)))
     random.Random(config.seed).shuffle(order)
-    order_ids = tuple(mapped[index].example_id for index in order)
+    order_ids = tuple(train_examples[index].example_id for index in order)
     checkpoint = Path(checkpoint_path)
 
     memory: dict[str, str] = {}
@@ -94,7 +106,7 @@ def train_tiny(
         raise TinyTrainingError("max_steps precedes the resumed checkpoint")
 
     for position in range(completed_steps, stop):
-        example = mapped[order[position]]
+        example = train_examples[order[position]]
         memory[_prompt_hash(example)] = example.assistant_target
 
     completed_steps = stop
