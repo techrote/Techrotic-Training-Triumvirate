@@ -217,9 +217,7 @@ class SessionTurn:
             action=_load(payload["action"], AssistantAction),
             results=tuple(_load(item, InterpreterResult) for item in results_raw),
             events=tuple(_load(item, AuthoritativeEvent) for item in events_raw),
-            next_observation=_load(
-                payload["next_observation"], CommanderObservation
-            ),
+            next_observation=_load(payload["next_observation"], CommanderObservation),
             delta=SemanticDelta(
                 base_hash=_expect_str(delta_raw["base_hash"], field="delta.base_hash"),
                 target_hash=_expect_str(
@@ -447,9 +445,7 @@ class SessionRecording:
         turns_raw = payload["turns"]
         if not isinstance(turns_raw, list):
             raise SchemaValidationError("session turns must be an array")
-        orchestration = _expect_object(
-            payload["orchestration"], field="orchestration"
-        )
+        orchestration = _expect_object(payload["orchestration"], field="orchestration")
         _require_keys(
             orchestration,
             required={"backend", "checkpoint_refs"},

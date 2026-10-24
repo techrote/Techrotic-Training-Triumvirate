@@ -164,13 +164,16 @@ def apply_delta(
             continue
         parent, key = _parent_for_path(root, parts)
         parent[key] = _copy_json(value)
-    if content_hash(
-        {
-            "schema": CommanderObservation.SCHEMA_NAME,
-            "schema_version": CommanderObservation.SCHEMA_VERSION,
-            "payload": root,
-        }
-    ) != delta.target_hash:
+    if (
+        content_hash(
+            {
+                "schema": CommanderObservation.SCHEMA_NAME,
+                "schema_version": CommanderObservation.SCHEMA_VERSION,
+                "payload": root,
+            }
+        )
+        != delta.target_hash
+    ):
         raise ValueError("reconstructed observation hash does not match delta target")
     return root
 
@@ -222,8 +225,7 @@ class DeterministicRenderer:
     def compact_result(self, result: InterpreterResult) -> str:
         kind = "ACK" if result.accepted else "ERR"
         return (
-            f"{kind} {result.command_id} {result.code} "
-            f"{canonical_json(result.detail)}"
+            f"{kind} {result.command_id} {result.code} {canonical_json(result.detail)}"
         )
 
     def compact_delta(self, delta: SemanticDelta) -> str:

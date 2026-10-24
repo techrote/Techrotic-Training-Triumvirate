@@ -103,9 +103,9 @@ def test_console_result_text_is_exactly_derived_from_interpreter_result() -> Non
         observation_generation=world.observation_generation,
         entity_ids=("unit-1",),
     )
-    accepted_result = CommandInterpreter().interpret(
-        accepted.to_envelope(), world
-    ).result
+    accepted_result = (
+        CommandInterpreter().interpret(accepted.to_envelope(), world).result
+    )
     assert renderer.compact_result(accepted_result).startswith("ACK status-ok OK ")
 
     stale = RequestStatusCommand(
@@ -115,7 +115,7 @@ def test_console_result_text_is_exactly_derived_from_interpreter_result() -> Non
     )
     stale_result = CommandInterpreter().interpret(stale.to_envelope(), world).result
     assert renderer.compact_result(stale_result) == (
-        'ERR status-stale STALE_OBSERVATION '
+        "ERR status-stale STALE_OBSERVATION "
         '{"command_generation":99,"world_generation":0}'
     )
 
