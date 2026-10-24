@@ -101,10 +101,13 @@ def test_variant_matrix_has_four_comparable_primary_runs() -> None:
         for item in variants
     }
     assert len(revisions) == 1
-    assert sum(
-        item["budget_cap"]["gpu_hours"]  # type: ignore[index,operator]
-        for item in variants
-    ) == 24.0
+    assert (
+        sum(
+            item["budget_cap"]["gpu_hours"]  # type: ignore[index,operator]
+            for item in variants
+        )
+        == 24.0
+    )
 
 
 def test_four_way_smoke_is_not_reported_as_quality_evidence(tmp_path: Path) -> None:
