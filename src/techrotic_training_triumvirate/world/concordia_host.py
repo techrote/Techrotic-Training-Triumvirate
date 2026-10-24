@@ -111,13 +111,16 @@ class _DeterministicGameMaster:
         if output_value == "next_acting":
             return "Commander"
         if output_value == "next_action_spec":
-            return self._engine_lib.action_spec_to_string(
+            rendered = self._engine_lib.action_spec_to_string(
                 self._entity_lib.ActionSpec(
                     call_to_action="Return one canonical TTT command envelope.",
                     output_type=self._entity_lib.OutputType.FREE,
                     tag="ttt-command-envelope",
                 )
             )
+            if not isinstance(rendered, str):
+                raise TypeError("Concordia action_spec_to_string returned non-string data")
+            return rendered
         if output_value == "resolve":
             return self._resolve()
         raise NotImplementedError(f"unsupported Concordia GM output: {output_value}")
