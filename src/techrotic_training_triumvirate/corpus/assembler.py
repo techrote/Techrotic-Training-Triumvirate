@@ -72,6 +72,16 @@ def _count(values: Iterable[str]) -> JsonObject:
     return result
 
 
+def _json_array_size(value: JsonValue | None) -> int:
+    return len(value) if isinstance(value, list) else 0
+
+
+def _json_string_list(values: Iterable[str]) -> list[JsonValue]:
+    result: list[JsonValue] = []
+    result.extend(values)
+    return result
+
+
 def _strings(value: JsonValue, *, prefix: str = "") -> tuple[tuple[str, str], ...]:
     found: list[tuple[str, str]] = []
     if isinstance(value, str):
@@ -673,14 +683,10 @@ def _manifest(
     ]
     teacher_example_count = sum(bool(item.teacher_source_ids) for item in examples)
     command_count = sum(
-        len(item.target.get("commands", []))
-        for item in examples
-        if isinstance(item.target.get("commands"), list)
+        _json_array_size(item.target.get("commands")) for item in examples
     )
     communication_count = sum(
-        len(item.target.get("communications", []))
-        for item in examples
-        if isinstance(item.target.get("communications"), list)
+        _json_array_size(item.target.get("communications")) for item in examples
     )
     examples_with_commands = sum(bool(item.target.get("commands")) for item in examples)
     examples_with_communications = sum(
@@ -698,8 +704,10 @@ def _manifest(
             "seed": config.seed,
             "dev_percent": config.dev_percent,
             "shard_size": config.shard_size,
-            "frozen_scenario_ids": sorted(config.frozen_scenario_ids),
-            "frozen_families": sorted(config.frozen_families),
+            "frozen_scenario_ids": _json_string_list(
+                sorted(config.frozen_scenario_ids)
+            ),
+            "frozen_families": _json_string_list(sorted(config.frozen_families)),
         },
         "counts": {
             "admitted_episodes": len(admitted_sources),
