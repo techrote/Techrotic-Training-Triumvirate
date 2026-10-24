@@ -10,6 +10,7 @@ from techrotic_training_triumvirate.schemas import (
     AuthoritativeEvent,
     CommanderObservation,
     InterpreterResult,
+    JsonObject,
     PersonaSpec,
     canonical_json,
     content_hash,
@@ -88,6 +89,8 @@ class EvaluationContext:
     turn_index: int
     observation_generation: int
     observation: CommanderObservation
+    structured_observation: JsonObject
+    compact_observation: str
     previous_results: tuple[InterpreterResult, ...]
     recent_events: tuple[AuthoritativeEvent, ...]
     persona: PersonaSpec
