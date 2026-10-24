@@ -85,7 +85,10 @@ def test_synthetic_adapter_supports_every_teacher_task(task: TeacherTask) -> Non
         f"{req.request_id}:c1",
     ]
     assert all(candidate.task is task for candidate in batch.candidates)
-    assert all(candidate.provenance.model_ref.startswith("synthetic://") for candidate in batch.candidates)
+    assert all(
+        candidate.provenance.model_ref.startswith("synthetic://")
+        for candidate in batch.candidates
+    )
 
 
 def test_synthetic_adapter_is_deterministic_and_preserves_multiple_candidates() -> None:
@@ -141,7 +144,8 @@ def test_teacher_request_context_is_a_copy_not_world_authority_state() -> None:
 
 
 def test_candidate_provenance_can_be_promoted_to_source_record() -> None:
-    candidate = SyntheticTeacherAdapter().generate(request(candidate_count=1)).candidates[0]
+    batch = SyntheticTeacherAdapter().generate(request(candidate_count=1))
+    candidate = batch.candidates[0]
 
     provenance = candidate.source_provenance()
 
