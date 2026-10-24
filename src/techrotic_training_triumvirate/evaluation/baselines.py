@@ -104,8 +104,7 @@ class ScriptedCommanderBaseline:
             )
             vector = "sunrise-vector" if approach == "north" else "direct-vector"
             message = (
-                f"Glass-throne status {context.turn_index}: "
-                f"{unit_id} take {vector}."
+                f"Glass-throne status {context.turn_index}: {unit_id} take {vector}."
             )
 
         return AssistantAction(
@@ -155,9 +154,7 @@ class WeakCommanderBaseline:
         if context.turn_index == 1:
             stale = AssignObjectiveCommand(
                 command_id=f"{prefix}:stale",
-                observation_generation=max(
-                    0, context.observation_generation - 1
-                ),
+                observation_generation=max(0, context.observation_generation - 1),
                 unit_id="unit-1",
                 objective_kind="secure",
                 target_id="relay-east",
