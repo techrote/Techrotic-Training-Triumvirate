@@ -21,7 +21,10 @@ from techrotic_training_triumvirate.schemas import (
     canonical_json,
     content_hash,
 )
-from techrotic_training_triumvirate.session import DeterministicRenderer, SessionRenderer
+from techrotic_training_triumvirate.session import (
+    DeterministicRenderer,
+    SessionRenderer,
+)
 from techrotic_training_triumvirate.world import (
     ObjectiveStatus,
     ScenarioConfig,
