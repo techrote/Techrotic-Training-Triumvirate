@@ -132,6 +132,16 @@ TTT-005 implements that boundary in `techrotic_training_triumvirate.session`:
 
 Spike evidence and tested implementation: `docs/spikes/langgraph-checkpoint-branch-replay.md`.
 
+TTT-010 builds the student-visited correction layer on the same boundary:
+
+- the rollout policy implements the TTT-009 `StudentAdapter` contract and receives only admitted observation, feedback, event and persona surfaces;
+- failed student actions remain readable on the original LangGraph branch;
+- correction forks start from the precise historical pre-action checkpoint and preserve TTT parent branch/turn/hash lineage;
+- a deterministic simulator-aware oracle may use privileged World Authority knowledge to generate labels, but its private inputs never enter the student-visible recovery example;
+- each accepted repair is materialized as a canonical corrected TTT episode and passed through TTT-007 validation as T3;
+- the failed prior action plus authoritative feedback is attached as recovery context, while the target contains only the corrected student emission;
+- checkpoint IDs are retained only in source provenance metadata and do not participate in TTT episode, session or corpus-example semantic identity.
+
 ### Optional simulation substrate
 
 SPIKE-CD-001 / issue #20 proved that Concordia v2.4.0 can run a deterministic non-LLM Game Master through its real Sequential engine while routing JSON actions into strict TTT typed commands and preserving distinct world-private, commander-visible, and player-visible surfaces.
