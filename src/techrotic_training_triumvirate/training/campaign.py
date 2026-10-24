@@ -60,9 +60,17 @@ from techrotic_training_triumvirate.world import (
 )
 
 from .admission import load_training_config, resolve_model_binding
+from .campaign_integrity import verify_training_reuse
 from .data import load_corpus_examples, map_dataset, map_source_example
+from .device_admission import GPUSelection, verify_cuda_environment
 from .export import sha256_file
-from .model import BudgetAuthorization, ModelBinding, SourceExample, TrainingMix
+from .model import (
+    BudgetAuthorization,
+    DatasetIdentity,
+    ModelBinding,
+    SourceExample,
+    TrainingMix,
+)
 from .pilot import PILOT_MIXES, build_pilot_plan
 
 
@@ -423,6 +431,9 @@ class HFStudentAdapter:
     ) -> None:
         torch = importlib.import_module("torch")
         transformers = importlib.import_module("transformers")
+        self.gpu_identity = verify_cuda_environment(
+            cuda=torch.cuda, environment=os.environ
+        )
         from .hf_peft import verify_native_checkpoint
 
         verify_native_checkpoint(binding)
@@ -527,10 +538,14 @@ def run_variant_worker(
     if variant == "prompt-only":
         result: JsonObject = {"run_id": binding.native_revision}
     elif result_path.exists():
-        result = cast(JsonObject, json.loads(result_path.read_text()))
-        for name, digest in cast(dict[str, str], result["artifact_hashes"]).items():
-            if sha256_file(output / name) != digest:
-                raise CampaignError(f"completed candidate artifact changed: {name}")
+        config = load_training_config("primary", mix=TrainingMix(variant), seed=seed)
+        result = verify_training_reuse(
+            output,
+            binding=binding,
+            config=config,
+            dataset=dataset,
+            source_revision=git_commit,
+        ).result
     else:
         mix = TrainingMix(variant)
         config = load_training_config("primary", mix=mix, seed=seed)
@@ -560,6 +575,7 @@ def run_variant_worker(
         "dataset_hash": dataset.dataset_hash,
         "decoding": {"do_sample": False, "max_new_tokens": 384},
         "runtime": "hf-transformers-peft-native-float32",
+        "gpu_identity": adapter.gpu_identity,
         "quantization": "none",
         "training_run": result["run_id"],
         "substantive": True,
@@ -584,7 +600,14 @@ def run_variant_worker(
     }
 
 
-def verify_completed_worker(root: Path, *, variant: str, git_commit: str) -> None:
+def verify_completed_worker(
+    root: Path,
+    *,
+    variant: str,
+    git_commit: str,
+    dataset: DatasetIdentity | None = None,
+    seed: int = 24301,
+) -> None:
     """Read back every required artifact before accepting or skipping a worker."""
 
     try:
@@ -622,15 +645,25 @@ def verify_completed_worker(root: Path, *, variant: str, git_commit: str) -> Non
         )
         verifier.verify_closed_loop_report(extended)
         if variant != "prompt-only":
-            trained = json.loads(
-                (root / "training-result.json").read_text(encoding="utf-8")
-            )
+            if dataset is None:
+                raise CampaignError(
+                    "completed worker verification requires expected corpus identity"
+                )
+            trained = verify_training_reuse(
+                root,
+                binding=resolve_model_binding("primary"),
+                config=load_training_config(
+                    "primary", mix=TrainingMix(variant), seed=seed
+                ),
+                dataset=dataset,
+                source_revision=git_commit,
+            ).result
             if (
                 trained["run_id"] != worker["run_id"]
                 or metadata["training_run"] != trained["run_id"]
             ):
                 raise CampaignError("completed worker training identity changed")
-            for name, digest in trained["artifact_hashes"].items():
+            for name, digest in cast(JsonObject, trained["artifact_hashes"]).items():
                 artifact = (root / name).resolve()
                 if (
                     not artifact.is_relative_to(root.resolve())
@@ -661,7 +694,7 @@ def _run_pilot_campaign(
     allow_heavy: bool = False,
     gpu_hours: float = 4.0,
     seed: int = 24301,
-    gpu_index: int = 0,
+    gpu_uuid: str | None = None,
 ) -> JsonObject:
     """Execute sequential isolated workers with persisted conservative budget caps."""
 
@@ -682,8 +715,14 @@ def _run_pilot_campaign(
         execution_host=execution_host,
         allocation_id=allocation_id,
     )
+    _, expected_dataset = load_corpus_examples(corpus_root)
+    if not gpu_uuid:
+        raise CampaignError(
+            "an explicit physical GPU UUID is required for heavy execution"
+        )
+    selection = GPUSelection.from_uuid(gpu_uuid)
     identity = content_hash(
-        {"plan": plan, "git_commit": git_commit, "gpu_index": gpu_index}
+        {"plan": plan, "git_commit": git_commit, "gpu_uuid": selection.uuid}
     )
     state_path = root / "campaign.json"
     state: JsonObject = {
@@ -692,6 +731,7 @@ def _run_pilot_campaign(
         "campaign_identity": identity,
         "plan": plan,
         "host": collect_host(),
+        "gpu_selection": selection.to_dict(),
         "git_commit": git_commit,
         "charged_gpu_hours": 0.0,
         "external_compute_cost_gbp": 0.0,
@@ -712,7 +752,13 @@ def _run_pilot_campaign(
         slug = variant.replace("+", "-")
         existing = variants.get(variant)
         if isinstance(existing, dict) and existing.get("status") == "complete":
-            verify_completed_worker(root / slug, variant=variant, git_commit=git_commit)
+            verify_completed_worker(
+                root / slug,
+                variant=variant,
+                git_commit=git_commit,
+                dataset=expected_dataset,
+                seed=seed,
+            )
             continue
         per_variant = gpu_hours / len(candidate_variants)
         charged = float(cast(float, state["charged_gpu_hours"]))
@@ -743,8 +789,7 @@ def _run_pilot_campaign(
             "--gpu-hours",
             str(per_variant),
         ]
-        environment = dict(os.environ)
-        environment["CUDA_VISIBLE_DEVICES"] = str(gpu_index)
+        environment = selection.environment(os.environ)
         environment["PYTHONUNBUFFERED"] = "1"
         started = time.monotonic()
         status = "failed"
@@ -765,7 +810,11 @@ def _run_pilot_campaign(
                 if status == "complete":
                     try:
                         verify_completed_worker(
-                            variant_root, variant=variant, git_commit=git_commit
+                            variant_root,
+                            variant=variant,
+                            git_commit=git_commit,
+                            dataset=expected_dataset,
+                            seed=seed,
                         )
                     except CampaignError as exc:
                         status = "failed"
@@ -810,7 +859,7 @@ def run_pilot_campaign(
     allow_heavy: bool = False,
     gpu_hours: float = 4.0,
     seed: int = 24301,
-    gpu_index: int = 0,
+    gpu_uuid: str | None = None,
 ) -> JsonObject:
     """Serialize admission/accounting so concurrent invocations cannot overspend."""
 
@@ -835,7 +884,7 @@ def run_pilot_campaign(
             allow_heavy=allow_heavy,
             gpu_hours=gpu_hours,
             seed=seed,
-            gpu_index=gpu_index,
+            gpu_uuid=gpu_uuid,
         )
     finally:
         lock.unlink(missing_ok=True)

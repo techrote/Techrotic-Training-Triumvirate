@@ -8,15 +8,16 @@ through the stdlib tiny backend without downloading a model.
 from __future__ import annotations
 
 import gc
-import hashlib
 import importlib
-import json
+import os
 import time
 from pathlib import Path
 from typing import Any, cast
 
 from techrotic_training_triumvirate.schemas import JsonObject, JsonValue, canonical_json
 
+from .campaign_integrity import expected_training_identity, verify_checkpoint_identity
+from .device_admission import verify_cuda_environment
 from .export import build_run_manifest, sha256_file
 from .model import (
     BudgetAuthorization,
@@ -164,29 +165,22 @@ def run_hf_peft_training(
 
     root = Path(output_dir).resolve()
     root.mkdir(parents=True, exist_ok=True)
-    identity_payload: JsonObject = {
-        "model_binding": binding.to_object(),
-        "training_config": config.to_object(),
-        "dataset_identity": dataset.to_object(),
-        "backend": config.backend,
-    }
-    training_identity = hashlib.sha256(
-        canonical_json(identity_payload).encode()
-    ).hexdigest()
+    identity_record = expected_training_identity(
+        binding=binding,
+        config=config,
+        dataset=dataset,
+        source_revision=git_commit,
+    )
+    training_identity = str(identity_record["training_identity"])
     identity_path = root / "training-identity.json"
-    identity_record: JsonObject = {
-        "schema_version": 1,
-        "training_identity": training_identity,
-        **identity_payload,
-    }
     if identity_path.exists():
-        parsed_identity: object = json.loads(identity_path.read_text(encoding="utf-8"))
-        if not isinstance(parsed_identity, dict):
-            raise HFTrainingError("existing training identity file is malformed")
-        if parsed_identity.get("training_identity") != training_identity:
-            raise HFTrainingError(
-                "output/resume directory belongs to a different model/config/dataset"
-            )
+        verify_checkpoint_identity(
+            root,
+            binding=binding,
+            config=config,
+            dataset=dataset,
+            source_revision=git_commit,
+        )
     elif resume_from_checkpoint is not None:
         raise HFTrainingError(
             "resume requires the TTT training-identity.json from the original run"
@@ -220,6 +214,7 @@ def run_hf_peft_training(
         raise HFTrainingError("native heavy execution requires an admitted CUDA host")
     if torch.cuda.device_count() != 1:
         raise HFTrainingError("select exactly one CUDA GPU before heavy execution")
+    gpu_identity = verify_cuda_environment(cuda=torch.cuda, environment=os.environ)
     native_hashes = verify_native_checkpoint(binding)
     started = time.monotonic()
     tokenizer = transformers.AutoTokenizer.from_pretrained(
@@ -402,7 +397,7 @@ def run_hf_peft_training(
     }
     for path in sorted(adapter_dir.rglob("*")):
         if path.is_file():
-            artifact_hashes[str(path.relative_to(root))] = sha256_file(path)
+            artifact_hashes[path.relative_to(root).as_posix()] = sha256_file(path)
 
     manifest = build_run_manifest(
         phase="train-export",
@@ -433,6 +428,7 @@ def run_hf_peft_training(
             "peft_version": str(peft.__version__),
             "cuda_version": str(torch.version.cuda),
             "gpu": str(torch.cuda.get_device_name(0)),
+            "gpu_identity": gpu_identity,
             "peak_gpu_memory_bytes": int(torch.cuda.max_memory_allocated(0)),
             "wall_seconds": time.monotonic() - started,
         },

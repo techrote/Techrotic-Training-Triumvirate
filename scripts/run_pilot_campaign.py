@@ -29,7 +29,11 @@ def main() -> int:
     parser.add_argument("--allocation-id", required=True)
     parser.add_argument("--git-commit", required=True)
     parser.add_argument("--gpu-hours", type=float, default=4.0)
-    parser.add_argument("--gpu-index", type=int, default=0)
+    parser.add_argument(
+        "--gpu-uuid",
+        required=True,
+        help="Explicit physical GPU UUID, preferred over driver index",
+    )
     parser.add_argument("--allow-heavy", action="store_true")
     args = parser.parse_args()
     if args.prepare_corpus:
@@ -58,7 +62,7 @@ def main() -> int:
         allow_heavy=args.allow_heavy,
         gpu_hours=args.gpu_hours,
         seed=args.seed,
-        gpu_index=args.gpu_index,
+        gpu_uuid=args.gpu_uuid,
     )
     print(json.dumps(result, indent=2))
     return 0 if result["status"] == "complete" else 1

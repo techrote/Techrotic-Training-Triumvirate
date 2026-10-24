@@ -236,3 +236,27 @@ experiment.
 
 TTT-013 owns pilot quality experiments and consumption of the larger admitted
 training budget.
+
+## Native training identity v2
+
+New native HF training writes `training-identity.json` with schema version 2.
+Its identity hash covers admitted model binding, complete training configuration,
+exact dataset identity, backend and full immutable `source_revision`. An existing
+identity must exactly match before an interrupted checkpoint can resume, and
+these checks run before any heavyweight model/runtime import. Unknown/malformed
+versions, extra fields and source drift refuse.
+
+Interrupted identity-v1 checkpoints do not bind source and are explicitly refused.
+A completed historical v1 output remains independently verifiable using its
+canonical RunManifest, which binds the original source commit, plus matching
+model/data/config identity, artifact inventory/hashes and parity. That readback
+does not authorize restarting old training under different source. New v2
+completed outputs receive the same source-bearing manifest checks.
+
+New native training/evaluation requires `CUDA_VISIBLE_DEVICES` to name one full
+physical GPU UUID. Actual CUDA device UUID is checked before loading weights;
+selected/actual UUID and name are recorded. This avoids ordinal changes silently
+selecting another GPU. The current local allocation permits only the TITAN RTX
+UUID documented in `18-pilot-execution.md`. Export artifact inventory paths use
+forward slashes for portable JSON manifests. Existing historical backslash paths
+remain readable after containment validation.

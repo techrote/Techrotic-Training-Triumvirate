@@ -4,7 +4,9 @@ The 2026-10-24 request to complete this repository admits the local execution
 allocation `task-2026-10-24-ttt013e`. The actual hostname, GPU UUIDs, driver,
 platform and Python are captured before execution in `campaign.json`. This
 allocation uses one local GPU at a time. The machine exposes a Tesla V100 16 GB
-and a TITAN RTX 24 GB; the execution command selects one explicitly.
+and a TITAN RTX 24 GB. The owner restricted all further execution to the TITAN RTX.
+Its physical UUID is `GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8`;
+future workers require that explicit UUID, independent of CUDA ordinals.
 
 The existing programme ceiling remains 24 GPU-hours, £75 external compute
 across TTT-012/013 and £0 paid APIs. This allocation authorizes **£0 external
@@ -69,7 +71,8 @@ Example execution after committing the implementation sources:
 .\.venv-training\Scripts\python.exe scripts/run_pilot_campaign.py `
   --corpus artifacts/pilot-corpus-v2 --output artifacts/ttt-013-execution `
   --prepare-corpus --allocation-id task-2026-10-24-ttt013e `
-  --git-commit COMMITTED_SOURCE_SHA --gpu-hours 4 --gpu-index 0 --allow-heavy
+  --git-commit COMMITTED_SOURCE_SHA --gpu-hours 4 `
+  --gpu-uuid GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8 --allow-heavy
 ```
 
 Only `campaign.json` with all five variants complete and verified reports
@@ -77,3 +80,26 @@ establishes completed execution. Failed workers and incomplete campaigns are
 preserved as evidence and cannot be reported as four successful fine-tunes.
 The final runtime decision uses the prospective gates in
 `19-final-admission.md`; negative results are valid evidence.
+
+## Post-execution identity hardening
+
+The original pilot ran immutable source
+`11e70686b09a27cf7c784beaf8d7a46717b345a0`. Its initial V100 failure,
+subsequent TITAN execution and UUID-pinned continuation are historical evidence;
+new checks are not retroactively claimed for that source.
+
+Future public campaigns require `--gpu-uuid`; numeric GPU selection is refused.
+The child environment pins `CUDA_VISIBLE_DEVICES` to the complete physical UUID
+before CUDA initialization. Both training and evaluation verify actual
+`torch.cuda.get_device_properties(0).uuid` before model loading and record actual
+UUID/name. An unrelated lost GPU need not be queried when an explicit UUID is
+already admitted. The TITAN may appear as visible CUDA ordinal zero without
+changing its physical identity. No V100 execution is authorized by this allocation.
+
+Completed-candidate reuse verifies exact native binding, corpus identity,
+profile/mix/seed, source commit, source-bearing run manifest, all declared adapter
+files and parity. Legacy completed identity-v1 outputs remain readable only
+against their original source-bearing RunManifest; they cannot be relabelled as
+new-source training. Interrupted native checkpoints require identity v2, which
+includes the full source revision in its content hash. Ambiguous interrupted v1
+checkpoints refuse rather than being resumed under new source.
