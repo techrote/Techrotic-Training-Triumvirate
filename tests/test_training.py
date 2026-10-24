@@ -48,8 +48,12 @@ def test_model_bindings_and_profiles_resolve_from_admission() -> None:
     challenger = resolve_model_binding("challenger")
     assert primary.model_key == primary_key
     assert challenger.model_key == challenger_key
-    assert primary.native_repository == cast["models"][primary_key]["native"]["repository"]
-    assert challenger.native_revision == cast["models"][challenger_key]["native"]["revision"]
+    assert primary.native_repository == (
+        cast["models"][primary_key]["native"]["repository"]
+    )
+    assert challenger.native_revision == (
+        cast["models"][challenger_key]["native"]["revision"]
+    )
 
     primary_config = load_training_config("primary")
     challenger_config = load_training_config("challenger")
