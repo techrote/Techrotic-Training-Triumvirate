@@ -56,6 +56,17 @@ Default tests and corpus validators must not silently call remote APIs. Live gen
 
 ## Dataset identity
 
+TTT-007 emits deterministic JSONL shards plus a canonical manifest. The manifest
+records tier, scenario-family, persona and error distributions; operational command
+and persona/communication content composition; teacher contribution; rejection reasons;
+split identities; and per-shard SHA-256 hashes. Identical admitted
+inputs, configuration and seed therefore produce identical shard and manifest content.
+
+Unadmitted external/model-generated sources are quarantined. For source classes such
+as teacher/model output, third-party datasets and game-derived traces, admission
+requires both an explicit license identifier and an admitted/compatible
+`license_disposition` in source metadata.
+
 An admitted dataset version should be content-addressable or accompanied by a deterministic manifest listing shard/file hashes and counts. Record:
 - tier composition;
 - scenario-family distribution;
@@ -82,7 +93,6 @@ Large binaries need not live in git; manifests and immutable external references
 ## Evidence discipline
 
 Do not report an expensive run as successful based only on a console summary. Preserve machine-readable metrics/results and enough immutable evidence to independently read back the claimed result.
-
 
 ## Session recording evidence
 
