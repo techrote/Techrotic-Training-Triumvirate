@@ -12,7 +12,7 @@ The immediate programme is inspired by:
 - Simon Edwardsson's WorldTUI training methodology: https://simedw.com/2026/10/21/world-model-terminal/
 - Sprocket 500M as an example of a small model with unusually persistent/emergent character behaviour: https://huggingface.co/kandivault/sprocket-500m
 
-Neither Sprocket nor any Qwen/WorldTUI checkpoint is selected as a required runtime or training model. **The initial model cast is intentionally deferred until the architecture, corpus contracts, and evaluation gates exist.**
+Neither Sprocket nor any Qwen/WorldTUI/Liquid/Gemma checkpoint is selected as a required runtime or training model. **The initial model cast is intentionally deferred until the architecture, corpus contracts, and evaluation gates exist.**
 
 ## Start here
 
@@ -30,12 +30,15 @@ Neither Sprocket nor any Qwen/WorldTUI checkpoint is selected as a required runt
 - [Implementation programme](docs/rag/09-implementation-programme.md)
 - [Planning review](docs/rag/10-planning-review.md)
 - [Model-cast admission](docs/rag/11-model-cast-admission.md)
+- [Candidate small-model zoo](docs/rag/12-candidate-model-zoo.md)
 
 ## Current status
 
 The reviewed programme and RAG context are published. **TTT-001 / issue #2 is ready to execute.** The implementation queue runs through TTT-016 / issue #17.
 
 The initial model cast remains deliberately **UNSELECTED** and is admitted only at TTT-011 / issue #12 after the model-independent command, corpus, recovery, and evaluation foundations exist.
+
+A first-pass **~20 GB small-model GGUF characterization shelf** is now recorded in `docs/rag/12-candidate-model-zoo.md`. It is a shortlist for later benchmarking, not an admission or download authorization.
 
 Each implementation issue contains an autonomous-agent prompt and inherits the repository-wide requirement to implement, test, open a focused PR, satisfy automated checks, self-review, and merge.
 

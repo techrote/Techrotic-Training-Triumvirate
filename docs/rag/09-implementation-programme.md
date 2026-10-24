@@ -88,6 +88,8 @@ Issues should be executed from current `main`; agents must reconcile work merged
 
 No teacher/student lineup is selected in this programme document.
 
+A non-authoritative first-pass ~20 GB small-model characterization shelf is recorded in `12-candidate-model-zoo.md`. It exists to make TTT-011 evidence-driven and **must not be interpreted as admission or download authorization**.
+
 TTT-011 / #12 is blocked until the owner records the initial cast decision in `11-model-cast-admission.md` or its issue. Candidate analysis may precede the final decision, but implementation must not silently choose a checkpoint.
 
 Possible roles to fill:

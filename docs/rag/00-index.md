@@ -21,6 +21,7 @@ Always read `AGENTS.md` first. Then read the issue's **Required reading** list. 
 | [09-implementation-programme.md](09-implementation-programme.md) | Issue programme, dependencies, execution waves |
 | [10-planning-review.md](10-planning-review.md) | Initial plan critique and design improvements |
 | [11-model-cast-admission.md](11-model-cast-admission.md) | Deliberately deferred teacher/student model selection |
+| [12-candidate-model-zoo.md](12-candidate-model-zoo.md) | Non-authoritative ~20 GB small-model shelf and characterize-first evaluation plan |
 
 ## External inspiration, not normative dependencies
 

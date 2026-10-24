@@ -6,7 +6,9 @@
 
 The programme intentionally publishes before choosing the initial teacher/student model lineup.
 
-No implementation agent may infer a selection from discussion, examples, or repository dependencies. The selection becomes authoritative only when this document or the linked TTT-011 issue records it explicitly.
+A non-authoritative first-pass candidate shelf and characterization plan is recorded in [12-candidate-model-zoo.md](12-candidate-model-zoo.md). That shortlist is planning material only: **it does not constitute owner admission of any model**.
+
+No implementation agent may infer a selection from discussion, examples, the candidate shelf, or repository dependencies. The selection becomes authoritative only when this document or the linked TTT-011 issue records it explicitly.
 
 ## Roles to select
 
@@ -19,11 +21,29 @@ No implementation agent may infer a selection from discussion, examples, or repo
 | Operational model-assisted oracle | None by default; deterministic preferred |
 | WorldTUI-derived checkpoint experiment | TBD / optional |
 
+## Candidate-characterization input
+
+TTT-011 should use `12-candidate-model-zoo.md` as the starting shortlist unless the owner revises it.
+
+The current plan intentionally emphasizes small models first:
+
+- extreme-small and 1.2B Liquid baselines;
+- LFM2.5-2.6B;
+- LFM2.5-8B-A1B low-active-parameter MoE;
+- Qwen3.5-4B;
+- Think.NPC-1B;
+- Qwen-3B-Intent-Microplan-v2;
+- Gemma NPC variants;
+- Sprocket as a possible separate creative reference if an artifact is admitted.
+
+The first decision should be informed by a common characterization battery rather than model reputation alone.
+
 ## Candidate record template
 
 For each considered model record:
 - exact model/repository/revision;
-- parameter count;
+- parameter count and active-parameter count where applicable;
+- exact GGUF/native artifact filenames and hashes;
 - context;
 - tokenizer/chat/tool format;
 - license and output/training-use disposition;
@@ -31,7 +51,8 @@ For each considered model record:
 - structured-output probe result;
 - persona/spontaneity probe result;
 - secret-discipline probe result;
-- runtime memory/latency target measurement;
+- recovery/multi-turn probe result;
+- runtime memory/latency/tokens-per-second measurement;
 - fine-tuning method compatibility;
 - redistribution/export constraints.
 
@@ -42,8 +63,10 @@ The cast should maximize the experiment's information value, not simply benchmar
 Prefer candidates that let us test:
 - whether eccentric teacher behaviour transfers;
 - whether command competence and personality can coexist;
-- whether a sub-billion student is sufficient;
+- whether a sub-billion or ~1B student is sufficient;
 - whether additional capacity materially improves multi-turn recovery;
+- whether low-active-parameter MoE models offer a useful speed/capability trade;
+- whether NPC-specialized pretraining/tuning improves behaviour beyond general models;
 - whether a WorldTUI-derived representation/checkpoint adds value beyond its methodology.
 
 ## Decision block
