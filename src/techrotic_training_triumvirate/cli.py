@@ -49,6 +49,14 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="pretty-print instead of compact JSON",
     )
+
+    world_demo = subparsers.add_parser(
+        "world-demo",
+        help="run the deterministic abstract World Authority reference episode",
+    )
+    world_demo.add_argument("--seed", type=int, default=DEFAULT_TEST_SEED)
+    world_demo.add_argument("--turns", type=int, default=24)
+    world_demo.add_argument("--mid-state", action="store_true")
     return parser
 
 
@@ -96,6 +104,38 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(json.dumps(schema, indent=2, sort_keys=True))
         else:
             print(json.dumps(schema, sort_keys=True, separators=(",", ":")))
+        return 0
+
+    if args.command == "world-demo":
+        from .world import run_scripted_episode
+
+        result = run_scripted_episode(
+            seed=args.seed,
+            turns=args.turns,
+            mid_state=args.mid_state,
+        )
+        failure_codes = [
+            event.data.get("code")
+            for event in result.events
+            if event.kind == "execution-failed"
+        ]
+        print(
+            json.dumps(
+                {
+                    "seed": args.seed,
+                    "turns": args.turns,
+                    "mid_state": args.mid_state,
+                    "accepted": sum(item.accepted for item in result.results),
+                    "rejected": sum(not item.accepted for item in result.results),
+                    "events": len(result.events),
+                    "failure_codes": failure_codes,
+                    "final_state_hash": result.final_state_hash,
+                    "event_hash": result.event_hash,
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+        )
         return 0
 
     parser.print_help()

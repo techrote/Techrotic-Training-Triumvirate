@@ -32,6 +32,7 @@ Neither Sprocket nor any Qwen/WorldTUI/Liquid/Gemma checkpoint is selected as a 
 - [Planning review](docs/rag/10-planning-review.md)
 - [Model-cast admission](docs/rag/11-model-cast-admission.md)
 - [Candidate small-model zoo](docs/rag/12-candidate-model-zoo.md)
+- [Abstract World Authority](docs/rag/13-world-authority.md)
 
 ## Development
 
@@ -73,6 +74,8 @@ A first-pass **~20 GB small-model GGUF characterization shelf** is recorded in `
 Architecture spikes have established:
 - **LangGraph** as the orchestration/checkpoint/branch/replay substrate;
 - **Concordia** as an optional richer simulation/Game-Master host, while TTT retains a framework-neutral direct World Authority.
+
+The native abstract World Authority is available through `ttt world-demo --seed 24301 --turns 24`; its Concordia host remains optional and parity-tested.
 
 ## Core rule
 

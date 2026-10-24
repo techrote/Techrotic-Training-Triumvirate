@@ -124,6 +124,8 @@ TTT's World Authority must remain framework-neutral and directly callable withou
 
 Spike evidence and tested implementation: `docs/spikes/concordia-deterministic-gm-visibility.md`.
 
+TTT-004 implements this decision as a framework-neutral `WorldAuthority` plus a separate optional Concordia adapter. The native path is the canonical high-volume/test path; Concordia parity is checked against the same TTT semantic hashes rather than defining a second world model. See `13-world-authority.md`.
+
 Serialized contracts must be versioned.
 
 ## 5. Hidden-information surfaces
