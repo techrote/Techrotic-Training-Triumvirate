@@ -177,7 +177,7 @@ class WeakCommanderBaseline:
                 unit_id="unit-1",
                 objective_kind="secure",
                 target_id="relay-east",
-                approach="north",
+                approach="direct",
                 constraints=(),
             )
             second = AssignObjectiveCommand(
@@ -186,7 +186,7 @@ class WeakCommanderBaseline:
                 unit_id="unit-1",
                 objective_kind="secure",
                 target_id="relay-east",
-                approach="north",
+                approach="direct",
                 constraints=(),
             )
             return AssistantAction(
@@ -194,12 +194,16 @@ class WeakCommanderBaseline:
                 communications=(_communication(context, text="Standing by."),),
             )
 
-        status = RequestStatusCommand(
-            command_id=f"{prefix}:status",
-            observation_generation=context.observation_generation,
-            entity_ids=("unit-1", "relay-east"),
+        malformed = CommandEnvelope(
+            command_id=f"{prefix}:repeat-malformed",
+            protocol_version="ttt-command-v1",
+            body={
+                "op": "launch_shell",
+                "observation_generation": context.observation_generation,
+                "script": "repeat-pretend-success",
+            },
         )
         return AssistantAction(
-            commands=(status.to_envelope(),),
+            commands=(malformed,),
             communications=(_communication(context, text="Standing by."),),
         )
