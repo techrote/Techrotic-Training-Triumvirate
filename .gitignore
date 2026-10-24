@@ -12,6 +12,7 @@ dist/
 
 # Environments and editors
 .venv/
+.venv-*/
 venv/
 .env
 .env.*

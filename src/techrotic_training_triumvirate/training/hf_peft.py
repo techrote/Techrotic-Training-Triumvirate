@@ -11,6 +11,7 @@ import gc
 import hashlib
 import importlib
 import json
+import time
 from pathlib import Path
 from typing import Any, cast
 
@@ -89,6 +90,7 @@ def _predict(
     example: MappedExample,
     *,
     max_new_tokens: int,
+    metrics: JsonObject | None = None,
 ) -> str:
     prompt = _messages(example)
     encoded = tokenizer.apply_chat_template(
@@ -98,15 +100,47 @@ def _predict(
         return_tensors="pt",
     )
     encoded = encoded.to(model.device)
+    started = time.monotonic()
     output = model.generate(
         encoded,
+        attention_mask=encoded.new_ones(encoded.shape),
         max_new_tokens=max_new_tokens,
         do_sample=False,
         pad_token_id=tokenizer.pad_token_id,
         eos_token_id=tokenizer.eos_token_id,
     )
     generated = output[0][encoded.shape[-1] :]
-    return str(tokenizer.decode(generated, skip_special_tokens=False))
+    text = str(tokenizer.decode(generated, skip_special_tokens=True))
+    elapsed = time.monotonic() - started
+    if metrics is not None:
+        count = int(generated.shape[-1])
+        metrics.update(
+            generated_tokens=count,
+            generation_seconds=elapsed,
+            tokens_per_second=count / elapsed if elapsed else 0.0,
+        )
+    return text
+
+
+def verify_native_checkpoint(binding: ModelBinding) -> JsonObject:
+    """Download the admitted native weights and verify their recorded digest."""
+
+    hub = importlib.import_module("huggingface_hub")
+    hashes: JsonObject = {}
+    for name in binding.native_artifact_names:
+        path = hub.hf_hub_download(
+            binding.native_repository, name, revision=binding.native_revision
+        )
+        digest = sha256_file(Path(path))
+        hashes[name] = digest
+        if (
+            binding.native_artifact_sha256 is not None
+            and digest != binding.native_artifact_sha256
+        ):
+            raise HFTrainingError(
+                f"admitted native checkpoint SHA-256 mismatch: {name}"
+            )
+    return hashes
 
 
 def run_hf_peft_training(
@@ -128,7 +162,7 @@ def run_hf_peft_training(
     if not train_examples:
         raise HFTrainingError("no training-split examples are available")
 
-    root = Path(output_dir)
+    root = Path(output_dir).resolve()
     root.mkdir(parents=True, exist_ok=True)
     identity_payload: JsonObject = {
         "model_binding": binding.to_object(),
@@ -164,6 +198,13 @@ def run_hf_peft_training(
             newline="\n",
         )
 
+    if resume_from_checkpoint is not None:
+        checkpoint = Path(resume_from_checkpoint).resolve()
+        if not checkpoint.is_relative_to(root / "checkpoints"):
+            raise HFTrainingError("resume checkpoint must belong to this run")
+        if not (checkpoint / "trainer_state.json").is_file():
+            raise HFTrainingError("resume checkpoint has no Trainer state")
+
     try:
         torch = importlib.import_module("torch")
         transformers = importlib.import_module("transformers")
@@ -175,6 +216,12 @@ def run_hf_peft_training(
 
     transformers.set_seed(config.seed)
     torch.manual_seed(config.seed)
+    if not torch.cuda.is_available():
+        raise HFTrainingError("native heavy execution requires an admitted CUDA host")
+    if torch.cuda.device_count() != 1:
+        raise HFTrainingError("select exactly one CUDA GPU before heavy execution")
+    native_hashes = verify_native_checkpoint(binding)
+    started = time.monotonic()
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         binding.native_repository,
         revision=binding.native_revision,
@@ -229,6 +276,8 @@ def run_hf_peft_training(
     model = transformers.AutoModelForCausalLM.from_pretrained(
         binding.native_repository,
         revision=binding.native_revision,
+        torch_dtype=torch.float32,
+        attn_implementation="eager",
     )
     model.config.use_cache = False
     lora_config = peft.LoraConfig(
@@ -260,6 +309,12 @@ def run_hf_peft_training(
         save_steps=config.save_steps,
         report_to=[],
         remove_unused_columns=False,
+        fp16=True,
+        gradient_checkpointing=True,
+        gradient_checkpointing_kwargs={"use_reentrant": False},
+        dataloader_num_workers=0,
+        logging_steps=1,
+        save_total_limit=2,
     )
     trainer = transformers.Trainer(
         model=model,
@@ -267,11 +322,15 @@ def run_hf_peft_training(
         train_dataset=_Dataset(),
         data_collator=collate,
     )
-    trainer.train(resume_from_checkpoint=resume_from_checkpoint)
+    train_result = trainer.train(resume_from_checkpoint=resume_from_checkpoint)
+    training_metrics = dict(train_result.metrics)
+    completed_steps = int(trainer.state.global_step)
+    trainer.save_state()
 
     parity_examples = tuple(item for item in mapped if item.split == "dev")[:3]
     if not parity_examples:
         parity_examples = train_examples[:1]
+    model.config.use_cache = True
     model.eval()
     before = [
         _predict(
@@ -296,8 +355,11 @@ def run_hf_peft_training(
     reloaded_base = transformers.AutoModelForCausalLM.from_pretrained(
         binding.native_repository,
         revision=binding.native_revision,
+        torch_dtype=torch.float32,
+        attn_implementation="eager",
     )
     reloaded = peft.PeftModel.from_pretrained(reloaded_base, adapter_dir)
+    reloaded.to("cuda")
     reloaded.eval()
     after = [
         _predict(
@@ -365,6 +427,14 @@ def run_hf_peft_training(
             "resume_from_checkpoint": resume_from_checkpoint,
             "training_identity": training_identity,
             "parity_passed": True,
+            "native_artifact_hashes": native_hashes,
+            "torch_version": str(torch.__version__),
+            "transformers_version": str(transformers.__version__),
+            "peft_version": str(peft.__version__),
+            "cuda_version": str(torch.version.cuda),
+            "gpu": str(torch.cuda.get_device_name(0)),
+            "peak_gpu_memory_bytes": int(torch.cuda.max_memory_allocated(0)),
+            "wall_seconds": time.monotonic() - started,
         },
     )
     run_manifest_path = root / "run-manifest.json"
@@ -379,6 +449,10 @@ def run_hf_peft_training(
         "adapter_dir": str(adapter_dir),
         "parity": parity,
         "artifact_hashes": artifact_hashes,
+        "training_metrics": cast(JsonObject, training_metrics),
+        "completed_steps": completed_steps,
+        "train_examples": len(train_examples),
+        "wall_seconds": time.monotonic() - started,
     }
     (root / "training-result.json").write_text(
         f"{canonical_json(result)}\n",
