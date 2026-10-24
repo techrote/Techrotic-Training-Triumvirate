@@ -106,7 +106,9 @@ commander, and the benchmark persona. It does **not** reveal the adversarial
 case kind or evaluator-only labels.
 
 Deterministic baselines implement the same adapter boundary as later model
-runtimes.
+runtimes. Because TTT-005 is available, each context also carries the canonical
+structured and compact observation surfaces produced by its replaceable
+`SessionRenderer`; TTT-009 does not define a second rendering/session format.
 
 ### Frozen benchmark v1
 
