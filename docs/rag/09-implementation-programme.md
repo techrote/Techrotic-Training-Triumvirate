@@ -12,7 +12,9 @@
 
 Programme tracker: #1.
 
-Architecture spike: SPIKE-LG-001 / #18, implemented by PR #19. The spike proved deterministic checkpoint → branch → correction → replay and adopts LangGraph for orchestration/checkpointing while preserving TTT-owned world/event/provenance semantics.
+Architecture spikes:
+- SPIKE-LG-001 / #18, implemented by PR #19, proved checkpoint → branch → correction → replay and adopts LangGraph for orchestration/checkpointing while preserving TTT-owned world/event/provenance semantics.
+- SPIKE-CD-001 / #20, implemented by PR #21, proved Concordia can host a deterministic non-LLM Game Master with TTT typed-command parsing and separated visibility surfaces. Concordia is conditionally adopted as an optional richer simulation substrate, not the mandatory World Authority.
 
 ## 1. Programme principles
 
@@ -27,7 +29,7 @@ Issues should be executed from current `main`; agents must reconcile work merged
 | TTT-001 | #2 | Repository/package bootstrap, deterministic dev tooling and CI |
 | TTT-002 | #3 | Versioned canonical schemas for scenarios, observations, episodes, provenance |
 | TTT-003 | #4 | Typed command IR, deterministic interpreter, stable error taxonomy |
-| TTT-004 | #5 | Abstract battlefield simulator and procedural scenario generator |
+| TTT-004 | #5 | Framework-neutral abstract battlefield World Authority, procedural scenarios, and optional Concordia host parity |
 | TTT-005 | #6 | LangGraph-backed session/checkpoint/replay orchestration plus console/delta views |
 | TTT-006 | #7 | Model-agnostic creative-teacher/persona mutation subsystem |
 | TTT-007 | #8 | Corpus assembler, validators, provenance, dedup and split discipline |

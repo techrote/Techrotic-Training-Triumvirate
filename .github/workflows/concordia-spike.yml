@@ -1,0 +1,36 @@
+name: Concordia spike
+
+on:
+  pull_request:
+    paths:
+      - "spikes/concordia/**"
+      - "docs/spikes/concordia-deterministic-gm-visibility.md"
+      - ".github/workflows/concordia-spike.yml"
+  push:
+    branches: [main]
+    paths:
+      - "spikes/concordia/**"
+      - "docs/spikes/concordia-deterministic-gm-visibility.md"
+      - ".github/workflows/concordia-spike.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: spikes/concordia/pyproject.toml
+      - name: Install spike
+        run: python -m pip install -e "./spikes/concordia[test]"
+      - name: Run spike tests
+        run: python -m pytest spikes/concordia/tests
+      - name: Execute evidence demo
+        run: python -m ttt_concordia_spike

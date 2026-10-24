@@ -114,6 +114,16 @@ Use LangGraph checkpoints to answer *where/how should execution resume or fork?*
 
 Spike evidence and tested implementation: `docs/spikes/langgraph-checkpoint-branch-replay.md`.
 
+### Optional simulation substrate
+
+SPIKE-CD-001 / issue #20 proved that Concordia v2.4.0 can run a deterministic non-LLM Game Master through its real Sequential engine while routing JSON actions into strict TTT typed commands and preserving distinct world-private, commander-visible, and player-visible surfaces.
+
+The decision is **conditional adoption**: Concordia may host richer TTT simulations when its entity, scene, scheduling, or Game-Master machinery is useful, but it is not the mandatory World Authority implementation.
+
+TTT's World Authority must remain framework-neutral and directly callable without Concordia or LangGraph. Keep a lightweight native/direct execution path for fast tests and corpus generation. If Concordia is used, treat its string entity/action boundary as transport only; parse into TTT typed commands before mutation, disable/fail closed on LLM fallback in authoritative GM paths, and treat Concordia logs/checkpoints as supplementary rather than canonical provenance.
+
+Spike evidence and tested implementation: `docs/spikes/concordia-deterministic-gm-visibility.md`.
+
 Serialized contracts must be versioned.
 
 ## 5. Hidden-information surfaces
