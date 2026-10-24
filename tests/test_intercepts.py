@@ -155,8 +155,15 @@ def test_private_or_forbidden_values_cannot_escape_ordinary_intercept() -> None:
             "channel": secret,
         },
     )
+    visible_channel_encoder = InterceptEncoder(
+        doctrine=doctrine(),
+        policy=policy(
+            reveal_fields=("op", "channel"),
+            forbidden_values=(secret,),
+        ),
+    )
     with pytest.raises(InterceptVisibilityError):
-        encoder.encode(contaminated)
+        visible_channel_encoder.encode(contaminated)
 
 
 def test_false_tactical_message_requires_explicit_deception_event() -> None:
