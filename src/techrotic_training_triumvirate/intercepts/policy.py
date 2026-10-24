@@ -12,7 +12,7 @@ from techrotic_training_triumvirate.schemas import (
     canonical_json,
 )
 
-from .model import DoctrineLexicon, INTERCEPTABLE_FIELDS, string_value
+from .model import INTERCEPTABLE_FIELDS, DoctrineLexicon, string_value
 
 
 class InterceptVisibilityError(ValueError):
