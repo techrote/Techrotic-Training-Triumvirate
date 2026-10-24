@@ -258,6 +258,21 @@ def _read_completed(
         )
     ):
         raise FinalEvidenceError("all five source-bound workers must actually complete")
+    execution_summary = load_package(portable / "execution-summary.json")
+    budget = execution_summary["budget"]
+    if (
+        execution_summary.get("worker_source_revision") != SOURCE_REVISION
+        or execution_summary.get("status") != "executed-all-five-candidates"
+        or abs(
+            budget["total_conservative_gpu_hours"]
+            - budget["charged_campaign_gpu_hours"]
+            - budget["preflight_conservative_gpu_hours"]
+        )
+        > 1e-9
+        or budget["charged_campaign_gpu_hours"] != campaign["charged_gpu_hours"]
+    ):
+        raise FinalEvidenceError("execution summary source/budget contradicts campaign")
+    campaign["evidence_execution_summary"] = execution_summary
     verify_checksums(root / COMPARISON)
     comparison = load_package(root / COMPARISON / "comparison.json")
     if (
@@ -346,6 +361,7 @@ def _read_completed(
         )
         summary = summarize_candidate(frozen, extended, metadata, training)
         summary["raw_generation_count"] = len(raw)
+        summary["native_generation"] = execution_summary["generation"][variant]
         if training:
             manifest = load_package(copied / "run-manifest.json")
             summary["native_training_runtime"] = manifest["payload"]["runtime"]
@@ -569,27 +585,44 @@ def report_tables(
             "Detailed secrecy groups retain exact secret matches, lexical world-fact "
             "matches, fabricated-result markers and intercept failures separately.",
             "",
-            "| Policy | Speech emissions | Persona constraints | Repetition | "
-            "Lexical diversity | Doctrine consistency | Native action seconds |",
-            "|---|---:|---:|---:|---:|---:|---:|",
+            "| Policy | Speech emissions | Persona constraints | Repetition proxy | "
+            "Lexical diversity | Doctrine consistency | Native action seconds | "
+            "Native median tok/s |",
+            "|---|---:|---:|---:|---:|---:|---:|---:|",
         ]
     )
     for item in summaries:
         character = item["character"]
         duration = item["native_inference_runtime"]["total_action_seconds"]
+        token_rate = item.get("native_generation", {}).get("median_tokens_per_second")
+        token_label = f"{token_rate:.3f}" if token_rate is not None else "unmeasured"
         lines.append(
             f"| {item['variant']} | {item['closed_loop_communication_count']} | "
             f"{character['constraint_adherence_rate']:.6f} | "
             f"{character['repetition_rate']:.6f} | "
             f"{character['lexical_diversity']:.6f} | "
-            f"{character['doctrine_consistency_rate']:.6f} | {duration:.3f} |"
+            f"{character['doctrine_consistency_rate']:.6f} | {duration:.3f} | "
+            f"{token_label} |"
         )
+    lines.extend(
+        [
+            "",
+            "Repetition is the mean of per-episode automated proxies; an empty "
+            "speech episode has proxy 1. Thus a high mean with one total utterance "
+            "does not imply that utterance was repeated. Native action seconds cover "
+            "the 72 long-session actions; native median token rates use all 149 saved "
+            "generations in the execution summary. They do not qualify Q4 runtime.",
+        ]
+    )
     lines.extend(["", "Automated style warnings (proxies, not human quality scores):"])
     for item in summaries:
         if item["closed_loop_communication_count"] == 0:
             lines.append(f"- {item['variant']}: no long-session speech emissions.")
         elif item["character"]["repetition_rate"] > 0.5:
-            lines.append(f"- {item['variant']}: exact speech repetition exceeds 0.50.")
+            lines.append(
+                f"- {item['variant']}: episode-averaged repetition proxy exceeds "
+                "0.50 (including the empty-episode convention)."
+            )
 
     return lines
 
@@ -613,7 +646,12 @@ def build_final_evidence(root: Path) -> dict[str, Any]:
                 "root-authored data card does not match actual corpus"
             )
     index = load_package(root / PORTABLE / "artifact-index.json")
-    omitted = [item["location"] for item in index["files"] if not item["packaged"]]
+    omitted = [
+        item["location"]
+        for item in index["files"]
+        if not item["packaged"]
+        and ("/adapter/" in item["location"] or "/checkpoints/" in item["location"])
+    ]
     if not omitted:
         raise FinalEvidenceError(
             "expected explicit omitted local model/checkpoint artifacts"
@@ -636,6 +674,7 @@ def build_final_evidence(root: Path) -> dict[str, Any]:
             canonical_json(value) + "\n", encoding="utf-8", newline="\n"
         )
     trained = [item for item in summaries if item["variant"] != "prompt-only"]
+    budget = campaign["evidence_execution_summary"]["budget"]
     for item in trained:
         slug = item["variant"].replace("+", "-")
         local = [path for path in omitted if f"/{slug}/" in path]
@@ -691,7 +730,11 @@ def build_final_evidence(root: Path) -> dict[str, Any]:
             "## Execution, reproducibility and limits",
             "",
             f"- Campaign host: `{canonical_json(campaign['host'])}`.",
-            f"- Charged GPU hours: `{campaign['charged_gpu_hours']}`; "
+            "- Total conservative GPU hours including preflight: "
+            f"`{budget['total_conservative_gpu_hours']}` "
+            f"(campaign `{budget['charged_campaign_gpu_hours']}` + "
+            f"preflight `{budget['preflight_conservative_gpu_hours']}`). "
+            "The failed V100 charge is already included in the campaign amount; "
             f"external compute: £{campaign['external_compute_cost_gbp']}; "
             f"paid API spend: £{campaign['paid_model_api_cost_gbp']}.",
             (
@@ -727,7 +770,10 @@ def build_final_evidence(root: Path) -> dict[str, Any]:
                 "decoding, dependency capture, launcher, logs, source episodes and "
                 "raw responses are hashed. Large adapter/checkpoint files remain "
                 "local and explicitly unavailable in the portable package; no model "
-                "publication occurred."
+                "publication occurred. The artifact index also records unpacked "
+                "source-cache/duplicate-output omissions reconstructible from the "
+                "packaged source archive/raw records; those are not classified as "
+                "unavailable model/checkpoint artifacts."
             ),
             (
                 "- The corpus has 252 examples (210 train / 42 dev), deterministic "

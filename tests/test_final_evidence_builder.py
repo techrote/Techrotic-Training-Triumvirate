@@ -218,7 +218,9 @@ def test_report_tables_keep_candidate_critical_counts_in_correct_table() -> None
     )
     warnings = text.split("Automated style warnings", 1)[1]
     assert "| fixture-" not in warnings
-    assert "fixture-a: exact speech repetition exceeds 0.50" in warnings
+    assert "fixture-a: episode-averaged repetition proxy exceeds 0.50" in warnings
+    assert "empty-episode convention" in warnings
+    assert "does not imply that utterance was repeated" in text
     assert text.count("| fixture-a |") == 3
     assert text.count("| fixture-b |") == 3
 
