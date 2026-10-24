@@ -158,9 +158,10 @@ def apply_delta(
         if not parts:
             if not isinstance(value, dict):
                 raise ValueError("root replacement must be an object")
-            root = _copy_json(value)
-            if not isinstance(root, dict):
+            replacement = _copy_json(value)
+            if not isinstance(replacement, dict):
                 raise AssertionError("root replacement must stay an object")
+            root = replacement
             continue
         parent, key = _parent_for_path(root, parts)
         parent[key] = _copy_json(value)
