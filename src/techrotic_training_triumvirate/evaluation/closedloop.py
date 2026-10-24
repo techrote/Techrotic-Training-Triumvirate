@@ -882,7 +882,9 @@ def write_closed_loop_comparison(
         ):
             variants.add(variant)
         name = f"candidate-{index + 1:02d}.json"
-        (destination / name).write_text(report.to_json() + "\n", encoding="utf-8")
+        (destination / name).write_text(
+            report.to_json() + "\n", encoding="utf-8", newline="\n"
+        )
         files[name] = hashlib.sha256((destination / name).read_bytes()).hexdigest()
         summaries.append(
             _object(
@@ -936,10 +938,10 @@ def write_closed_loop_comparison(
         "samples": samples,
     }
     (destination / "human-packet.json").write_text(
-        canonical_json(packet) + "\n", encoding="utf-8"
+        canonical_json(packet) + "\n", encoding="utf-8", newline="\n"
     )
     (destination / "human-packet-key.json").write_text(
-        canonical_json(key) + "\n", encoding="utf-8"
+        canonical_json(key) + "\n", encoding="utf-8", newline="\n"
     )
     missing = [variant for variant in expected_variants if variant not in variants]
     comparison = _object(
@@ -961,7 +963,7 @@ def write_closed_loop_comparison(
         }
     )
     (destination / "comparison.json").write_text(
-        canonical_json(comparison) + "\n", encoding="utf-8"
+        canonical_json(comparison) + "\n", encoding="utf-8", newline="\n"
     )
     lines = [
         "# TTT-014 closed-loop comparison",
@@ -1035,7 +1037,9 @@ def write_closed_loop_comparison(
             "",
         ]
     )
-    (destination / "comparison.md").write_text("\n".join(lines), encoding="utf-8")
+    (destination / "comparison.md").write_text(
+        "\n".join(lines), encoding="utf-8", newline="\n"
+    )
     artifact_names = [
         *(str(name) for name in files),
         "human-packet.json",
@@ -1048,6 +1052,6 @@ def write_closed_loop_comparison(
         for name in sorted(artifact_names)
     ]
     (destination / "SHA256SUMS").write_text(
-        "\n".join(checksums) + "\n", encoding="utf-8"
+        "\n".join(checksums) + "\n", encoding="utf-8", newline="\n"
     )
     return comparison

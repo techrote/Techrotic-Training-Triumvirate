@@ -35,6 +35,7 @@ VARIANTS = ("prompt-only", "operational", "persona", "joint", "joint+corrective"
 PORTABLE = Path("docs/evidence/ttt-013-execution")
 LOCAL = Path("artifacts/ttt-013-execution")
 BASELINE = Path("docs/evidence/ttt-014/baseline")
+COMPARISON = Path("docs/evidence/ttt-014/comparison")
 FINAL = Path("docs/evidence/ttt-016")
 
 
@@ -257,6 +258,16 @@ def _read_completed(
         )
     ):
         raise FinalEvidenceError("all five source-bound workers must actually complete")
+    verify_checksums(root / COMPARISON)
+    comparison = load_package(root / COMPARISON / "comparison.json")
+    if (
+        comparison.get("substantive_comparison_complete") is not True
+        or comparison.get("missing_real_variants") != []
+        or len(comparison.get("candidates", [])) != 6
+    ):
+        raise FinalEvidenceError(
+            "TTT-014 comparison must include baseline and all five real variants"
+        )
     corpus, dataset = load_corpus_examples(portable / "corpus")
     if (
         not corpus
@@ -340,6 +351,16 @@ def _read_completed(
             summary["native_training_runtime"] = manifest["payload"]["runtime"]
         summaries.append(summary)
         reports.append(extended)
+    baseline = verify_closed_loop_report(
+        load_package(root / BASELINE / "closed-loop.json")
+    )
+    if {item["semantic_hash"] for item in comparison["candidates"]} != {
+        baseline.semantic_hash(),
+        *(report.semantic_hash() for report in reports),
+    }:
+        raise FinalEvidenceError(
+            "TTT-014 comparison does not bind these exact worker traces"
+        )
     return campaign, summaries, reports
 
 
@@ -741,7 +762,7 @@ def build_final_evidence(root: Path) -> dict[str, Any]:
         "\n".join(lines), encoding="utf-8", newline="\n"
     )
     references = []
-    for directory in (root / PORTABLE, root / BASELINE, destination):
+    for directory in (root / PORTABLE, root / BASELINE, root / COMPARISON, destination):
         for path in sorted(directory.rglob("*")):
             if not path.is_file() or path.name == "admission-package.json":
                 continue
@@ -755,6 +776,8 @@ def build_final_evidence(root: Path) -> dict[str, Any]:
                 "run-manifest.json": "run-manifest",
                 "parity.json": "export-parity",
             }.get(path.name, "provenance")
+            if directory == root / COMPARISON and path.name.startswith("candidate-"):
+                kind = "closed-loop"
             references.append(
                 evidence_reference(root, path.relative_to(root).as_posix(), kind=kind)
             )
