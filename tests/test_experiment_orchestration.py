@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 
 from techrotic_training_triumvirate.experiments import (
-    EvidenceClass,
     EventKind,
+    EvidenceClass,
     ExperimentContractError,
     ExperimentPlan,
     ExperimentState,
