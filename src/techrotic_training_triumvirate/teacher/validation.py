@@ -30,8 +30,7 @@ class OperationalValidator(Protocol):
         self,
         candidate: TeacherCandidate,
         request: TeacherRequest,
-    ) -> ValidationDecision:
-        ...
+    ) -> ValidationDecision: ...
 
 
 class OperationalStatus(str, Enum):
