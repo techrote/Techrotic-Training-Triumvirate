@@ -54,6 +54,14 @@ episodes and excluded from supervised targets. Actual delayed execution stalls
 are followed by authoritative completion for the same unit and target; a
 behavioral validator rejects demonstrations that do not establish that recovery.
 
+Training targets contain 3,468 `request_status` commands and 432
+`assign_objective` commands; development contains 578 and 72 respectively.
+Only 36 training inputs and six development inputs contain an immediately recent
+`execution-failed` event, and all 42 corresponding targets assign an objective.
+Thus status requests dominate the supervised distribution. Successful oracle
+recovery does not prove that a learned policy has mastered this smaller recovery
+subset; evaluation must establish that separately.
+
 World Authority owns acceptance, events, hidden state and outcomes. The scripted
 demonstrator reads only admitted observations and feedback. Training and inference
 share `commander_input`: current observation generation, visible facts/entities,
