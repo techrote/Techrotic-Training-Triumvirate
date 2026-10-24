@@ -119,12 +119,8 @@ class CapabilityDescriptor(SchemaRecord):
             required={"capability_id", "parameters"},
         )
         return cls(
-            capability_id=require_str(
-                payload["capability_id"], field="capability_id"
-            ),
-            parameters=require_json_object(
-                payload["parameters"], field="parameters"
-            ),
+            capability_id=require_str(payload["capability_id"], field="capability_id"),
+            parameters=require_json_object(payload["parameters"], field="parameters"),
         )
 
 
@@ -255,9 +251,7 @@ class WorldPrivateReference(SchemaRecord):
             ),
             state_hash=require_str(payload["state_hash"], field="state_hash"),
             generation=require_int(payload["generation"], field="generation"),
-            secret_ids=require_str_tuple(
-                payload["secret_ids"], field="secret_ids"
-            ),
+            secret_ids=require_str_tuple(payload["secret_ids"], field="secret_ids"),
         )
 
 
@@ -306,9 +300,7 @@ class CommanderObservation(SchemaRecord):
             objective_ids=require_str_tuple(
                 payload["objective_ids"], field="objective_ids"
             ),
-            event_ids=require_str_tuple(
-                payload["event_ids"], field="event_ids"
-            ),
+            event_ids=require_str_tuple(payload["event_ids"], field="event_ids"),
             facts=require_json_object(payload["facts"], field="facts"),
         )
 
@@ -345,17 +337,11 @@ class CommanderPrivateContext(SchemaRecord):
             },
         )
         return cls(
-            commander_id=require_str(
-                payload["commander_id"], field="commander_id"
-            ),
+            commander_id=require_str(payload["commander_id"], field="commander_id"),
             goals=require_str_tuple(payload["goals"], field="goals"),
-            secret_ids=require_str_tuple(
-                payload["secret_ids"], field="secret_ids"
-            ),
+            secret_ids=require_str_tuple(payload["secret_ids"], field="secret_ids"),
             beliefs=require_json_object(payload["beliefs"], field="beliefs"),
-            memory_refs=require_str_tuple(
-                payload["memory_refs"], field="memory_refs"
-            ),
+            memory_refs=require_str_tuple(payload["memory_refs"], field="memory_refs"),
         )
 
 
@@ -387,9 +373,7 @@ class PlayerObservation(SchemaRecord):
             visible_entities=require_str_tuple(
                 payload["visible_entities"], field="visible_entities"
             ),
-            event_ids=require_str_tuple(
-                payload["event_ids"], field="event_ids"
-            ),
+            event_ids=require_str_tuple(payload["event_ids"], field="event_ids"),
             facts=require_json_object(payload["facts"], field="facts"),
         )
 
@@ -425,9 +409,7 @@ class PlayerInterceptEnvelope(SchemaRecord):
                 "deception_event_id",
             },
         )
-        is_deception = require_bool(
-            payload["is_deception"], field="is_deception"
-        )
+        is_deception = require_bool(payload["is_deception"], field="is_deception")
         deception_event_id = require_optional_str(
             payload["deception_event_id"], field="deception_event_id"
         )
@@ -440,9 +422,7 @@ class PlayerInterceptEnvelope(SchemaRecord):
                 "deception_event_id must be null for ordinary intercepts"
             )
         return cls(
-            intercept_id=require_str(
-                payload["intercept_id"], field="intercept_id"
-            ),
+            intercept_id=require_str(payload["intercept_id"], field="intercept_id"),
             source_event_ids=require_str_tuple(
                 payload["source_event_ids"], field="source_event_ids"
             ),
@@ -496,12 +476,8 @@ class PersonaSpec(SchemaRecord):
             speech_constraints=require_str_tuple(
                 payload["speech_constraints"], field="speech_constraints"
             ),
-            doctrine=require_json_object(
-                payload["doctrine"], field="doctrine"
-            ),
-            secret_ids=require_str_tuple(
-                payload["secret_ids"], field="secret_ids"
-            ),
+            doctrine=require_json_object(payload["doctrine"], field="doctrine"),
+            secret_ids=require_str_tuple(payload["secret_ids"], field="secret_ids"),
             tactical_biases=require_json_object(
                 payload["tactical_biases"], field="tactical_biases"
             ),
@@ -569,9 +545,7 @@ class CommunicationRecord(SchemaRecord):
             ),
             channel=require_str(payload["channel"], field="channel"),
             text=require_str(payload["text"], field="text"),
-            recipients=require_str_tuple(
-                payload["recipients"], field="recipients"
-            ),
+            recipients=require_str_tuple(payload["recipients"], field="recipients"),
         )
 
 
@@ -762,9 +736,7 @@ class TurnRecord(SchemaRecord):
             field="next_observation",
         )
         if observation.turn_id != turn_id:
-            raise SchemaValidationError(
-                "turn observation.turn_id must equal turn_id"
-            )
+            raise SchemaValidationError("turn observation.turn_id must equal turn_id")
         if next_observation.turn_id != turn_id + 1:
             raise SchemaValidationError(
                 "next_observation.turn_id must equal turn_id + 1"
@@ -850,16 +822,10 @@ class SourceProvenance(SchemaRecord):
         )
         return cls(
             source_id=require_str(payload["source_id"], field="source_id"),
-            source_class=require_str(
-                payload["source_class"], field="source_class"
-            ),
+            source_class=require_str(payload["source_class"], field="source_class"),
             uri=require_optional_str(payload["uri"], field="uri"),
-            revision=require_optional_str(
-                payload["revision"], field="revision"
-            ),
-            license_id=require_optional_str(
-                payload["license_id"], field="license_id"
-            ),
+            revision=require_optional_str(payload["revision"], field="revision"),
+            license_id=require_optional_str(payload["license_id"], field="license_id"),
             source_content_hash=require_optional_str(
                 payload["source_content_hash"], field="source_content_hash"
             ),
@@ -923,9 +889,7 @@ class RunManifest(SchemaRecord):
             generator_config=require_json_object(
                 payload["generator_config"], field="generator_config"
             ),
-            source_refs=require_str_tuple(
-                payload["source_refs"], field="source_refs"
-            ),
+            source_refs=require_str_tuple(payload["source_refs"], field="source_refs"),
             parent_run_ids=require_str_tuple(
                 payload["parent_run_ids"], field="parent_run_ids"
             ),
@@ -984,9 +948,7 @@ class EpisodeRecord(SchemaRecord):
                 )
         return cls(
             episode_id=require_str(payload["episode_id"], field="episode_id"),
-            scenario=_record(
-                payload["scenario"], ScenarioSpec, field="scenario"
-            ),
+            scenario=_record(payload["scenario"], ScenarioSpec, field="scenario"),
             persona=_record(payload["persona"], PersonaSpec, field="persona"),
             initial_world=_record(
                 payload["initial_world"],
