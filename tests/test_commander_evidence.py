@@ -124,6 +124,10 @@ def test_allocation_refuses_unknown_lifetime_wrong_gpu_and_erased_charges(monkey
     wrong["attempts"][0]["gpu_uuid"] = "GPU-not-the-admitted-TITAN"
     with pytest.raises(ValueError, match="another physical GPU"):
         module.verify_allocation(wrong)
+    missing = copy.deepcopy(ledger)
+    del missing["attempts"][0]["gpu_uuid"]
+    with pytest.raises(ValueError, match="another physical GPU"):
+        module.verify_allocation(missing)
     erased = copy.deepcopy(ledger)
     erased["charged_gpu_hours"] = 0
     with pytest.raises(ValueError, match="differs from attempt charges"):

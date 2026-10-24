@@ -136,11 +136,20 @@ def reporter_identity(root: Path, revision: str) -> dict[str, Any]:
 
 def verify_allocation(ledger: dict[str, Any]) -> None:
     charged = ledger["charged_gpu_hours"]
-    if not 0 <= charged <= 22:
+    if (
+        type(charged) not in (int, float)
+        or not math.isfinite(charged)
+        or not 0 <= charged <= 22
+    ):
         raise ValueError("allocation exceeds the admitted 22-hour cap")
     actual = 0.0
     for attempt in ledger["attempts"]:
-        if attempt.get("gpu_uuid", TITAN) != TITAN:
+        conservative = (
+            attempt["status"] == "conservative_preflight"
+            and attempt.get("gpu_uuid") is None
+            and attempt.get("reason", "").startswith("TITAN-only")
+        )
+        if attempt.get("gpu_uuid") != TITAN and not conservative:
             raise ValueError("allocation contains another physical GPU")
         if (
             type(attempt["status"]) is not int
@@ -148,7 +157,11 @@ def verify_allocation(ledger: dict[str, Any]) -> None:
         ):
             raise ValueError("allocation has an unresolved attempt")
         hours = attempt["actual_gpu_hours"]
-        if not 0 <= hours <= attempt.get("hours", hours):
+        if (
+            type(hours) not in (int, float)
+            or not math.isfinite(hours)
+            or not 0 <= hours <= attempt.get("hours", hours)
+        ):
             raise ValueError("attempt charge lies outside its reservation")
         actual += hours
     if not math.isclose(actual, charged, abs_tol=1e-8):
