@@ -81,7 +81,9 @@ def resolve_model_binding(selector: str = "primary") -> ModelBinding:
     artifacts = native.get("artifacts")
     if isinstance(artifact, str):
         artifact_names = (artifact,)
-    elif isinstance(artifacts, list) and all(isinstance(item, str) for item in artifacts):
+    elif isinstance(artifacts, list) and all(
+        isinstance(item, str) for item in artifacts
+    ):
         artifact_names = tuple(cast(list[str], artifacts))
     else:
         raise TrainingAdmissionError(f"{key} native artifact list is missing")
@@ -214,9 +216,11 @@ def quantization_export_spec(selector: str = "primary") -> JsonObject:
     binding = resolve_model_binding(selector)
     cast_data = load_model_cast_v1()
     profiles = _load_profiles()
-    profile = cast(dict[str, Any], cast(dict[str, Any], profiles["profiles"])[binding.model_key])
+    profile_map = cast(dict[str, Any], profiles["profiles"])
+    profile = cast(dict[str, Any], profile_map[binding.model_key])
     quant = cast(dict[str, Any], profile["quantization_export"])
-    model_record = cast(dict[str, Any], cast(dict[str, Any], cast_data["models"])[binding.model_key])
+    model_map = cast(dict[str, Any], cast_data["models"])
+    model_record = cast(dict[str, Any], model_map[binding.model_key])
     inference = cast(dict[str, Any], model_record["inference"])
     probe_defaults = cast(dict[str, Any], cast_data["probe_defaults"])
 
