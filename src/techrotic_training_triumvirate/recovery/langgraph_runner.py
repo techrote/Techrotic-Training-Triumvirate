@@ -28,6 +28,7 @@ from techrotic_training_triumvirate.schemas import (
     EpisodeRecord,
     EvaluationAnnotations,
     InterpreterResult,
+    JsonObject,
     PersonaSpec,
     RunManifest,
     SchemaValidationError,
@@ -68,7 +69,7 @@ class RolloutTurn:
     next_observation: CommanderObservation
     failures: tuple[FailurePoint, ...]
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> JsonObject:
         return {
             "turn_id": self.turn_id,
             "observation": self.observation.to_dict(),
