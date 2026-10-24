@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
-from techrotic_training_triumvirate.schemas import JsonObject, canonical_json
+from techrotic_training_triumvirate.schemas import JsonObject, JsonValue, canonical_json
 
 from .export import build_run_manifest, sha256_file
 from .model import (
@@ -321,10 +321,11 @@ def run_hf_peft_training(
     if not all(bool(item["equal"]) for item in parity_cases):
         raise HFTrainingError("saved/reloaded PEFT adapter failed inference parity")
 
+    parity_values: list[JsonValue] = [case for case in parity_cases]
     parity: JsonObject = {
         "schema_version": 1,
         "passed": True,
-        "cases": parity_cases,
+        "cases": parity_values,
     }
     parity_path = root / "parity.json"
     parity_path.write_text(
