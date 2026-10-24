@@ -53,9 +53,8 @@ _EXTERNAL_SOURCE_MARKERS = (
 
 def _requires_license(source_class: str) -> bool:
     normalized = source_class.strip().lower()
-    return (
-        normalized in _EXTERNAL_SOURCE_CLASSES
-        or any(marker in normalized for marker in _EXTERNAL_SOURCE_MARKERS)
+    return normalized in _EXTERNAL_SOURCE_CLASSES or any(
+        marker in normalized for marker in _EXTERNAL_SOURCE_MARKERS
     )
 
 
@@ -683,9 +682,7 @@ def _manifest(
         for item in examples
         if isinstance(item.target.get("communications"), list)
     )
-    examples_with_commands = sum(
-        bool(item.target.get("commands")) for item in examples
-    )
+    examples_with_commands = sum(bool(item.target.get("commands")) for item in examples)
     examples_with_communications = sum(
         bool(item.target.get("communications")) for item in examples
     )
