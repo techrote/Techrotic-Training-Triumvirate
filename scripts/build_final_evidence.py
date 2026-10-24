@@ -365,6 +365,15 @@ def _read_completed(
         if training:
             manifest = load_package(copied / "run-manifest.json")
             summary["native_training_runtime"] = manifest["payload"]["runtime"]
+            summary["training_recipe"] = manifest["payload"]["generator_config"][
+                "training_config"
+            ]
+            summary["training_evidence"] = {
+                "run_manifest": f"../ttt-013-execution/{slug}/run-manifest.json",
+                "training_identity": (
+                    f"../ttt-013-execution/{slug}/training-identity.json"
+                ),
+            }
         summaries.append(summary)
         reports.append(extended)
     baseline = verify_closed_loop_report(
@@ -404,11 +413,16 @@ def _recommendation(summary: dict[str, Any]) -> str:
 
 def _card(summary: dict[str, Any], unavailable: list[str]) -> str:
     metadata, training = summary["metadata"], summary["training"]
+    recipe, evidence = summary["training_recipe"], summary["training_evidence"]
     return "\n".join(
         [
             f"# Candidate model card: {summary['policy']['policy_id']}",
             "",
             "**NOT ADMITTED** for runtime integration.",
+            "",
+            "Intended use: **research and evidence readback only**, including "
+            "reproduction of this documented native pilot. These adapters are "
+            "unqualified for live commander deployment or CyberSand integration.",
             "",
             _recommendation(summary),
             "",
@@ -417,6 +431,21 @@ def _card(summary: dict[str, Any], unavailable: list[str]) -> str:
             f"- Base checkpoint: `{canonical_json(metadata['base_checkpoint'])}`.",
             f"- Dataset SHA-256: `{metadata['dataset_hash']}`.",
             f"- Decoding: `{canonical_json(metadata['decoding'])}`.",
+            "",
+            "## Recorded training recipe",
+            "",
+            "The canonical run manifest supplies this exact configuration; loss "
+            "metrics below are reported separately from the training recipe.",
+            "",
+            "```json",
+            json.dumps(recipe, indent=2, sort_keys=True, ensure_ascii=False),
+            "```",
+            "",
+            f"[Canonical run manifest]({evidence['run_manifest']}) · "
+            f"[Training identity]({evidence['training_identity']}).",
+            "",
+            "## Results and resource evidence",
+            "",
             (
                 "- Native Transformers/PEFT float32 execution; Q4 export and target "
                 "runtime measurements absent."

@@ -160,10 +160,31 @@ def test_negative_metrics_are_not_promoted_by_parity_or_training_loss() -> None:
     assert all(value is None for value in summary["human_ratings"].values())
     assert summary["q4_runtime_measurements"] is None
     assert "Reject continued runtime integration" in builder._recommendation(summary)
+    summary["training_recipe"] = {
+        "backend": "fixture-only",
+        "lora": {"rank": 4, "alpha": 12, "target_modules": ["fixture-linear"]},
+        "learning_rate": 0.0007,
+        "micro_batch_size": 2,
+        "gradient_accumulation_steps": 3,
+        "max_sequence_tokens": 1024,
+    }
+    summary["training_evidence"] = {
+        "run_manifest": "../ttt-013-execution/joint/run-manifest.json",
+        "training_identity": "../ttt-013-execution/joint/training-identity.json",
+    }
     card = builder._card(summary, ["fixture/omitted.safetensors"])
     assert "NOT ADMITTED" in card
     assert "ratings remain null" in card
     assert "fixture/omitted.safetensors" in card
+    assert "research and evidence readback only" in card
+    recipe = json.loads(card.split("```json\n", 1)[1].split("\n```", 1)[0])
+    assert recipe == summary["training_recipe"]
+    assert (
+        "[Canonical run manifest](../ttt-013-execution/joint/run-manifest.json)" in card
+    )
+    assert (
+        "[Training identity](../ttt-013-execution/joint/training-identity.json)" in card
+    )
     frozen["cases"] = [{"command_count": 0, "accepted_count": 0}]
     frozen["operational"]["mechanical"].update(
         score=1.0, rejection_recovery_rate=1.0, parse_valid_rate=1.0
