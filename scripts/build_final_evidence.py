@@ -58,7 +58,7 @@ def reporter_source(root: Path) -> dict[str, Any]:
     revision = revision_result.stdout.decode("ascii").strip()
     if len(revision) != 40 or any(c not in "0123456789abcdef" for c in revision):
         raise FinalEvidenceError("reporting source must have an immutable Git commit")
-    files = {}
+    files, committed_files = {}, {}
     for name in (
         "scripts/build_final_evidence.py",
         "src/techrotic_training_triumvirate/admission.py",
@@ -70,17 +70,23 @@ def reporter_source(root: Path) -> dict[str, Any]:
             capture_output=True,
             check=False,
         )
-        if committed.returncode or committed.stdout != (root / name).read_bytes():
+        checked_out = (root / name).read_bytes()
+        if committed.returncode or committed.stdout.replace(
+            b"\r\n", b"\n"
+        ) != checked_out.replace(b"\r\n", b"\n"):
             raise FinalEvidenceError(
                 f"reporting source is uncommitted or changed: {name}"
             )
         files[name] = sha256(root / name)
+        committed_files[name] = hashlib.sha256(committed.stdout).hexdigest()
     return {
         "schema": "ttt.final_evidence_generation",
         "schema_version": 1,
         "worker_source_revision": SOURCE_REVISION,
         "reporting_source_revision": revision,
         "reporting_file_sha256": files,
+        "committed_reporting_file_sha256": committed_files,
+        "reporting_source_matches_commit_after_crlf_normalization": True,
         "execution": (
             "read-only evidence verification and document generation; no inference"
         ),

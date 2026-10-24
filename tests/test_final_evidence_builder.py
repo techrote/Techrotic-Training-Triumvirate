@@ -251,6 +251,16 @@ def test_reporting_commit_is_separate_and_changed_tool_is_refused(
     assert source["reporting_source_revision"] == "c" * 40
     assert source["worker_source_revision"] == builder.SOURCE_REVISION
     assert source["reporting_source_revision"] != source["worker_source_revision"]
+    (tmp_path / names[0]).write_bytes(b"committed tool fixture\r\n")
+    windows_source = builder.reporter_source(tmp_path)
+    assert (
+        windows_source["reporting_source_matches_commit_after_crlf_normalization"]
+        is True
+    )
+    assert (
+        windows_source["reporting_file_sha256"][names[0]]
+        != windows_source["committed_reporting_file_sha256"][names[0]]
+    )
     (tmp_path / names[0]).write_bytes(b"uncommitted change")
     with pytest.raises(builder.FinalEvidenceError, match="uncommitted or changed"):
         builder.reporter_source(tmp_path)
