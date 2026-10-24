@@ -26,7 +26,6 @@ from .base import (
 )
 
 
-
 def _record[RecordT: SchemaRecord](
     value: object,
     expected: type[RecordT],
