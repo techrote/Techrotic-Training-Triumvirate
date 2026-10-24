@@ -47,12 +47,21 @@ _TACTICAL_DIMENSIONS = {
 }
 
 
-def _string_tuple(value: JsonValue, *, dimension: PersonaDimension) -> tuple[str, ...]:
-    if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+def _string_tuple(
+    value: JsonValue,
+    *,
+    dimension: PersonaDimension,
+) -> tuple[str, ...]:
+    if not isinstance(value, list):
         raise ValueError(f"{dimension.value} requires an array of strings")
-    if any(not item.strip() for item in value):
-        raise ValueError(f"{dimension.value} entries must not be empty")
-    return tuple(value)
+    result: list[str] = []
+    for item in value:
+        if not isinstance(item, str):
+            raise ValueError(f"{dimension.value} requires an array of strings")
+        if not item.strip():
+            raise ValueError(f"{dimension.value} entries must not be empty")
+        result.append(item)
+    return tuple(result)
 
 
 def mutate_persona(
