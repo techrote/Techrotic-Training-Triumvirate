@@ -52,7 +52,12 @@ def _student(*, malformed: bool = False) -> ScriptedStudentAdapter:
             adapter_id="deterministic-script",
             revision="v1",
         ),
-        steps=(ScriptedStep(command_body=command_body),),
+        steps=(
+            ScriptedStep(
+                command_body=command_body,
+                communication_text="Student attempted route.",
+            ),
+        ),
     )
 
 
@@ -81,6 +86,14 @@ def test_error_prone_student_builds_t3_corpus_and_replay_policy_improves() -> No
     first = run_corrective_round(student, config=_config("round-1"))
 
     assert first.failure_count == 1
+    assert first.rollout[0].observation == first.original_recording.turns[0].observation
+    assert first.rollout[0].next_observation == (
+        first.original_recording.turns[0].next_observation
+    )
+    assert first.rollout[0].action.communications[0].text == (
+        "Student attempted route."
+    )
+    assert first.manifest.artifact_hashes["student_rollout"]
     assert first.corrections
     assert first.corpus.examples
     assert all(example.tier.value == "T3" for example in first.corpus.examples)
