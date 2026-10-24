@@ -140,6 +140,26 @@ def test_adversarial_recovery_and_intercept_grounding_are_scored() -> None:
     assert intercept_case.violations["intercept_grounding_failure_count"] == 0
 
 
+def test_benchmark_consumes_ttt005_deterministic_renderer_surface() -> None:
+    delegate = ScriptedCommanderBaseline()
+
+    class RenderingProbe:
+        @property
+        def identity(self):
+            return delegate.identity
+
+        def begin_case(self, *, case_id: str, seed: int) -> None:
+            delegate.begin_case(case_id=case_id, seed=seed)
+
+        def act(self, context):
+            assert context.structured_observation == context.observation.to_dict()
+            assert context.compact_observation.startswith(f"TURN {context.turn_index}")
+            return delegate.act(context)
+
+    report = run_benchmark(RenderingProbe(), code_revision="test-revision")
+    assert report.cases
+
+
 def test_report_keeps_character_proxies_separate_from_operational_scores() -> None:
     report = run_benchmark(
         ScriptedCommanderBaseline(),
