@@ -97,12 +97,6 @@ class RecoveryContext:
                 result.to_dict() for result in self.interpreter_results
             ],
             "world_events": [event.to_dict() for event in self.world_events],
-            "correction": {
-                "oracle_id": self.oracle_id,
-                "parent_run_id": self.parent_run_id,
-                "parent_branch_id": self.parent_branch_id,
-                "parent_turn_hash": self.parent_turn_hash,
-            },
         }
 
 
