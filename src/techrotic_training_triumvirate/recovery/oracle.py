@@ -69,17 +69,14 @@ class DeterministicRecoveryOracle:
         preferred_target = attempted_body.get("target_id")
         target_id = (
             preferred_target
-            if isinstance(preferred_target, str)
-            and preferred_target in objective_ids
+            if isinstance(preferred_target, str) and preferred_target in objective_ids
             else objective_ids[0]
         )
 
         actions: list[AssistantAction] = []
         if failure.code not in {"TARGET_STATE_CHANGED", "ORDER_CONFLICT"}:
             open_routes = tuple(
-                route.route_id
-                for route in blueprint.routes
-                if not route.blocked
+                route.route_id for route in blueprint.routes if not route.blocked
             )
             for index, route_id in enumerate(open_routes):
                 command = AssignObjectiveCommand(
