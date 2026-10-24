@@ -7,7 +7,6 @@ from typing import Any
 
 from .base import registered_record_types
 
-
 _STRING: dict[str, Any] = {"type": "string"}
 _INTEGER: dict[str, Any] = {"type": "integer"}
 _BOOLEAN: dict[str, Any] = {"type": "boolean"}
