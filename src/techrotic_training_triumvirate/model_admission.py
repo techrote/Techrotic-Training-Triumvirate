@@ -5,8 +5,9 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections.abc import Mapping
 from importlib.resources import files
-from typing import Any, Mapping, cast
+from typing import Any, cast
 
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _MUTABLE_REFS = {"head", "latest", "main", "master"}
@@ -139,7 +140,9 @@ def validate_model_cast_v1(data: Mapping[str, Any] | None = None) -> None:
             )
 
     if selected_primary_count != 1:
-        raise ModelAdmissionError("exactly one selected primary compact student is required")
+        raise ModelAdmissionError(
+            "exactly one selected primary compact student is required"
+        )
 
     budget = cast_data.get("training_budget")
     targets = cast_data.get("runtime_targets")
