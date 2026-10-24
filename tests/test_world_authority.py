@@ -151,9 +151,7 @@ def test_competing_orders_produce_target_state_change_failure() -> None:
 
     assert world.objectives["relay-east"].status is ObjectiveStatus.SECURED
     failure_codes = [
-        event.data["code"]
-        for event in world.events
-        if event.kind == "execution-failed"
+        event.data["code"] for event in world.events if event.kind == "execution-failed"
     ]
     assert "TARGET_STATE_CHANGED" in failure_codes
 
