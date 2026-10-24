@@ -9,7 +9,6 @@ from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from typing import ClassVar, Self, cast
 
-
 type JsonScalar = str | int | float | bool | None
 type JsonValue = JsonScalar | list[JsonValue] | dict[str, JsonValue]
 type JsonObject = dict[str, JsonValue]
