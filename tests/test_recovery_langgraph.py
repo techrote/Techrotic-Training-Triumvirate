@@ -244,7 +244,8 @@ def test_same_semantic_correction_is_deterministic_despite_checkpoint_ids() -> N
     )
 
 
-def test_frozen_evaluation_world_is_refused_before_rollout_or_corpus_admission() -> None:
+def test_frozen_evaluation_world_is_refused_before_rollout_or_corpus_admission(
+) -> None:
     with pytest.raises(FrozenEvaluationGuardError, match="reserved"):
         run_corrective_round(
             _student(),
