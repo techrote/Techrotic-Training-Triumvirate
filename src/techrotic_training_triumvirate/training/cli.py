@@ -24,6 +24,7 @@ from .data import (
 from .export import export_tiny
 from .hf_peft import run_hf_peft_training
 from .model import TrainingMix
+from .pilot import build_pilot_plan, run_pilot_smoke
 from .tiny import train_tiny
 
 
@@ -105,6 +106,28 @@ def build_parser() -> argparse.ArgumentParser:
     train_hf.add_argument("--allow-heavy", action="store_true")
     train_hf.add_argument("--git-commit", required=True)
     train_hf.add_argument("--resume-from-checkpoint")
+
+    pilot_plan = subparsers.add_parser(
+        "pilot-plan",
+        help="freeze the benchmark-clean TTT-013 four-way experiment plan",
+    )
+    pilot_plan.add_argument("--corpus", type=Path, required=True)
+    pilot_plan.add_argument("--output", type=Path, required=True)
+    pilot_plan.add_argument("--model", default="primary")
+    pilot_plan.add_argument("--seed", type=int, default=24301)
+    pilot_plan.add_argument("--gpu-hours", type=float, default=24.0)
+    pilot_plan.add_argument("--external-cost-gbp", type=float, default=75.0)
+    pilot_plan.add_argument("--execution-host")
+    pilot_plan.add_argument("--allocation-id")
+
+    pilot_smoke = subparsers.add_parser(
+        "pilot-smoke",
+        help="run all four TTT-013 mixes through deterministic tiny smoke training",
+    )
+    pilot_smoke.add_argument("--output", type=Path, required=True)
+    pilot_smoke.add_argument("--model", default="primary")
+    pilot_smoke.add_argument("--seed", type=int, default=24301)
+    pilot_smoke.add_argument("--git-commit", default="working-tree")
     return parser
 
 
@@ -199,6 +222,35 @@ def main(argv: Sequence[str] | None = None) -> int:
             output_dir=args.output,
             git_commit=args.git_commit,
             resume_from_checkpoint=args.resume_from_checkpoint,
+        )
+        print(canonical_json(result))
+        return 0
+
+    if args.command == "pilot-plan":
+        plan = build_pilot_plan(
+            args.corpus,
+            model=args.model,
+            seed=args.seed,
+            gpu_hours=args.gpu_hours,
+            external_compute_cost_gbp=args.external_cost_gbp,
+            execution_host=args.execution_host,
+            allocation_id=args.allocation_id,
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(
+            f"{canonical_json(plan)}\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        print(canonical_json(plan))
+        return 0
+
+    if args.command == "pilot-smoke":
+        result = run_pilot_smoke(
+            args.output,
+            model=args.model,
+            seed=args.seed,
+            git_commit=args.git_commit,
         )
         print(canonical_json(result))
         return 0

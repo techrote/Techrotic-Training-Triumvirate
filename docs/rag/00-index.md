@@ -24,6 +24,7 @@ Always read `AGENTS.md` first. Then read the issue's **Required reading** list. 
 | [12-candidate-model-zoo.md](12-candidate-model-zoo.md) | Non-authoritative ~20 GB small-model shelf and characterize-first evaluation plan |
 | [13-world-authority.md](13-world-authority.md) | Deterministic abstract world, replay, visibility and optional Concordia host |
 | [14-training-export.md](14-training-export.md) | Reproducible fine-tuning, checkpoint/resume, export, parity and budget gates |
+| [15-pilot-ablation.md](15-pilot-ablation.md) | TTT-013 pilot corpus admission, four-way ablation plan, smoke evidence, and execution blocker |
 
 ## External inspiration, not normative dependencies
 
