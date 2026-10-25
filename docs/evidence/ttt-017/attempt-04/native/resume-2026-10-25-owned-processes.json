@@ -1,0 +1,105 @@
+{
+  "observed_at_unix": 1792939254.97056,
+  "phase": "reused-training-native-evaluation",
+  "actors": [
+    {
+      "pid": 19840,
+      "cmdline": [
+        "C:\\cybernpc2\\Techrotic-Training-Triumvirate\\.venv-training\\Scripts\\python.exe",
+        "C:\\cybernpc2\\Techrotic-Training-Triumvirate\\artifacts\\ttt-017\\source-f152cafc59bda5207b8cb1c5ef7d6d60133d1b41\\scripts\\train_commander.py",
+        "--corpus",
+        "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/corpus-v4",
+        "--output",
+        "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/attempt-04",
+        "--git-commit",
+        "f152cafc59bda5207b8cb1c5ef7d6d60133d1b41",
+        "--gpu-uuid",
+        "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8",
+        "--hours",
+        "2",
+        "--epochs",
+        "3",
+        "--frozen",
+        "--worker"
+      ],
+      "create_time": 1792938787.2045317,
+      "ppid": 27936,
+      "exe": "C:\\cybernpc2\\Techrotic-Training-Triumvirate\\.venv-training\\Scripts\\python.exe"
+    },
+    {
+      "pid": 27936,
+      "cmdline": [
+        "C:\\Users\\_\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/source-f152cafc59bda5207b8cb1c5ef7d6d60133d1b41/scripts/train_commander.py",
+        "--corpus",
+        "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/corpus-v4",
+        "--output",
+        "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/attempt-04",
+        "--git-commit",
+        "f152cafc59bda5207b8cb1c5ef7d6d60133d1b41",
+        "--gpu-uuid",
+        "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8",
+        "--hours",
+        "2",
+        "--epochs",
+        "3",
+        "--frozen"
+      ],
+      "create_time": 1792938786.945644,
+      "ppid": 39488,
+      "exe": "C:\\Users\\_\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    },
+    {
+      "pid": 32812,
+      "cmdline": [
+        "C:\\Users\\_\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\cybernpc2\\Techrotic-Training-Triumvirate\\artifacts\\ttt-017\\source-f152cafc59bda5207b8cb1c5ef7d6d60133d1b41\\scripts\\train_commander.py",
+        "--corpus",
+        "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/corpus-v4",
+        "--output",
+        "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/attempt-04",
+        "--git-commit",
+        "f152cafc59bda5207b8cb1c5ef7d6d60133d1b41",
+        "--gpu-uuid",
+        "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8",
+        "--hours",
+        "2",
+        "--epochs",
+        "3",
+        "--frozen",
+        "--worker"
+      ],
+      "create_time": 1792938787.214144,
+      "ppid": 19840,
+      "exe": "C:\\Users\\_\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    },
+    {
+      "pid": 39488,
+      "cmdline": [
+        "C:\\cybernpc2\\Techrotic-Training-Triumvirate\\.venv-training\\Scripts\\python.exe",
+        "-u",
+        "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/source-f152cafc59bda5207b8cb1c5ef7d6d60133d1b41/scripts/train_commander.py",
+        "--corpus",
+        "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/corpus-v4",
+        "--output",
+        "C:/cybernpc2/Techrotic-Training-Triumvirate/artifacts/ttt-017/attempt-04",
+        "--git-commit",
+        "f152cafc59bda5207b8cb1c5ef7d6d60133d1b41",
+        "--gpu-uuid",
+        "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8",
+        "--hours",
+        "2",
+        "--epochs",
+        "3",
+        "--frozen"
+      ],
+      "create_time": 1792938786.9360857,
+      "ppid": 42540,
+      "exe": "C:\\cybernpc2\\Techrotic-Training-Triumvirate\\.venv-training\\Scripts\\python.exe"
+    }
+  ],
+  "semantic_source": "f152cafc59bda5207b8cb1c5ef7d6d60133d1b41",
+  "training_run": "ttt-012-train-export-791d6d18b367582e",
+  "launch_script_sha256": "d4f0a50527fb8c3384a64bef6bd52a7bcac499235fa38049bd415ae43d4b3265"
+}

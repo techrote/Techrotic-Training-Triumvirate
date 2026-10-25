@@ -3,7 +3,7 @@
 Owner request and execution allocation: issue #41. The initial NOT ADMITTED
 study remains immutable. New training/evaluation source and dataset identities
 are separate. The new allocation is 22 single-device GPU-hours, including failed
-attempts and GPU probes, with £0 external compute and £0 paid APIs. Historical
+attempts and GPU probes, with Â£0 external compute and Â£0 paid APIs. Historical
 initial consumption is 0.962306 GPU-hours. Each attempt reserves its cap before
 launch; interrupted unknown reservations remain fully charged. Budget exhaustion
 is a hard stop, not an admission or completion.
@@ -165,3 +165,23 @@ Full readback on a clean clone requires restoring those exact binaries; metadata
 alone is insufficient. The original negative package remains portable and intact.
 The [corpus-v4 card](../evidence/ttt-017/corpus-v4-data-card.md) describes attempt-04's
 specific training inputs; it does not assert qualification.
+
+## Resumed candidate and first-request latency
+
+Attempt-04 resumed on 25 October from its verified completed adapter without
+repeating SFT. Native development, frozen and three-by-24-turn evaluations passed:
+mechanical 0.997436, rejection/objective/execution recovery 1.0, zero critical
+detections. The first trained Q4 evaluation also passed behavior but failed
+runtime: maximum streamed TTFT 6.972509 seconds against the unchanged two-second
+target. The two later probes were fast; all three original samples are preserved.
+
+The Q4 transport offers explicit `--disable-cuda-graphs` for a separately
+recorded runtime configuration. The pinned llama.cpp source supports
+`GGML_CUDA_DISABLE_GRAPHS`; presence disables graph capture, even value `0`.
+The transport clears inherited values and records its explicit setting in both
+raw runtime evidence and the named-host measurement description. A new attempt
+uses a fresh output and reservation while reusing the identical Q4 bytes.
+This changes neither decoding nor model/evaluation semantics. The measurement
+protocol still includes the first request and takes the maximum of three
+uncached streamed probes; no slow sample is discarded or threshold relaxed.
+The original failed runtime attempt remains evidence.

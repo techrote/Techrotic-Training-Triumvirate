@@ -119,3 +119,66 @@ def test_rejected_continuation_development_replays_all_actual_actions() -> None:
     assert stored["operational"]["mechanical"]["score"] < 0.95
     assert stored["operational"]["mechanical"]["rejection_recovery_rate"] < 0.8
     assert not (folder / "benchmark.json").exists()
+
+
+def test_completed_continuation_native_actions_replay_without_model() -> None:
+    from techrotic_training_triumvirate.evaluation import PolicyIdentity, run_benchmark
+    from techrotic_training_triumvirate.evaluation.closedloop import (
+        run_closed_loop,
+        verify_closed_loop_report,
+    )
+    from techrotic_training_triumvirate.schemas import AssistantAction, load_record
+
+    folder = ROOT / "docs/evidence/ttt-017/attempt-04/native"
+    names = set()
+    for line in (folder / "SHA256SUMS").read_text().splitlines():
+        digest, name = line.split("  ", 1)
+        assert hashlib.sha256((folder / name).read_bytes()).hexdigest() == digest
+        names.add(name)
+    assert names == {p.name for p in folder.iterdir() if p.name != "SHA256SUMS"}
+    rows = [
+        json.loads(line)
+        for line in (folder / "raw-generations.jsonl").read_text().splitlines()
+    ]
+    # The actual worker records development, frozen, then long-session actions.
+    # Frozen and long-session case/turn keys overlap; keep their phases separate.
+    assert len(rows) == 77 + 77 + 72
+    frozen = load_package(folder / "benchmark.json")
+    closed = load_package(folder / "closed-loop.json")
+    assert frozen["policy"] == closed["evidence"]["policy"]
+
+    class Recorded:
+        identity = PolicyIdentity(**frozen["policy"])
+
+        def __init__(self, phase):
+            self.actions = {
+                (r["case_id"], r["turn"]): load_record(
+                    r["action"], expected_type=AssistantAction
+                )
+                for r in phase
+            }
+            assert len(self.actions) == len(phase)
+
+        def begin_case(self, *, case_id, seed):
+            pass
+
+        def act(self, context):
+            return self.actions[(context.case_id, context.turn_index)]
+
+    replay = run_benchmark(
+        Recorded(rows[77:154]), code_revision=frozen["code_revision"]
+    ).to_dict()
+    assert replay == frozen
+    long_replay = run_closed_loop(
+        Recorded(rows[154:]),
+        code_revision=closed["evidence"]["code_revision"],
+        candidate_metadata=closed["evidence"]["candidate_metadata"],
+        measure_runtime=False,
+    ).to_dict()
+    assert long_replay["semantic_hash"] == closed["semantic_hash"]
+    verified = verify_closed_loop_report(closed)
+    assert len(verified.evidence["episodes"]) == 3
+    for episode in verified.evidence["episodes"]:
+        assert len(episode["turns"]) == 24
+        assert episode["metrics"]["objective"]["objective_completion_rate"] == 1.0
+        assert episode["metrics"]["recovery"]["execution_failure_recovery_rate"] == 1.0

@@ -1,0 +1,12 @@
+{
+  "stage": "RESUMING_NATIVE_EVALUATION",
+  "resumed_at_unix": 1792938780.7586768,
+  "training_run": "ttt-012-train-export-791d6d18b367582e",
+  "completed_steps": 1473,
+  "canonical_reuse_verified": true,
+  "parity_cases": 3,
+  "charged_gpu_hours_before_resume": 2.5533377777777626,
+  "gpu_uuid": "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8",
+  "source_revision": "f152cafc59bda5207b8cb1c5ef7d6d60133d1b41",
+  "reason": "Explicit owner instruction to continue; evaluate completed adapter without SFT"
+}

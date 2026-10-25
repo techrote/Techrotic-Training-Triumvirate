@@ -38,6 +38,22 @@ def builder(monkeypatch):
     return module
 
 
+def test_runtime_graph_setting_cannot_be_changed_by_unrecorded_parent_env(
+    monkeypatch,
+) -> None:
+    builder(monkeypatch)
+    from evaluate_q4_commander import TITAN, configure_cuda_graphs
+
+    parent = {"CUDA_VISIBLE_DEVICES": TITAN, "GGML_CUDA_DISABLE_GRAPHS": "0"}
+    enabled = configure_cuda_graphs(parent, disabled=False)
+    # llama.cpp tests presence, so even an inherited value of "0" disables it.
+    assert "GGML_CUDA_DISABLE_GRAPHS" not in enabled
+    disabled = configure_cuda_graphs(parent, disabled=True)
+    assert disabled["GGML_CUDA_DISABLE_GRAPHS"] == "1"
+    assert disabled["CUDA_VISIBLE_DEVICES"] == TITAN
+    assert parent["GGML_CUDA_DISABLE_GRAPHS"] == "0"
+
+
 class FrozenFixture(ScriptedCommanderBaseline):
     @property
     def identity(self) -> PolicyIdentity:
