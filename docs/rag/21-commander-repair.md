@@ -195,3 +195,27 @@ No model/data/decoding change or retraining occurred between them. Repeated
 frozen evaluation of identical Q4 bytes under a changed runtime setting is
 disclosed, along with possible process/driver-cache effects. Genuine human
 ratings and strict final admission readback remain required.
+
+## Completed admission
+
+On 25 October the owner supplied actual blinded ratings: the trained Group A
+received humour 2, surprise 2 and distinctiveness 3; the scripted control received
+1, 1 and 2. No numeric values were inferred from the initial qualitative reply.
+Existing admission policy requires genuine review but sets no score minimum.
+The canonical ratings and exact review provenance are preserved separately.
+
+The unchanged strict verifier then accepted **ADMITTED**, verifying all 48 bound
+local artifacts including actual native/adapter/merged/F16/Q4 binaries, with no
+unavailable files. Package content SHA-256 is
+`d07252d291c2e458ec398e2e8b5f478626478e41fa38ab01b97a58226e9a15f4`.
+[Final report/cards/package](../evidence/ttt-017/qualified-commander/) and
+[full attempt history](../evidence/ttt-017/attempt-04/) retain the measured scope,
+failed runtime attempt and all limitations. Total continuation charge is
+2.7592925 of 22 GPU-equivalent hours. No active worker or reservation remains.
+
+Admission applies to the exact measured graph-disabled TITAN Q4 research
+configuration, not downstream game integration. A clean clone must restore all
+48 original referenced artifacts, including internally licensed corpus inputs,
+before strict positive readback; small committed metadata alone is insufficient.
+The initial study's negative outcome remains unchanged. PR #47 delivers the
+qualification follow-up after PR #42 merged independently during the pause.

@@ -1,0 +1,13 @@
+{
+  "schema": "ttt.human_ratings",
+  "schema_version": 1,
+  "candidate_id": "closed-loop-scripted",
+  "ratings": [
+    {
+      "reviewer_id": "owner-chat-2026-10-25",
+      "humour": 1,
+      "surprise": 1,
+      "distinctiveness": 2
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "candidate_count": 1,
+  "content_sha256": "d07252d291c2e458ec398e2e8b5f478626478e41fa38ab01b97a58226e9a15f4",
+  "outcome": "ADMITTED",
+  "unavailable_artifacts": [],
+  "verified": true,
+  "verified_files": 48,
+  "evidence_root": "C:/cybernpc2/Techrotic-Training-Triumvirate",
+  "package_snapshot_sha256": "71de979007073b314085f41e758b246ce08fd65cec2e72a9cad716d8a284cbfb",
+  "package_is_unchanged_copy_of": "artifacts/ttt-017/final-04/admission-package.json",
+  "scope": "Actual local host with all bound artifacts present; fresh checkout must restore referenced artifacts"
+}

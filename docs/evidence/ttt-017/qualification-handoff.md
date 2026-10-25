@@ -1,8 +1,10 @@
 # Commander qualification handoff: 25 October 2026
 
-Current state: **WAITING_FOR_HUMAN**, not ADMITTED. The owner explicitly resumed
-the task. Optimization was not repeated. Native and final trained Q4 machine
-gates pass; actual local binary/source/lineage/budget checks independently pass.
+Current state: **ADMITTED**, with final Git delivery in PR #47. The owner
+explicitly resumed the task, supplied genuine blinded numerical ratings, and
+strict actual-artifact readback passed all 48 files. Optimization was not repeated.
+The instructions below are retained as execution history; do not rerun completed
+training/evaluation or solicit the same human review again.
 
 ## Preserved state
 
@@ -30,17 +32,21 @@ gates pass; actual local binary/source/lineage/budget checks independently pass.
 - Current preflight: `artifacts/ttt-017/qualification-preflight-readback.json`.
 - Current machine state: `artifacts/ttt-017/qualification-state.json`.
 
-## Human boundary
+## Completed human boundary (historical procedure)
 
 The actual A/B packet was opened and an asynchronous question requested integer
 1-5 humour, surprise and distinctiveness scores for each group. The packet is
 `artifacts/ttt-017/comparison-04-graphs-disabled/review-packet.md`. Only its
 instruction-line encoding was corrected; the generated original and hash-bound
 presentation audit are retained alongside it. Excerpts/order/groups did not change.
-Do not reveal or inspect `review-group-key.json` for presentation until ratings
-are supplied. Never fabricate ratings, interpret silence as a score, or infer
+The key stayed separate until ratings were supplied. The owner then rated A
+2/2/3 and B 1/1/2 (humour/surprise/distinctiveness); A was the trained candidate.
+Exact replies and canonical ratings are in `qualified-commander/review/` and
+`qualified-commander/human-ratings.json`. Never fabricate ratings, interpret silence as a score, or infer
 human quality from automatic proxies. Existing policy has no minimum score but
-requires genuine review. No positive package has been created.
+requires genuine review. The positive package now exists and passed strict readback. Final evidence is
+in [qualified-commander](qualified-commander/); content SHA-256
+`d07252d291c2e458ec398e2e8b5f478626478e41fa38ab01b97a58226e9a15f4`.
 
 After actual scores arrive, preserve the original user response and reviewer
 provenance, read the separate group key, and create the existing canonical human
@@ -49,7 +55,7 @@ integers, candidate ID `commander-repair-v2`, schema `ttt.human_ratings`, versio
 and a unique nonempty reviewer ID. Keep any control scores in a separate record.
 No runtime or training rerun is needed merely to await human review.
 
-## Final assembly after genuine review
+## Completed final assembly (reproduction reference)
 
 Use the unchanged builder with archived semantic modules. All actual local
 binaries have already been checked; recheck if files moved or changed.
@@ -77,9 +83,10 @@ The actual human file must exist first. If output already exists, verify it; do
 not overwrite it. The reporter source is separately bound from the Q4 transport
 and training semantics, even where commits coincide. It stages evidence and
 requires the original strict verifier with actual bound binaries available.
-Copy only small final evidence/cards/report into Git; preserve relative paths
-or rebuild a portable package deliberately rather than copying a manifest to
-a new location and assuming its references changed. No weight publication.
+The committed final snapshot is an unchanged copy of the verified local package.
+Its evidence paths deliberately retain their original repository-relative
+artifact locations. Full positive readback requires restoring all 48 referenced
+artifacts, including privately retained corpus inputs as well as weights. No weight publication.
 
 Then update README/cards/report around the actual outcome, self-review the
 follow-up PR, run required checks, observe green CI, merge and verify #41 closes.
@@ -89,7 +96,7 @@ goal complete only after genuine ADMITTED readback and required Git workflow.
 
 ## Validation and caveats
 
-374 tests passed, two skips (optional Concordia and Linux /proc-specific test
+375 tests passed, two skips (optional Concordia and Linux /proc-specific test
 on Windows); Ruff lint/format and strict mypy pass on native Windows and Linux
 type targets. Replay tests use all actual frozen and long-session model actions
 from the native and both Q4 phases. Windows completion flushing/platform API

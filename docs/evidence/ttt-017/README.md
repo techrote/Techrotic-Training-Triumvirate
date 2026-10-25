@@ -1,8 +1,10 @@
 # TITAN commander continuation evidence
 
 This continuation pursues a trained commander passing the original admission
-gates. The initial TTT-016 negative study remains immutable. No passing final
-admission is asserted by the records below.
+gates. The initial TTT-016 negative study remains immutable. The completed
+[qualified commander](qualified-commander/) has an actual **ADMITTED** outcome
+on 25 October 2026, after machine qualification, supplied human review and strict
+48-file local readback. Earlier failure/pause records below remain historical.
 
 ## Attempt-03: completed training, rejected development
 
@@ -85,3 +87,19 @@ for scores. No scores or ADMITTED result have been generated. PR #42 was merged
 while this chat was paused; new evidence uses a follow-up qualification branch.
 The [current handoff](qualification-handoff.md) supersedes the historical pause
 state for further work.
+
+## Final outcome: ADMITTED
+
+The owner supplied blinded Group A ratings humour 2, surprise 2, distinctiveness
+3; Group B ratings 1, 1, 2. Group A was the actual trained commander. The genuine
+review and its original qualitative/numerical replies are preserved with the
+[final package/cards/report](qualified-commander/). Existing policy has no
+minimum human score; these modest scores do not establish high creative quality.
+
+The strict original verifier accepted all 48 actual local files, with zero
+unavailable artifacts and package content SHA-256
+`d07252d291c2e458ec398e2e8b5f478626478e41fa38ab01b97a58226e9a15f4`.
+The committed package retains original repository-relative artifact paths. Full
+positive readback on another checkout requires restoring all bound weights,
+private corpus and execution inputs; no waiver or publication is implied.
+The original negative package remains unchanged and portable.

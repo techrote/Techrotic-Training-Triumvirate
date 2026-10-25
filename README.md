@@ -22,11 +22,12 @@ research evidence are available; no game-ready trained commander is claimed.
 The owner's subsequent request to obtain a passing trained commander is tracked
 separately in [issue #41](https://github.com/techrote/Techrotic-Training-Triumvirate/issues/41).
 Its [TITAN-only repair plan](docs/rag/21-commander-repair.md) preserves the initial
-negative evidence and the original admission gates. It is ongoing; no passing
-candidate is claimed until its measurements and genuine human review exist.
-On 25 October, [attempt-04](docs/evidence/ttt-017/attempt-04/) passed native and
-trained-Q4 machine gates with the original thresholds. Genuine blinded human
-ratings and strict final admission readback remain outstanding.
+negative evidence and the original admission gates. On 25 October, the trained
+[continuation commander](docs/evidence/ttt-017/qualified-commander/) was **ADMITTED**
+for its measured abstract-world research configuration: native/Q4 machine gates,
+actual runtime measurements, genuine supplied human review and strict readback
+of all 48 bound local artifacts passed. This does not establish game integration
+readiness or broad personality/tactical generalization.
 
 ## Start here
 

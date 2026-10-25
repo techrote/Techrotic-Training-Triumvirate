@@ -51,6 +51,15 @@ the original preparation-only history; document 18 describes the actual
 execution and its provenance. Successful implementation and a negative model
 admission decision are separate conclusions.
 
+## Completed TTT-017 continuation
+
+On 25 October 2026 a separately trained commander passed the original gates
+and received **ADMITTED** after actual Q4 runtime qualification, genuine supplied
+human ratings and strict readback of all 48 local artifacts. Start with its
+[report/cards/package](../evidence/ttt-017/qualified-commander/) and
+[qualification history](21-commander-repair.md). This bounded research admission
+does not rewrite the initial negative study or establish game integration.
+
 ## External inspiration, not normative dependencies
 
 - WorldTUI article: https://simedw.com/2026/10/21/world-model-terminal/

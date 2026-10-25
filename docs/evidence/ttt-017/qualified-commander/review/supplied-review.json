@@ -1,0 +1,21 @@
+{
+  "reviewer_id": "owner-chat-2026-10-25",
+  "received_date": "2026-10-25",
+  "verbatim": "A: h2, s2, d3\nB: h1, s1, d2",
+  "qualitative_verbatim": "Group A are pretty good. Group B is kinda meh and all examples exactly the same.",
+  "scores_by_blinded_group": {
+    "A": {
+      "humour": 2,
+      "surprise": 2,
+      "distinctiveness": 3
+    },
+    "B": {
+      "humour": 1,
+      "surprise": 1,
+      "distinctiveness": 2
+    }
+  },
+  "packet_sha256": "ff15f89575287101c00e5afb93f12614f6d9db7b9ae56a2e5456147e72f6f47b",
+  "group_key_sha256": "16c23d667c26f340644aaf89623d7a550ef5e28a884e748b4518212324754185",
+  "source": "Explicit human replies to blinded review questions in this chat; no scores inferred"
+}

@@ -191,3 +191,48 @@ def test_completed_continuation_actions_replay_without_model(
         assert len(episode["turns"]) == 24
         assert episode["metrics"]["objective"]["objective_completion_rate"] == 1.0
         assert episode["metrics"]["recovery"]["execution_failure_recovery_rate"] == 1.0
+
+
+def test_qualified_snapshot_binds_supplied_review_and_requires_local_artifacts(
+    tmp_path: Path,
+) -> None:
+    from techrotic_training_triumvirate.admission import (
+        AdmissionPackageError,
+        seal_package,
+    )
+
+    folder = ROOT / "docs/evidence/ttt-017/qualified-commander"
+    names = set()
+    for line in (folder / "SHA256SUMS").read_text().splitlines():
+        digest, name = line.split("  ", 1)
+        assert hashlib.sha256((folder / name).read_bytes()).hexdigest() == digest
+        names.add(name)
+    assert names == {
+        p.relative_to(folder).as_posix()
+        for p in folder.rglob("*")
+        if p.is_file() and p.name != "SHA256SUMS"
+    }
+    package = load_package(folder / "admission-package.json")
+    assert seal_package(package) == package
+    assert package["outcome"] == "ADMITTED"
+    readback = load_package(folder / "readback.json")
+    assert readback["verified"] is True
+    assert readback["content_sha256"] == package["content_sha256"]
+    assert readback["verified_files"] == len(package["evidence"]) == 48
+    supplied = load_package(folder / "review/supplied-review.json")
+    group_key = load_package(folder / "review/review-group-key.json")
+    ratings = load_package(folder / "human-ratings.json")
+    group = next(
+        g for g, candidate in group_key.items() if candidate == ratings["candidate_id"]
+    )
+    assert ratings["ratings"] == [
+        {
+            "reviewer_id": supplied["reviewer_id"],
+            **supplied["scores_by_blinded_group"][group],
+        }
+    ]
+    assert ratings["candidate_id"] == package["candidates"][0]["candidate_id"]
+    # Metadata and genuine review do not waive restoration of actual binaries
+    # and privately retained corpus inputs in a fresh checkout.
+    with pytest.raises(AdmissionPackageError, match="missing or escaped evidence"):
+        verify_package(folder / "admission-package.json", evidence_root=tmp_path)

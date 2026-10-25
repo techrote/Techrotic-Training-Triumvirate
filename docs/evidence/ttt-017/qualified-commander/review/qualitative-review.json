@@ -1,0 +1,8 @@
+{
+  "reviewer_id": "owner-chat",
+  "received_date": "2026-10-25",
+  "verbatim": "Group A are pretty good. Group B is kinda meh and all examples exactly the same.",
+  "group_identities_revealed": false,
+  "numeric_scores_supplied": false,
+  "status": "Awaiting explicit integer scores; no numerical inference made"
+}
