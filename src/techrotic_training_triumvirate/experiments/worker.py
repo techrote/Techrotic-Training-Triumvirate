@@ -26,6 +26,12 @@ class WorkerHostError(ValueError):
     """Worker launch, ownership, cancellation, or containment failed closed."""
 
 
+def _windows_library() -> Any:
+    if sys.platform != "win32":
+        raise WorkerHostError("Windows process APIs require Windows")
+    return ctypes.WinDLL("kernel32", use_last_error=True)
+
+
 def _sha256(value: object, field: str) -> str:
     if (
         not isinstance(value, str)
@@ -171,9 +177,7 @@ def process_creation_token(pid: int) -> str:
     if type(pid) is not int or pid <= 0:
         raise WorkerHostError("PID must be a positive integer")
     if os.name == "nt":
-        kernel32: Any = ctypes.WinDLL(  # type: ignore[attr-defined]
-            "kernel32", use_last_error=True
-        )
+        kernel32: Any = _windows_library()
         kernel32.OpenProcess.restype = ctypes.c_void_p
         kernel32.GetProcessTimes.restype = ctypes.c_int
         kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
@@ -227,9 +231,7 @@ def process_creation_token(pid: int) -> str:
 
 class _WindowsJob:
     def __init__(self, pid: int) -> None:
-        self._kernel32: Any = ctypes.WinDLL(  # type: ignore[attr-defined]
-            "kernel32", use_last_error=True
-        )
+        self._kernel32: Any = _windows_library()
         self._kernel32.CreateJobObjectW.argtypes = [
             ctypes.c_void_p,
             ctypes.c_wchar_p,
@@ -341,6 +343,8 @@ def _terminate_process_tree(
                 pass
         job.terminate()
         return
+    if sys.platform == "win32":
+        raise WorkerHostError("Windows termination requires an owned Job Object")
     try:
         os.killpg(process.pid, signal.SIGTERM)
     except ProcessLookupError:

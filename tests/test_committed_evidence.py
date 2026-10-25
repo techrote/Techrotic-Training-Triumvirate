@@ -7,6 +7,8 @@ import json
 from dataclasses import replace
 from pathlib import Path
 
+import pytest
+
 from techrotic_training_triumvirate.admission import load_package, verify_package
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -119,3 +121,118 @@ def test_rejected_continuation_development_replays_all_actual_actions() -> None:
     assert stored["operational"]["mechanical"]["score"] < 0.95
     assert stored["operational"]["mechanical"]["rejection_recovery_rate"] < 0.8
     assert not (folder / "benchmark.json").exists()
+
+
+@pytest.mark.parametrize(
+    ("phase", "development_count"),
+    [("native", 77), ("q4-runtime-miss", 0), ("q4-graphs-disabled", 0)],
+)
+def test_completed_continuation_actions_replay_without_model(
+    phase: str, development_count: int
+) -> None:
+    from techrotic_training_triumvirate.evaluation import PolicyIdentity, run_benchmark
+    from techrotic_training_triumvirate.evaluation.closedloop import (
+        run_closed_loop,
+        verify_closed_loop_report,
+    )
+    from techrotic_training_triumvirate.schemas import AssistantAction, load_record
+
+    folder = ROOT / "docs/evidence/ttt-017/attempt-04" / phase
+    names = set()
+    for line in (folder / "SHA256SUMS").read_text().splitlines():
+        digest, name = line.split("  ", 1)
+        assert hashlib.sha256((folder / name).read_bytes()).hexdigest() == digest
+        names.add(name)
+    assert names == {p.name for p in folder.iterdir() if p.name != "SHA256SUMS"}
+    rows = [
+        json.loads(line)
+        for line in (folder / "raw-generations.jsonl").read_text().splitlines()
+    ]
+    # The actual worker records development, frozen, then long-session actions.
+    # Frozen and long-session case/turn keys overlap; keep their phases separate.
+    assert len(rows) == development_count + 77 + 72
+    frozen = load_package(folder / "benchmark.json")
+    closed = load_package(folder / "closed-loop.json")
+    assert frozen["policy"] == closed["evidence"]["policy"]
+
+    class Recorded:
+        identity = PolicyIdentity(**frozen["policy"])
+
+        def __init__(self, phase):
+            self.actions = {
+                (r["case_id"], r["turn"]): load_record(
+                    r["action"], expected_type=AssistantAction
+                )
+                for r in phase
+            }
+            assert len(self.actions) == len(phase)
+
+        def begin_case(self, *, case_id, seed):
+            pass
+
+        def act(self, context):
+            return self.actions[(context.case_id, context.turn_index)]
+
+    replay = run_benchmark(
+        Recorded(rows[development_count : development_count + 77]),
+        code_revision=frozen["code_revision"],
+    ).to_dict()
+    assert replay == frozen
+    long_replay = run_closed_loop(
+        Recorded(rows[development_count + 77 :]),
+        code_revision=closed["evidence"]["code_revision"],
+        candidate_metadata=closed["evidence"]["candidate_metadata"],
+        measure_runtime=False,
+    ).to_dict()
+    assert long_replay["semantic_hash"] == closed["semantic_hash"]
+    verified = verify_closed_loop_report(closed)
+    assert len(verified.evidence["episodes"]) == 3
+    for episode in verified.evidence["episodes"]:
+        assert len(episode["turns"]) == 24
+        assert episode["metrics"]["objective"]["objective_completion_rate"] == 1.0
+        assert episode["metrics"]["recovery"]["execution_failure_recovery_rate"] == 1.0
+
+
+def test_qualified_snapshot_binds_supplied_review_and_requires_local_artifacts(
+    tmp_path: Path,
+) -> None:
+    from techrotic_training_triumvirate.admission import (
+        AdmissionPackageError,
+        seal_package,
+    )
+
+    folder = ROOT / "docs/evidence/ttt-017/qualified-commander"
+    names = set()
+    for line in (folder / "SHA256SUMS").read_text().splitlines():
+        digest, name = line.split("  ", 1)
+        assert hashlib.sha256((folder / name).read_bytes()).hexdigest() == digest
+        names.add(name)
+    assert names == {
+        p.relative_to(folder).as_posix()
+        for p in folder.rglob("*")
+        if p.is_file() and p.name != "SHA256SUMS"
+    }
+    package = load_package(folder / "admission-package.json")
+    assert seal_package(package) == package
+    assert package["outcome"] == "ADMITTED"
+    readback = load_package(folder / "readback.json")
+    assert readback["verified"] is True
+    assert readback["content_sha256"] == package["content_sha256"]
+    assert readback["verified_files"] == len(package["evidence"]) == 48
+    supplied = load_package(folder / "review/supplied-review.json")
+    group_key = load_package(folder / "review/review-group-key.json")
+    ratings = load_package(folder / "human-ratings.json")
+    group = next(
+        g for g, candidate in group_key.items() if candidate == ratings["candidate_id"]
+    )
+    assert ratings["ratings"] == [
+        {
+            "reviewer_id": supplied["reviewer_id"],
+            **supplied["scores_by_blinded_group"][group],
+        }
+    ]
+    assert ratings["candidate_id"] == package["candidates"][0]["candidate_id"]
+    # Metadata and genuine review do not waive restoration of actual binaries
+    # and privately retained corpus inputs in a fresh checkout.
+    with pytest.raises(AdmissionPackageError, match="missing or escaped evidence"):
+        verify_package(folder / "admission-package.json", evidence_root=tmp_path)

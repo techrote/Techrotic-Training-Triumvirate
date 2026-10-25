@@ -6,6 +6,7 @@ import json
 import os
 import platform
 import subprocess
+import sys
 import time
 from collections.abc import Callable
 from contextlib import suppress
@@ -136,8 +137,9 @@ def assert_admission_eligible(record: JsonObject) -> None:
 
 
 def _lower_priority() -> None:
-    with suppress(OSError):
-        os.nice(10)
+    if sys.platform != "win32":
+        with suppress(OSError):
+            os.nice(10)
 
 
 def run_cpu_diagnostic(spec: CpuDiagnosticSpec) -> JsonObject:

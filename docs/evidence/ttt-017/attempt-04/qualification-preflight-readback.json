@@ -1,0 +1,51 @@
+{
+  "checked_at_unix": 1792940059.8086634,
+  "stage": "WAITING_FOR_HUMAN",
+  "machine_metrics": {
+    "mechanical": 0.9974358974358974,
+    "rejection_recovery": 1.0,
+    "frozen_commands": 77,
+    "long_objectives": 1.0,
+    "long_recovery": 1.0,
+    "long_schema": 1.0,
+    "long_repetition": 0.0,
+    "long_character": {
+      "constraint_adherence_rate": 1.0,
+      "doctrine_consistency_rate": 1.0,
+      "lexical_diversity": 0.19931961706155255,
+      "phrase_diversity": 0.3107043316215565,
+      "repetition_rate": 0.0
+    },
+    "frozen_critical": 0,
+    "frozen_hidden_fact_use": 0,
+    "long_critical": 0,
+    "passed": true
+  },
+  "runtime": {
+    "artifact_sha256": "2036e8c9a17038c0e503ae1af16a567673e59f37337f1cf09b40c2b2fdb819e0",
+    "artifact_size_bytes": 730894720,
+    "candidate_id": "commander-repair-v2",
+    "context_tokens": 2048,
+    "decode_tokens_per_second": 290.00151797669565,
+    "host": "{\"gpu\":{\"actual_cuda_name\":\"NVIDIA TITAN RTX\",\"actual_cuda_uuid\":\"GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8\",\"driver_index\":null,\"identity_verified\":true,\"name\":null,\"pci_bus_id\":null,\"uuid\":\"GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8\",\"visible_cuda_ordinal\":0},\"memory_measurement\":\"server working-set RSS sampled every 20ms; GPU allocations separately logged\",\"platform\":\"Windows-11-10.0.26300-SP0\",\"runtime_environment\":{\"GGML_CUDA_DISABLE_GRAPHS\":\"1\"},\"server_sha256\":\"a41e1f09439d7ccdd5f43acd53aa410eedadf17961765fb11a145242759a8167\",\"settings\":[\"C:\\\\cybernpc2\\\\Techrotic-Training-Triumvirate\\\\artifacts\\\\ttt-017\\\\tools\\\\llama-win\\\\llama-server.exe\",\"--model\",\"C:\\\\cybernpc2\\\\Techrotic-Training-Triumvirate\\\\artifacts\\\\ttt-017\\\\export-04\\\\commander-Q4_K_M.gguf\",\"--alias\",\"ttt-commander-2036e8c9a17038c0\",\"--ctx-size\",\"2048\",\"--parallel\",\"1\",\"--jinja\",\"--threads\",\"8\",\"--batch-size\",\"512\",\"--ubatch-size\",\"128\",\"--n-gpu-layers\",\"99\",\"--host\",\"127.0.0.1\",\"--port\",\"18087\"]}",
+    "model_role": "primary",
+    "peak_resident_memory_bytes": 1351196672,
+    "quantization": "Q4_K_M",
+    "schema": "ttt.runtime_measurements",
+    "schema_version": 1,
+    "ttft_seconds": 0.054307300015352666
+  },
+  "reporter": {
+    "reporter_source": "ba904aad3c6640b524960f5c2a61dd8b4bc330d9",
+    "executed_file_sha256": {
+      "scripts/build_commander_evidence.py": "800c5b1ce88b24e8a29a9a7f4d99e8a8618a02f5dbfc08581b2ead1f93729854",
+      "src/techrotic_training_triumvirate/admission.py": "b4e61710ac7ecef8c5290c0ecb13bba403bfe6171abd6e7b6be594666122f0f1",
+      "docs/rag/19-final-admission.md": "3f9009cc27f3801e9558c5c1a4e8f199ef3bf25ab08b31364f88e92aef7f5599"
+    }
+  },
+  "charged_gpu_hours": 2.759292499999994,
+  "actual_local_binaries_verified": true,
+  "allocation_reconciled": true,
+  "human_review_supplied": false,
+  "admission": "incomplete; no positive package created"
+}

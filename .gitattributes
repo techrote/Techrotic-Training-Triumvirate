@@ -4,3 +4,6 @@
 docs/evidence/ttt-017/**/worker.log -text
 # Preserve the exact owner-pause proof bytes, including JSON readbacks.
 docs/evidence/ttt-017/pause-2026-10-24/** -text
+# Keep qualification snapshots byte-identical to their checksum inventories.
+docs/evidence/ttt-017/attempt-04/** -text
+docs/evidence/ttt-017/qualified-commander/** -text

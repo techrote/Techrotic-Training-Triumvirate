@@ -41,6 +41,17 @@ from techrotic_training_triumvirate.training.export import sha256_file
 TITAN = "GPU-a8ce1477-4b52-2e8a-350e-6d54c14d1cb8"
 
 
+def configure_cuda_graphs(
+    environment: dict[str, str], *, disabled: bool
+) -> dict[str, str]:
+    """Make this latency-sensitive setting explicit, independent of parent env."""
+    selected = dict(environment)
+    selected.pop("GGML_CUDA_DISABLE_GRAPHS", None)
+    if disabled:
+        selected["GGML_CUDA_DISABLE_GRAPHS"] = "1"
+    return selected
+
+
 def verify_sources(semantic_revision: str, driver_revision: str) -> dict[str, Any]:
     """Keep executed semantic modules and this external transport separately bound."""
     records = {}
@@ -252,6 +263,7 @@ def main() -> int:
     parser.add_argument("--driver-source", required=True)
     parser.add_argument("--port", type=int, default=18087)
     parser.add_argument("--cpu", action="store_true")
+    parser.add_argument("--disable-cuda-graphs", action="store_true")
     parser.add_argument("--development-only", action="store_true")
     parser.add_argument("--hard-seconds", type=int, default=1800)
     args = parser.parse_args()
@@ -259,7 +271,13 @@ def main() -> int:
     if args.output.exists():
         raise ValueError("fresh evidence output required")
     args.output.mkdir(parents=True)
-    environment = GPUSelection.from_uuid(TITAN).environment(os.environ)
+    environment = configure_cuda_graphs(
+        GPUSelection.from_uuid(TITAN).environment(os.environ),
+        disabled=args.disable_cuda_graphs,
+    )
+    runtime_environment = {
+        "GGML_CUDA_DISABLE_GRAPHS": environment.get("GGML_CUDA_DISABLE_GRAPHS")
+    }
     actual = {"mode": "cpu"}
     if args.cpu:
         environment["CUDA_VISIBLE_DEVICES"] = ""
@@ -369,6 +387,7 @@ def main() -> int:
                     "runtime_driver_sha256": sha256_file(Path(__file__)),
                     "model_sha256": model_hash,
                     "server_sha256": sha256_file(args.server),
+                    "runtime_environment": runtime_environment,
                 },
             )
             metadata = {
@@ -427,6 +446,7 @@ def main() -> int:
                             "gpu": actual,
                             "server_sha256": sha256_file(args.server),
                             "settings": command,
+                            "runtime_environment": runtime_environment,
                             "memory_measurement": (
                                 "server working-set RSS sampled "
                                 "every 20ms; GPU allocations "

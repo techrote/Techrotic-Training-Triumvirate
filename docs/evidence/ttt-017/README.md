@@ -1,8 +1,10 @@
 # TITAN commander continuation evidence
 
 This continuation pursues a trained commander passing the original admission
-gates. The initial TTT-016 negative study remains immutable. No passing final
-admission is asserted by the records below.
+gates. The initial TTT-016 negative study remains immutable. The completed
+[qualified commander](qualified-commander/) has an actual **ADMITTED** outcome
+on 25 October 2026, after machine qualification, supplied human review and strict
+48-file local readback. Earlier failure/pause records below remain historical.
 
 ## Attempt-03: completed training, rejected development
 
@@ -68,3 +70,36 @@ accounting, outstanding work and concrete resume commands. The checksum-bound
 records and full worker log. Large weights remain local. Resume only on the
 owner's instruction, by verifying and evaluating the completed adapter without
 repeating optimization. PR #42 remains draft and issue #41 remains open.
+
+## Resumed on 25 October: machine gates passed, human review pending
+
+[Attempt-04 qualification evidence](attempt-04/) preserves the completed native
+evaluation, original Q4 latency miss, explicit graph-disabled Q4 pass and export
+lineage. Both native and Q4 frozen/24-turn behavioral gates pass. The final
+measured configuration has 0.0543073-second maximum TTFT, 290.001518 tokens/s
+median decode and 1.351 GB peak server working-set RSS for the 730.895 MB Q4.
+The initial 6.972509-second latency miss is retained. Total continuation charge
+is 2.7592925 hours, with no outstanding reservation or active owned GPU worker.
+
+The goal is incomplete while genuine blinded ratings and strict final package
+readback are pending. The review packet is ready and the owner has been asked
+for scores. No scores or ADMITTED result have been generated. PR #42 was merged
+while this chat was paused; new evidence uses a follow-up qualification branch.
+The [current handoff](qualification-handoff.md) supersedes the historical pause
+state for further work.
+
+## Final outcome: ADMITTED
+
+The owner supplied blinded Group A ratings humour 2, surprise 2, distinctiveness
+3; Group B ratings 1, 1, 2. Group A was the actual trained commander. The genuine
+review and its original qualitative/numerical replies are preserved with the
+[final package/cards/report](qualified-commander/). Existing policy has no
+minimum human score; these modest scores do not establish high creative quality.
+
+The strict original verifier accepted all 48 actual local files, with zero
+unavailable artifacts and package content SHA-256
+`d07252d291c2e458ec398e2e8b5f478626478e41fa38ab01b97a58226e9a15f4`.
+The committed package retains original repository-relative artifact paths. Full
+positive readback on another checkout requires restoring all bound weights,
+private corpus and execution inputs; no waiver or publication is implied.
+The original negative package remains unchanged and portable.

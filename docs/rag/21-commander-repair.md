@@ -166,3 +166,56 @@ Full readback on a clean clone requires restoring those exact binaries; metadata
 alone is insufficient. The original negative package remains portable and intact.
 The [corpus-v4 card](../evidence/ttt-017/corpus-v4-data-card.md) describes attempt-04's
 specific training inputs; it does not assert qualification.
+
+## Resumed candidate and first-request latency
+
+Attempt-04 resumed on 25 October from its verified completed adapter without
+repeating SFT. Native development, frozen and three-by-24-turn evaluations passed:
+mechanical 0.997436, rejection/objective/execution recovery 1.0, zero critical
+detections. The first trained Q4 evaluation also passed behavior but failed
+runtime: maximum streamed TTFT 6.972509 seconds against the unchanged two-second
+target. The two later probes were fast; all three original samples are preserved.
+
+The Q4 transport offers explicit `--disable-cuda-graphs` for a separately
+recorded runtime configuration. The pinned llama.cpp source supports
+`GGML_CUDA_DISABLE_GRAPHS`; presence disables graph capture, even value `0`.
+The transport clears inherited values and records its explicit setting in both
+raw runtime evidence and the named-host measurement description. A new attempt
+uses a fresh output and reservation while reusing the identical Q4 bytes.
+This changes neither decoding nor model/evaluation semantics. The measurement
+protocol still includes the first request and takes the maximum of three
+uncached streamed probes; no slow sample is discarded or threshold relaxed.
+The original failed runtime attempt remains evidence.
+
+The explicit graph-disabled Q4 attempt then passed: maximum TTFT 0.0543073
+seconds, median decode 290.001518 tokens/s, 1,351,196,672-byte peak server RSS,
+730,894,720-byte artifact and all operational/long-session gates. Both attempts
+and their raw probes remain in the [attempt-04 evidence](../evidence/ttt-017/attempt-04/).
+No model/data/decoding change or retraining occurred between them. Repeated
+frozen evaluation of identical Q4 bytes under a changed runtime setting is
+disclosed, along with possible process/driver-cache effects. Genuine human
+ratings and strict final admission readback remain required.
+
+## Completed admission
+
+On 25 October the owner supplied actual blinded ratings: the trained Group A
+received humour 2, surprise 2 and distinctiveness 3; the scripted control received
+1, 1 and 2. No numeric values were inferred from the initial qualitative reply.
+Existing admission policy requires genuine review but sets no score minimum.
+The canonical ratings and exact review provenance are preserved separately.
+
+The unchanged strict verifier then accepted **ADMITTED**, verifying all 48 bound
+local artifacts including actual native/adapter/merged/F16/Q4 binaries, with no
+unavailable files. Package content SHA-256 is
+`d07252d291c2e458ec398e2e8b5f478626478e41fa38ab01b97a58226e9a15f4`.
+[Final report/cards/package](../evidence/ttt-017/qualified-commander/) and
+[full attempt history](../evidence/ttt-017/attempt-04/) retain the measured scope,
+failed runtime attempt and all limitations. Total continuation charge is
+2.7592925 of 22 GPU-equivalent hours. No active worker or reservation remains.
+
+Admission applies to the exact measured graph-disabled TITAN Q4 research
+configuration, not downstream game integration. A clean clone must restore all
+48 original referenced artifacts, including internally licensed corpus inputs,
+before strict positive readback; small committed metadata alone is insufficient.
+The initial study's negative outcome remains unchanged. PR #47 delivers the
+qualification follow-up after PR #42 merged independently during the pause.
