@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_version": 2,
-  "admission": "TTT-017 issue41; exact repair recipe recorded before execution in docs/rag/20-commander-repair.md",
+  "admission": "TTT-017 issue41; exact repair recipe recorded before execution in docs/rag/21-commander-repair.md",
   "profiles": {
     "lfm2.5-1.2b-instruct": {
       "backend": "hf-transformers-peft",
