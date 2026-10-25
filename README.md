@@ -24,6 +24,9 @@ separately in [issue #41](https://github.com/techrote/Techrotic-Training-Triumvi
 Its [TITAN-only repair plan](docs/rag/21-commander-repair.md) preserves the initial
 negative evidence and the original admission gates. It is ongoing; no passing
 candidate is claimed until its measurements and genuine human review exist.
+On 25 October, [attempt-04](docs/evidence/ttt-017/attempt-04/) passed native and
+trained-Q4 machine gates with the original thresholds. Genuine blinded human
+ratings and strict final admission readback remain outstanding.
 
 ## Start here
 

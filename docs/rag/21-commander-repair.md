@@ -3,7 +3,7 @@
 Owner request and execution allocation: issue #41. The initial NOT ADMITTED
 study remains immutable. New training/evaluation source and dataset identities
 are separate. The new allocation is 22 single-device GPU-hours, including failed
-attempts and GPU probes, with Â£0 external compute and Â£0 paid APIs. Historical
+attempts and GPU probes, with £0 external compute and £0 paid APIs. Historical
 initial consumption is 0.962306 GPU-hours. Each attempt reserves its cap before
 launch; interrupted unknown reservations remain fully charged. Budget exhaustion
 is a hard stop, not an admission or completion.
@@ -186,3 +186,12 @@ This changes neither decoding nor model/evaluation semantics. The measurement
 protocol still includes the first request and takes the maximum of three
 uncached streamed probes; no slow sample is discarded or threshold relaxed.
 The original failed runtime attempt remains evidence.
+
+The explicit graph-disabled Q4 attempt then passed: maximum TTFT 0.0543073
+seconds, median decode 290.001518 tokens/s, 1,351,196,672-byte peak server RSS,
+730,894,720-byte artifact and all operational/long-session gates. Both attempts
+and their raw probes remain in the [attempt-04 evidence](../evidence/ttt-017/attempt-04/).
+No model/data/decoding change or retraining occurred between them. Repeated
+frozen evaluation of identical Q4 bytes under a changed runtime setting is
+disclosed, along with possible process/driver-cache effects. Genuine human
+ratings and strict final admission readback remain required.

@@ -60,7 +60,9 @@ def _inventory(root: Path, names: tuple[str, ...]) -> JsonObject:
         if name == "COMPLETE.json":
             raise CompletionMarkerError("completion marker cannot inventory itself")
         path = _artifact_path(root, name)
-        with path.open("rb") as handle:
+        # Windows CRT commit requires a writable descriptor; neither mode writes
+        # artifact bytes. Refuse a flush failure before publishing completion.
+        with path.open("r+b" if os.name == "nt" else "rb") as handle:
             os.fsync(handle.fileno())
         inventory[name] = sha256_file(path)
     return inventory

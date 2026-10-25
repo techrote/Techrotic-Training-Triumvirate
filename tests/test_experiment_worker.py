@@ -6,6 +6,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -44,6 +45,17 @@ def test_worker_host_records_successful_fixed_argv_completion(tmp_path: Path) ->
     assert completion["reason"] == "exited"
     assert completion["returncode"] == 0
     assert "worker-ok" in (tmp_path / "attempt-1/worker.log").read_text()
+
+
+def test_windows_termination_refuses_missing_job_before_posix_signal(
+    monkeypatch,
+) -> None:
+    from techrotic_training_triumvirate.experiments import worker
+
+    monkeypatch.setattr(worker.sys, "platform", "win32")
+    process = SimpleNamespace(poll=lambda: None)
+    with pytest.raises(WorkerHostError, match="owned Job Object"):
+        worker._terminate_process_tree(process, None, grace_seconds=0.1)
 
 
 def test_worker_host_enforces_deadline_without_controller_polling(

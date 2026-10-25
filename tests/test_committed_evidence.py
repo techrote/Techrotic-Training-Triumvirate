@@ -7,6 +7,8 @@ import json
 from dataclasses import replace
 from pathlib import Path
 
+import pytest
+
 from techrotic_training_triumvirate.admission import load_package, verify_package
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -121,7 +123,13 @@ def test_rejected_continuation_development_replays_all_actual_actions() -> None:
     assert not (folder / "benchmark.json").exists()
 
 
-def test_completed_continuation_native_actions_replay_without_model() -> None:
+@pytest.mark.parametrize(
+    ("phase", "development_count"),
+    [("native", 77), ("q4-runtime-miss", 0), ("q4-graphs-disabled", 0)],
+)
+def test_completed_continuation_actions_replay_without_model(
+    phase: str, development_count: int
+) -> None:
     from techrotic_training_triumvirate.evaluation import PolicyIdentity, run_benchmark
     from techrotic_training_triumvirate.evaluation.closedloop import (
         run_closed_loop,
@@ -129,7 +137,7 @@ def test_completed_continuation_native_actions_replay_without_model() -> None:
     )
     from techrotic_training_triumvirate.schemas import AssistantAction, load_record
 
-    folder = ROOT / "docs/evidence/ttt-017/attempt-04/native"
+    folder = ROOT / "docs/evidence/ttt-017/attempt-04" / phase
     names = set()
     for line in (folder / "SHA256SUMS").read_text().splitlines():
         digest, name = line.split("  ", 1)
@@ -142,7 +150,7 @@ def test_completed_continuation_native_actions_replay_without_model() -> None:
     ]
     # The actual worker records development, frozen, then long-session actions.
     # Frozen and long-session case/turn keys overlap; keep their phases separate.
-    assert len(rows) == 77 + 77 + 72
+    assert len(rows) == development_count + 77 + 72
     frozen = load_package(folder / "benchmark.json")
     closed = load_package(folder / "closed-loop.json")
     assert frozen["policy"] == closed["evidence"]["policy"]
@@ -166,11 +174,12 @@ def test_completed_continuation_native_actions_replay_without_model() -> None:
             return self.actions[(context.case_id, context.turn_index)]
 
     replay = run_benchmark(
-        Recorded(rows[77:154]), code_revision=frozen["code_revision"]
+        Recorded(rows[development_count : development_count + 77]),
+        code_revision=frozen["code_revision"],
     ).to_dict()
     assert replay == frozen
     long_replay = run_closed_loop(
-        Recorded(rows[154:]),
+        Recorded(rows[development_count + 77 :]),
         code_revision=closed["evidence"]["code_revision"],
         candidate_metadata=closed["evidence"]["candidate_metadata"],
         measure_runtime=False,

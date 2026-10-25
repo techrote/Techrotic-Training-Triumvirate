@@ -166,3 +166,12 @@ admission-package readback and one end-to-end run without continuous LLM control
 
 Simulation success, CPU-only runtime success, timeout, silence or a fabricated
 review can never promote an admission experiment.
+
+## Windows validation compatibility
+
+Completion inventories flush artifact descriptors before publishing their marker.
+Windows uses a writable descriptor for CRT commit without modifying artifact
+bytes; flush failures still refuse completion. Platform-specific ctypes/POSIX
+APIs are guarded by the actual platform for both execution and static checking.
+A Windows cancellation without its owned Job Object refuses before POSIX signal
+handling. These compatibility fixes do not establish GPU orchestration admission.

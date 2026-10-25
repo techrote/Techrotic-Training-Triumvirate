@@ -68,3 +68,20 @@ accounting, outstanding work and concrete resume commands. The checksum-bound
 records and full worker log. Large weights remain local. Resume only on the
 owner's instruction, by verifying and evaluating the completed adapter without
 repeating optimization. PR #42 remains draft and issue #41 remains open.
+
+## Resumed on 25 October: machine gates passed, human review pending
+
+[Attempt-04 qualification evidence](attempt-04/) preserves the completed native
+evaluation, original Q4 latency miss, explicit graph-disabled Q4 pass and export
+lineage. Both native and Q4 frozen/24-turn behavioral gates pass. The final
+measured configuration has 0.0543073-second maximum TTFT, 290.001518 tokens/s
+median decode and 1.351 GB peak server working-set RSS for the 730.895 MB Q4.
+The initial 6.972509-second latency miss is retained. Total continuation charge
+is 2.7592925 hours, with no outstanding reservation or active owned GPU worker.
+
+The goal is incomplete while genuine blinded ratings and strict final package
+readback are pending. The review packet is ready and the owner has been asked
+for scores. No scores or ADMITTED result have been generated. PR #42 was merged
+while this chat was paused; new evidence uses a follow-up qualification branch.
+The [current handoff](qualification-handoff.md) supersedes the historical pause
+state for further work.
