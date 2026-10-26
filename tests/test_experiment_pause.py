@@ -80,7 +80,9 @@ def test_pause_fences_launches_until_training_reconciled_and_survives_restart(
                 plan.experiment_id, attempt, acquired_at="2026-10-26T00:00:05Z"
             )
         assert (
-            store.append_event(plan.experiment_id, _event(EventKind.TRAINING_VERIFIED, 6))
+            store.append_event(
+                plan.experiment_id, _event(EventKind.TRAINING_VERIFIED, 6)
+            )
             is ExperimentState.PAUSING
         )
         with pytest.raises(ExperimentStoreError, match="active GPU lease"):
@@ -111,14 +113,18 @@ def test_pause_fences_launches_until_training_reconciled_and_survives_restart(
         with pytest.raises(ExperimentStoreError, match="pause fence"):
             store.reserve_budget(plan.experiment_id, other, 0.1)
         assert (
-            store.append_event(plan.experiment_id, _event(EventKind.RESUME_REQUESTED, 9))
+            store.append_event(
+                plan.experiment_id, _event(EventKind.RESUME_REQUESTED, 9)
+            )
             is ExperimentState.TRAINED
         )
         assert store.append_event(
             plan.experiment_id, _event(EventKind.RESUME_REQUESTED, 9)
         ) is ExperimentState.TRAINED
         assert (
-            store.append_event(plan.experiment_id, _event(EventKind.DEVELOPMENT_STARTED, 10))
+            store.append_event(
+                plan.experiment_id, _event(EventKind.DEVELOPMENT_STARTED, 10)
+            )
             is ExperimentState.DEVELOPMENT
         )
         assert store.budget_snapshot(plan.experiment_id)["committed_gpu_hours"] == 0.2
@@ -206,24 +212,59 @@ def test_pause_from_trained_and_cli_unpause_are_non_launching(
     with ExperimentStore(db) as store:
         _training(store, plan)
         store.append_event(plan.experiment_id, _event(EventKind.TRAINING_VERIFIED, 4))
-    assert main([
-        "experiments", "pause", plan.experiment_id, "--db", str(db),
-        "--reason", "owner request", "--timestamp", "2026-10-26T00:01:00Z",
-    ]) == 0
+    assert (
+        main(
+            [
+                "experiments",
+                "pause",
+                plan.experiment_id,
+                "--db",
+                str(db),
+                "--reason",
+                "owner request",
+                "--timestamp",
+                "2026-10-26T00:01:00Z",
+            ]
+        )
+        == 0
+    )
     assert json.loads(capsys.readouterr().out)["downstream_fenced"] is True
-    assert main([
-        "experiments", "pause-confirm", plan.experiment_id, "--db", str(db),
-        "--timestamp", "2026-10-26T00:02:00Z",
-    ]) == 0
+    assert (
+        main(
+            [
+                "experiments",
+                "pause-confirm",
+                plan.experiment_id,
+                "--db",
+                str(db),
+                "--timestamp",
+                "2026-10-26T00:02:00Z",
+            ]
+        )
+        == 0
+    )
     assert json.loads(capsys.readouterr().out)["state"] == "PAUSED"
-    assert main([
-        "experiments", "resume", plan.experiment_id, "--db", str(db)
-    ]) == 0
+    assert (
+        main(["experiments", "resume", plan.experiment_id, "--db", str(db)])
+        == 0
+    )
     assert json.loads(capsys.readouterr().out)["relaunched"] is False
-    assert main([
-        "experiments", "unpause", plan.experiment_id, "--db", str(db),
-        "--reason", "resume evaluation", "--timestamp", "2026-10-26T00:03:00Z",
-    ]) == 0
+    assert (
+        main(
+            [
+                "experiments",
+                "unpause",
+                plan.experiment_id,
+                "--db",
+                str(db),
+                "--reason",
+                "resume evaluation",
+                "--timestamp",
+                "2026-10-26T00:03:00Z",
+            ]
+        )
+        == 0
+    )
     response = json.loads(capsys.readouterr().out)
     assert response["state"] == "TRAINED"
     assert response["relaunched"] is False

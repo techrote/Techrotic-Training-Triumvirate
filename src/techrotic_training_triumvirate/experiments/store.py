@@ -19,6 +19,7 @@ from techrotic_training_triumvirate.schemas import (
 
 from .engine import advance
 from .model import (
+    EventKind,
     EvidenceClass,
     ExperimentContractError,
     ExperimentPlan,
@@ -515,7 +516,9 @@ class ExperimentStore:
         status: str = "running",
     ) -> None:
         if status != "running":
-            raise ExperimentStoreError("only a verified host completion may stop a worker")
+            raise ExperimentStoreError(
+                "only a verified host completion may stop a worker"
+            )
         with self._transaction():
             existing = self._connection.execute(
                 """

@@ -186,13 +186,12 @@ def run_experiments(args: argparse.Namespace, parser: argparse.ArgumentParser) -
                 "pause-confirm": EventKind.PAUSE_CONFIRMED,
                 "unpause": EventKind.RESUME_REQUESTED,
             }[args.experiment_command]
-            payload = (
-                {"after": args.after, "reason": args.reason}
-                if args.experiment_command == "pause"
-                else {"reason": args.reason}
-                if args.experiment_command == "unpause"
-                else {"boundary": "TRAINED"}
-            )
+            if args.experiment_command == "pause":
+                payload = {"after": args.after, "reason": args.reason}
+            elif args.experiment_command == "unpause":
+                payload = {"reason": args.reason}
+            else:
+                payload = {"boundary": "TRAINED"}
             with ExperimentStore(args.db) as store:
                 state = store.append_event(
                     args.experiment_id,
@@ -203,11 +202,15 @@ def run_experiments(args: argparse.Namespace, parser: argparse.ArgumentParser) -
                         payload=payload,
                     ),
                 )
-            print(canonical_json({
-                "state": state.value,
-                "downstream_fenced": state.value in {"PAUSING", "PAUSED"},
-                "relaunched": False,
-            }))
+            print(
+                canonical_json(
+                    {
+                        "state": state.value,
+                        "downstream_fenced": state.value in {"PAUSING", "PAUSED"},
+                        "relaunched": False,
+                    }
+                )
+            )
             return 0
 
         if args.experiment_command == "cancel":
