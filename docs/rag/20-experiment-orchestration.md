@@ -9,7 +9,8 @@
 5. CPU diagnostics — real local conversion/inference checks that remain non-admission evidence.
 6. Simulation and fault testing — deterministic rehearsal and failure preservation.
 7. Operator CLI — current GPU-free commands and restart behavior.
-8. Hardware-only completion — work that still requires the admitted physical GPU and real review.
+8. Trained-boundary pause fence — reconciliation, host completion and explicit unpause.
+9. Hardware-only completion — work that still requires the admitted physical GPU and real review.
 
 ## 1. Controller boundary
 
@@ -143,6 +144,9 @@ The GPU-free surface is:
 ttt experiments validate PLAN.json --db STATE.sqlite
 ttt experiments status EXPERIMENT_ID --db STATE.sqlite
 ttt experiments resume EXPERIMENT_ID --db STATE.sqlite
+ttt experiments pause EXPERIMENT_ID --after TRAINED --reason TEXT --db STATE.sqlite
+ttt experiments pause-confirm EXPERIMENT_ID --db STATE.sqlite
+ttt experiments unpause EXPERIMENT_ID --reason TEXT --db STATE.sqlite
 ttt experiments cancel EXPERIMENT_ID --db STATE.sqlite --reason TEXT
 ttt experiments review import EXPERIMENT_ID ratings.json --db STATE.sqlite
 ttt experiments verify EXPERIMENT_ID --db STATE.sqlite
@@ -155,7 +159,40 @@ relaunch the previous command. Real stage launchers should first bind the
 corresponding existing pipeline adapter and obtain the required budget/device
 lease.
 
-## 8. Hardware-only completion
+## 8. Trained-boundary pause fence
+
+Pause requests are explicit hash-chained events accepted only in TRAINING or
+TRAINED. Both enter PAUSING and suppress downstream development actions. A
+TRAINING_VERIFIED event received while PAUSING keeps the fence active rather than
+starting evaluation. The store refuses *new* budget reservations, GPU leases and
+worker registrations while PAUSING or PAUSED; existing reservations can be
+reconciled but not silently discarded.
+
+PAUSE_CONFIRMED can enter PAUSED only after a recorded TRAINING_VERIFIED event,
+zero active GPU leases, no unreconciled reservations and no registered worker
+whose owned host has not been verified stopped. To settle a registered worker,
+call ExperimentStore.record_worker_completion(experiment_id, attempt_id): it
+checks host-complete.json in the admitted attempt directory against the
+registered launch nonce, source/config/spec hashes, successful exit and
+non-admission host marker. This is host-exit evidence, **not** training parity;
+the existing training-reuse and stage-artifact verifiers remain authoritative.
+A worker crash without a trustworthy completion remains unresolved, not PAUSED.
+
+Restart/replay preserves PAUSING and PAUSED, and never launches work. Only an
+explicit RESUME_REQUESTED event (CLI: unpause) returns PAUSED to TRAINED. That
+transition emits a requirement to verify completed training reuse before
+starting development; it does not repeat optimization or launch a process.
+New evaluation/phase attempts must have fresh identities and log directories;
+prior charges remain. Direct, out-of-band worker launches are not covered by
+this store-level fence and are not an acceptable production scheduler.
+
+**Not yet implemented:** enforcing a wall-clock pause deadline, stopping at a
+verified optimizer/RNG checkpoint if TRAINED cannot be reached in time, and
+an actual physical GPU stage launcher wired to this fence. No guaranteed
+10–30-minute stop window or physical no-live-process proof is claimed. These
+remain part of #43's end-to-end hardware acceptance.
+
+## 9. Hardware-only completion
 
 This implementation intentionally leaves physical qualification outside default
 CI. Final TTT-018 acceptance still requires an explicitly budgeted TITAN

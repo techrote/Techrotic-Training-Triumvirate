@@ -47,6 +47,30 @@ def add_experiments_parser(subparsers: Any) -> None:
     replay.add_argument("experiment_id")
     replay.add_argument("--db", type=Path, required=True)
 
+    pause = commands.add_parser(
+        "pause", help="fence downstream work until the verified TRAINED boundary"
+    )
+    pause.add_argument("experiment_id")
+    pause.add_argument("--db", type=Path, required=True)
+    pause.add_argument("--after", choices=("TRAINED",), default="TRAINED")
+    pause.add_argument("--reason", required=True)
+    pause.add_argument("--timestamp")
+
+    pause_confirm = commands.add_parser(
+        "pause-confirm", help="seal a quiescent TRAINED boundary as PAUSED"
+    )
+    pause_confirm.add_argument("experiment_id")
+    pause_confirm.add_argument("--db", type=Path, required=True)
+    pause_confirm.add_argument("--timestamp")
+
+    unpause = commands.add_parser(
+        "unpause", help="release a PAUSED fence without launching new work"
+    )
+    unpause.add_argument("experiment_id")
+    unpause.add_argument("--db", type=Path, required=True)
+    unpause.add_argument("--reason", required=True)
+    unpause.add_argument("--timestamp")
+
     cancel = commands.add_parser(
         "cancel", help="record an explicit cancellation transition"
     )
@@ -149,6 +173,40 @@ def run_experiments(args: argparse.Namespace, parser: argparse.ArgumentParser) -
                         "experiment_id": args.experiment_id,
                         "state": state.value,
                         "event_chain": list(hashes),
+                        "relaunched": False,
+                    }
+                )
+            )
+            return 0
+
+        if args.experiment_command in {"pause", "pause-confirm", "unpause"}:
+            timestamp = args.timestamp or datetime.now(UTC).isoformat()
+            kind = {
+                "pause": EventKind.PAUSE_REQUESTED,
+                "pause-confirm": EventKind.PAUSE_CONFIRMED,
+                "unpause": EventKind.RESUME_REQUESTED,
+            }[args.experiment_command]
+            if args.experiment_command == "pause":
+                payload = {"after": args.after, "reason": args.reason}
+            elif args.experiment_command == "unpause":
+                payload = {"reason": args.reason}
+            else:
+                payload = {"boundary": "TRAINED"}
+            with ExperimentStore(args.db) as store:
+                state = store.append_event(
+                    args.experiment_id,
+                    VerifiedEvent(
+                        event_id=f"{kind.value.lower()}-{timestamp}",
+                        kind=kind,
+                        timestamp=timestamp,
+                        payload=payload,
+                    ),
+                )
+            print(
+                canonical_json(
+                    {
+                        "state": state.value,
+                        "downstream_fenced": state.value in {"PAUSING", "PAUSED"},
                         "relaunched": False,
                     }
                 )
