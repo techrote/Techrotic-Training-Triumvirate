@@ -547,9 +547,7 @@ class ExperimentStore:
                 (experiment_id, attempt_id, encoded, cancel_path, status),
             )
 
-    def record_worker_completion(
-        self, experiment_id: str, attempt_id: str
-    ) -> None:
+    def record_worker_completion(self, experiment_id: str, attempt_id: str) -> None:
         """Match an owned host's completed record before releasing the pause fence."""
 
         root = Path(self.plan(experiment_id).artifact_root).resolve()

@@ -86,14 +86,10 @@ def test_pause_fences_launches_until_training_reconciled_and_survives_restart(
             is ExperimentState.PAUSING
         )
         with pytest.raises(ExperimentStoreError, match="active GPU lease"):
-            store.append_event(
-                plan.experiment_id, _event(EventKind.PAUSE_CONFIRMED, 7)
-            )
+            store.append_event(plan.experiment_id, _event(EventKind.PAUSE_CONFIRMED, 7))
         store.release_device_lease(plan.experiment_id, attempt)
         with pytest.raises(ExperimentStoreError, match="reconciled budget"):
-            store.append_event(
-                plan.experiment_id, _event(EventKind.PAUSE_CONFIRMED, 7)
-            )
+            store.append_event(plan.experiment_id, _event(EventKind.PAUSE_CONFIRMED, 7))
         store.reconcile_budget(
             plan.experiment_id, attempt, actual_hours=0.2, lifetime_established=True
         )
@@ -118,9 +114,12 @@ def test_pause_fences_launches_until_training_reconciled_and_survives_restart(
             )
             is ExperimentState.TRAINED
         )
-        assert store.append_event(
-            plan.experiment_id, _event(EventKind.RESUME_REQUESTED, 9)
-        ) is ExperimentState.TRAINED
+        assert (
+            store.append_event(
+                plan.experiment_id, _event(EventKind.RESUME_REQUESTED, 9)
+            )
+            is ExperimentState.TRAINED
+        )
         assert (
             store.append_event(
                 plan.experiment_id, _event(EventKind.DEVELOPMENT_STARTED, 10)
@@ -136,9 +135,7 @@ def test_pause_requires_actual_training_verification(tmp_path: Path) -> None:
         _training(store, plan)
         store.append_event(plan.experiment_id, _event(EventKind.PAUSE_REQUESTED, 4))
         with pytest.raises(ExperimentStoreError, match="verified TRAINED"):
-            store.append_event(
-                plan.experiment_id, _event(EventKind.PAUSE_CONFIRMED, 5)
-            )
+            store.append_event(plan.experiment_id, _event(EventKind.PAUSE_CONFIRMED, 5))
         assert store.state(plan.experiment_id) is ExperimentState.PAUSING
 
 
@@ -165,13 +162,13 @@ def test_pause_waits_for_registered_worker_completion(tmp_path: Path) -> None:
         )
         store.append_event(plan.experiment_id, _event(EventKind.PAUSE_REQUESTED, 5))
         with pytest.raises(ExperimentStoreError, match="worker-host completion"):
-            store.append_event(
-                plan.experiment_id, _event(EventKind.PAUSE_CONFIRMED, 6)
-            )
+            store.append_event(plan.experiment_id, _event(EventKind.PAUSE_CONFIRMED, 6))
         with pytest.raises(ExperimentStoreError, match="pause fence"):
             store.record_worker(
-                plan.experiment_id, "new-attempt",
-                identity=identity, cancel_path="cancel.json"
+                plan.experiment_id,
+                "new-attempt",
+                identity=identity,
+                cancel_path="cancel.json",
             )
         marker = tmp_path / attempt / "host-complete.json"
         marker.parent.mkdir()
@@ -244,10 +241,7 @@ def test_pause_from_trained_and_cli_unpause_are_non_launching(
         == 0
     )
     assert json.loads(capsys.readouterr().out)["state"] == "PAUSED"
-    assert (
-        main(["experiments", "resume", plan.experiment_id, "--db", str(db)])
-        == 0
-    )
+    assert main(["experiments", "resume", plan.experiment_id, "--db", str(db)]) == 0
     assert json.loads(capsys.readouterr().out)["relaunched"] is False
     assert (
         main(
