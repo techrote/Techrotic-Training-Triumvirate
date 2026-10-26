@@ -184,6 +184,47 @@ class ExperimentStore:
             }
         )
 
+    def _assert_launch_unfenced(self, experiment_id: str) -> None:
+        if self.state(experiment_id) in {
+            ExperimentState.PAUSING,
+            ExperimentState.PAUSED,
+        }:
+            raise ExperimentStoreError("pause fence prevents new worker resources")
+
+    def _assert_pause_quiescent(self, experiment_id: str) -> None:
+        """Refuse PAUSED until training is verified and all owned work is settled."""
+
+        trained = self._connection.execute(
+            "SELECT 1 FROM events WHERE experiment_id=? AND kind=? LIMIT 1",
+            (experiment_id, EventKind.TRAINING_VERIFIED.value),
+        ).fetchone()
+        if trained is None:
+            raise ExperimentStoreError("pause needs a verified TRAINED boundary")
+        leased = self._connection.execute(
+            "SELECT 1 FROM device_leases WHERE experiment_id=? LIMIT 1",
+            (experiment_id,),
+        ).fetchone()
+        if leased is not None:
+            raise ExperimentStoreError("pause cannot confirm with an active GPU lease")
+        unsettled = self._connection.execute(
+            """
+            SELECT 1 FROM budget_reservations
+            WHERE experiment_id=? AND charged_hours IS NULL LIMIT 1
+            """,
+            (experiment_id,),
+        ).fetchone()
+        if unsettled is not None:
+            raise ExperimentStoreError("pause requires reconciled budget reservations")
+        running = self._connection.execute(
+            """
+            SELECT 1 FROM workers
+            WHERE experiment_id=? AND status!='stopped' LIMIT 1
+            """,
+            (experiment_id,),
+        ).fetchone()
+        if running is not None:
+            raise ExperimentStoreError("pause requires verified worker-host completion")
+
     def append_event(self, experiment_id: str, event: VerifiedEvent) -> ExperimentState:
         fingerprint = content_hash(event.to_object())
         with self._transaction():
@@ -200,6 +241,8 @@ class ExperimentStore:
 
             state = self.state(experiment_id)
             transition = advance(state, event)
+            if event.kind is EventKind.PAUSE_CONFIRMED:
+                self._assert_pause_quiescent(experiment_id)
             previous = self._connection.execute(
                 """
                 SELECT sequence,event_hash FROM events
@@ -305,6 +348,7 @@ class ExperimentStore:
                     )
                 return self.budget_snapshot(experiment_id)
 
+            self._assert_launch_unfenced(experiment_id)
             used = self._connection.execute(
                 """
                 SELECT COALESCE(SUM(
@@ -419,6 +463,7 @@ class ExperimentStore:
     ) -> None:
         plan = self.plan(experiment_id)
         with self._transaction():
+            self._assert_launch_unfenced(experiment_id)
             reservation = self._connection.execute(
                 """
                 SELECT 1 FROM budget_reservations
@@ -469,6 +514,8 @@ class ExperimentStore:
         cancel_path: str,
         status: str = "running",
     ) -> None:
+        if status != "running":
+            raise ExperimentStoreError("only a verified host completion may stop a worker")
         with self._transaction():
             existing = self._connection.execute(
                 """
@@ -487,6 +534,7 @@ class ExperimentStore:
                         "worker identity changed for one attempt"
                     )
                 return
+            self._assert_launch_unfenced(experiment_id)
             self._connection.execute(
                 """
                 INSERT INTO workers(
@@ -494,6 +542,67 @@ class ExperimentStore:
                 ) VALUES(?,?,?,?,?)
                 """,
                 (experiment_id, attempt_id, encoded, cancel_path, status),
+            )
+
+    def record_worker_completion(
+        self, experiment_id: str, attempt_id: str
+    ) -> None:
+        """Match an owned host's completed record before releasing the pause fence."""
+
+        root = Path(self.plan(experiment_id).artifact_root).resolve()
+        if (
+            not attempt_id
+            or Path(attempt_id).name != attempt_id
+            or attempt_id in {".", ".."}
+        ):
+            raise ExperimentStoreError("invalid attempt identity")
+        marker = (root / attempt_id / "host-complete.json").resolve()
+        if not marker.is_relative_to(root) or not marker.is_file():
+            raise ExperimentStoreError("owned worker completion marker is missing")
+        try:
+            completion: object = json.loads(marker.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise ExperimentStoreError("invalid worker completion marker") from exc
+        if not isinstance(completion, dict):
+            raise ExperimentStoreError("worker completion must be an object")
+        with self._transaction():
+            worker = self._connection.execute(
+                """
+                SELECT identity_json,status FROM workers
+                WHERE experiment_id=? AND attempt_id=?
+                """,
+                (experiment_id, attempt_id),
+            ).fetchone()
+            if worker is None:
+                raise ExperimentStoreError("worker completion has no recorded owner")
+            identity: object = json.loads(cast(str, worker["identity_json"]))
+            if not isinstance(identity, dict):
+                raise ExperimentStoreError("stored worker identity is invalid")
+            required = ("launch_nonce", "source_hash", "config_hash", "spec_hash")
+            if any(
+                not isinstance(identity.get(field), str)
+                or completion.get(field) != identity[field]
+                for field in required
+            ):
+                raise ExperimentStoreError("worker completion identity differs")
+            if (
+                completion.get("schema") != "ttt.worker_host_completion"
+                or completion.get("schema_version") != 1
+                or completion.get("attempt_id") != attempt_id
+                or completion.get("reason") != "exited"
+                or type(completion.get("returncode")) is not int
+                or completion["returncode"] != 0
+                or completion.get("admission_eligible") is not False
+            ):
+                raise ExperimentStoreError("worker host did not complete successfully")
+            if worker["status"] not in {"running", "stopped"}:
+                raise ExperimentStoreError("invalid stored worker status")
+            self._connection.execute(
+                """
+                UPDATE workers SET status='stopped'
+                WHERE experiment_id=? AND attempt_id=?
+                """,
+                (experiment_id, attempt_id),
             )
 
     def record_artifact(

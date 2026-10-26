@@ -26,6 +26,23 @@ _TRANSITIONS: dict[tuple[ExperimentState, EventKind], Transition] = {
     (ExperimentState.TRAINING, EventKind.TRAINING_VERIFIED): Transition(
         ExperimentState.TRAINED, ("start_development",)
     ),
+    # A pause request fences downstream actions even if training is still running.
+    (ExperimentState.TRAINING, EventKind.PAUSE_REQUESTED): Transition(
+        ExperimentState.PAUSING, ("fence_downstream", "await_trained_boundary")
+    ),
+    (ExperimentState.TRAINED, EventKind.PAUSE_REQUESTED): Transition(
+        ExperimentState.PAUSING, ("fence_downstream", "verify_quiescence")
+    ),
+    (ExperimentState.PAUSING, EventKind.TRAINING_VERIFIED): Transition(
+        ExperimentState.PAUSING, ("verify_quiescence",)
+    ),
+    (ExperimentState.PAUSING, EventKind.PAUSE_CONFIRMED): Transition(
+        ExperimentState.PAUSED, ("preserve_evidence",)
+    ),
+    # Unpausing does not launch work. The next development step remains explicit.
+    (ExperimentState.PAUSED, EventKind.RESUME_REQUESTED): Transition(
+        ExperimentState.TRAINED, ("verify_training_reuse_before_development",)
+    ),
     (ExperimentState.TRAINED, EventKind.DEVELOPMENT_STARTED): Transition(
         ExperimentState.DEVELOPMENT, ("evaluate_development",)
     ),
@@ -62,6 +79,8 @@ _ACTIVE = frozenset(
         ExperimentState.READY,
         ExperimentState.TRAINING,
         ExperimentState.TRAINED,
+        ExperimentState.PAUSING,
+        ExperimentState.PAUSED,
         ExperimentState.DEVELOPMENT,
         ExperimentState.CANDIDATE_SELECTED,
         ExperimentState.EXPORTING,
